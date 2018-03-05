@@ -2,7 +2,8 @@
 % also tests basic ac and hvdc modeling
 % tests when gencost is present but not dclinecost
 % based on nesta_case3_lmbd from NESTA v0.6.0
-function mpc = case3
+
+function mpc = matlab_02
 mpc.version = '2';
 mpc.baseMVA = 100.0;
 mpc.bus = [

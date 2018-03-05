@@ -6,6 +6,8 @@
 
 # this could benefit from a much more robust parser
 
+export parse_matlab_file, parse_matlab_string
+
 function parse_matlab_file(file_string::String; kwargs...)
     data_string = readstring(open(file_string))
     return parse_matlab_string(data_string; kwargs...)

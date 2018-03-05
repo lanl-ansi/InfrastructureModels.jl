@@ -2,7 +2,7 @@
 % And other hard to parse cases
 % also test data without a generator cost model
 
-function mpc = case2
+function mpc = matlab_01
 mpc.version = '2';
 mpc.baseMVA =  100.00;
 
