@@ -1,0 +1,22 @@
+language: julia
+os:
+  - linux
+  - osx
+julia:
+  - 0.6
+  - nightly
+matrix:
+  allow_failures:
+    - julia: nightly
+sudo: false
+before_install:
+  - julia -e 'if !("Coverage" in keys(Pkg.installed())) Pkg.add("Coverage") end'
+  - julia -e 'if !("Documenter" in keys(Pkg.installed())) Pkg.add("Documenter") end'
+script:
+  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+  - julia -e 'Pkg.clone(pwd())'
+  - julia -e 'Pkg.test("InfrastructureModels", coverage=true)'
+
+after_success:
+  - julia -e  'using Coverage; cd(Pkg.dir("InfrastructureModels")); LCOV.writefile("lcov.info", process_folder(".")); run(pipeline(`curl -s https://codecov.io/bash`, `bash`))'
+  # - julia -e 'cd(Pkg.dir("InfrastructureModels")); include(joinpath("docs", "make.jl"))'
