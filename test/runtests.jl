@@ -1,7 +1,8 @@
 using InfrastructureModels
-using Logging
-# suppress warnings during testing
-Logging.configure(level=ERROR)
+using Memento
+
+# Suppress warnings during testing.
+setlevel!(getlogger(InfrastructureModels), "error")
 
 using Base.Test
 
