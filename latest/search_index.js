@@ -145,6 +145,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "library.html#InfrastructureModels.replicate-Tuple{Dict{String,Any},Int64}",
+    "page": "Library",
+    "title": "InfrastructureModels.replicate",
+    "category": "method",
+    "text": "Transforms a single network into a multinetwork with several deepcopies of the original network\n\n\n\n"
+},
+
+{
     "location": "library.html#InfrastructureModels.split_line-Tuple{AbstractString}",
     "page": "Library",
     "title": "InfrastructureModels.split_line",
@@ -213,7 +221,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Developer",
     "title": "Single Network Data",
     "category": "section",
-    "text": "All network data has two parameters,multinetwork: a boolean value indicating if the data represents a single network or multiple networks\nper_unit: a boolean value indicating if the parameter units are in mixed-units or per unitcomponent lists These two parameters can be accompanied by collections of components, where the component name is the key of the collection.  A minimalist network dataset would be,{\n\"multinetwork\": false,\n\"per_unit\": <boolean>,\n\"component_1\": {...},\n\"component_2\": {...},\n...\n\"component_j\": {...}\n}Each component collection is a lookup table of the form index to component_data, for convenience each component includes its index value as an internal parameter.  Each component additionally has a required value called status which takes 1 or 0 indicating if the component is active or inactive, respectively, and on optional parameter called name, which is a human readable name for the component.  A typical component collection as a form along these lines,{\n\"component_1\":{\n    \"1\":{\n        \"index\": <int>,\n        \"status\": <int>,\n        \"name\": <string>,\n        ...\n    },\n    \"2\":{\n        \"index\": <int>,\n        \"status\" :<int>,\n        \"name\": <string>,\n        ...\n    }\n    ...\n    \"k\":{\n        \"index\": <int>,\n        \"status\" <int>,\n        \"name\": <string>,\n        ...\n    }\n},\n...\n}"
+    "text": "All network data has two required parameters,multinetwork: a boolean value indicating if the data represents a single network or multiple networks\nper_unit: a boolean value indicating if the parameter units are in mixed-units or per unitcomponent lists These two parameters can be accompanied by collections of components, where the component name is the key of the collection.  The name parameter is optional and can be used to give a human readable name for the network data.  A minimalist network dataset would be,{\n\"multinetwork\": false,\n\"per_unit\": <boolean>,\n\"name\": <string>,\n\"component_1\": {...},\n\"component_2\": {...},\n...\n\"component_j\": {...}\n}Each component collection is a lookup table of the form index to component_data, for convenience each component includes its index value as an internal parameter.  Each component additionally has a required value called status which takes 1 or 0 indicating if the component is active or inactive, respectively, and on optional parameter called name, which is a human readable name for the component.  A typical component collection as a form along these lines,{\n\"component_1\":{\n    \"1\":{\n        \"index\": <int>,\n        \"status\": <int>,\n        \"name\": <string>,\n        ...\n    },\n    \"2\":{\n        \"index\": <int>,\n        \"status\" :<int>,\n        \"name\": <string>,\n        ...\n    }\n    ...\n    \"k\":{\n        \"index\": <int>,\n        \"status\" <int>,\n        \"name\": <string>,\n        ...\n    }\n},\n...\n}"
 },
 
 {
@@ -221,7 +229,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Developer",
     "title": "Multi Network Data",
     "category": "section",
-    "text": "If the multinetwork parameter is true then several single network data objects are wrapped in a nw lookup table, like so,{\n\"multinetwork\": true,\n\"per_unit\": <boolean>,\n\"nw\":{\n    \"1\":{\n        \"index\": <int>,\n        \"component_1\": {...},\n        ...\n        \"component_j\": {...}\n    },\n    \"2\":{\n        \"index\": <int>,\n        \"component_1\": {...},\n        ...\n        \"component_j\": {...}\n    },\n    ...\n    \"i\":{\n        \"index\": <int>,\n        \"component_1\": {...},\n        ...\n        \"component_j\": {...}\n    },\n}\n}"
+    "text": "If the multinetwork parameter is true then several single network data objects are wrapped in a nw lookup table, like so,{\n\"multinetwork\": true,\n\"per_unit\": <boolean>,\n\"name\": <string>,\n\"nw\":{\n    \"1\":{\n        \"index\": <int>,\n        \"name\": <string>,\n        \"component_1\": {...},\n        ...\n        \"component_j\": {...}\n    },\n    \"2\":{\n        \"index\": <int>,\n        \"name\": <string>,\n        \"component_1\": {...},\n        ...\n        \"component_j\": {...}\n    },\n    ...\n    \"i\":{\n        \"index\": <int>,\n        \"name\": <string>,\n        \"component_1\": {...},\n        ...\n        \"component_j\": {...}\n    },\n}\n}"
 },
 
 {
