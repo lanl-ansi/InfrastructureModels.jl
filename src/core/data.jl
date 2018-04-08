@@ -37,11 +37,7 @@ function replicate(sn_data::Dict{String,Any}, count::Int)
         error("replicate can only be used on single networks")
     end
 
-    if haskey(sn_data, "name")
-        name = sn_data["name"]
-    else
-        name = "anon"
-    end
+    name = get(sn_data, "name", "anonymous")
 
     mn_data = Dict{String,Any}(
         "nw" => Dict{String,Any}()
@@ -57,6 +53,7 @@ function replicate(sn_data::Dict{String,Any}, count::Int)
     end
 
     mn_data["multinetwork"] = true
+    mn_data["name"] = "$(count) replicates of $(name)"
 
     sn_data_tmp = deepcopy(sn_data)
     for k in global_keys

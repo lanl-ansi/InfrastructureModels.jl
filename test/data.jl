@@ -80,6 +80,8 @@ end
     @test length(mn_data) == 6
     @test mn_data["multinetwork"]
     @test haskey(mn_data, "per_unit")
+    @test haskey(mn_data, "name")
+
     @test haskey(mn_data, "a")
     @test haskey(mn_data, "b")
     @test haskey(mn_data, "list")
