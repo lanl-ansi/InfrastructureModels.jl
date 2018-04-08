@@ -95,7 +95,7 @@ end
         }
     }")
 
-    InfrastructureModels.update_data!(data, mod)
+    update_data!(data, mod)
 
     @test length(data) == 5
     @test data["a"] == 1

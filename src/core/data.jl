@@ -1,4 +1,4 @@
-
+export update_data!
 
 "recursively applies new_data to data, overwriting information"
 function update_data!(data::Dict{String,Any}, new_data::Dict{String,Any})
