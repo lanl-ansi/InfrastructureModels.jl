@@ -30,6 +30,47 @@ function _update_data!(data::Dict{String,Any}, new_data::Dict{String,Any})
 end
 
 
+"Transforms a single network into a multinetwork with several deepcopies of the original network"
+function replicate(sn_data::Dict{String,Any}, count::Int)
+    @assert count > 1
+    if !haskey(sn_data, "multinetwork") || sn_data["multinetwork"] == true
+        error("replicate can only be used on single networks")
+    end
+
+    if haskey(sn_data, "name")
+        name = sn_data["name"]
+    else
+        name = "anon"
+    end
+
+    mn_data = Dict{String,Any}(
+        "nw" => Dict{String,Any}()
+    )
+
+    global_keys = Set()
+    for (k,v) in sn_data
+        # Question: should this only copy component lists?
+        if !(typeof(v) <: Dict)
+            mn_data[k] = deepcopy(v)
+            push!(global_keys, k)
+        end
+    end
+
+    mn_data["multinetwork"] = true
+
+    sn_data_tmp = deepcopy(sn_data)
+    for k in global_keys
+        delete!(sn_data_tmp, k)
+    end
+
+    for n in 1:count
+        mn_data["nw"]["$n"] = deepcopy(sn_data_tmp)
+    end
+
+    return mn_data
+end
+
+
 "prints the text summary for a data dictionary to STDOUT"
 function print_summary(obj::Dict{String,Any}; kwargs...)
     summary(STDOUT, obj; kwargs...)

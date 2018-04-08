@@ -6,16 +6,17 @@ InfrastructureModels and dependent packages leverage an extensible JSON-based da
 
 ### Single Network Data
 
-All network data has two parameters,
+All network data has two required parameters,
 * `multinetwork`: a boolean value indicating if the data represents a single network or multiple networks
 * `per_unit`: a boolean value indicating if the parameter units are in mixed-units or per unit
 component lists
-These two parameters can be accompanied by collections of components, where the component name is the key of the collection.  A minimalist network dataset would be,
+These two parameters can be accompanied by collections of components, where the component name is the key of the collection.  The `name` parameter is optional and can be used to give a human readable name for the network data.  A minimalist network dataset would be,
 
 ```json
 {
 "multinetwork": false,
 "per_unit": <boolean>,
+"name": <string>,
 "component_1": {...},
 "component_2": {...},
 ...
@@ -62,15 +63,18 @@ If the `multinetwork` parameter is `true` then several single network data objec
 {
 "multinetwork": true,
 "per_unit": <boolean>,
+"name": <string>,
 "nw":{
     "1":{
         "index": <int>,
+        "name": <string>,
         "component_1": {...},
         ...
         "component_j": {...}
     },
     "2":{
         "index": <int>,
+        "name": <string>,
         "component_1": {...},
         ...
         "component_j": {...}
@@ -78,6 +82,7 @@ If the `multinetwork` parameter is `true` then several single network data objec
     ...
     "i":{
         "index": <int>,
+        "name": <string>,
         "component_1": {...},
         ...
         "component_j": {...}

@@ -7,6 +7,8 @@ setlevel!(getlogger(InfrastructureModels), "error")
 
 using Base.Test
 
+include("common.jl")
+
 @testset "InfrastructureModels Tests" begin
 
 include("data.jl")

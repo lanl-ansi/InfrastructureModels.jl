@@ -62,35 +62,7 @@ end
 end
 
 @testset "summary feature component data" begin
-    data = JSON.parse("""{
-        "multinetwork":false,
-        "per_unit":false,
-        "a":1,
-        "b":"bloop",
-        "list": [1, "two", 3.0, false],
-        "dict": {"a":1, "b":2.0, "c":true, "d":"bloop"},
-        "comp":{
-            "1":{
-                "a":1,
-                "b":2,
-                "c":"same",
-                "status":1
-            },
-            "2":{
-                "a":3,
-                "b":4,
-                "c":"same",
-                "status":0
-            },
-            "3":{
-                "a":5,
-                "b":6,
-                "c":"same"
-            }
-        }
-    }""")
-
-    output = sprint(InfrastructureModels.summary, data)
+    output = sprint(InfrastructureModels.summary, generic_network_data)
 
     line_count = count(c -> c == '\n', output)
     @test line_count >= 18 && line_count <= 22
@@ -99,6 +71,22 @@ end
     @test contains(output, "default values:")
     @test contains(output, "Table Counts")
     @test contains(output, "Table: comp")
+end
+
+
+@testset "network replicate data" begin
+    mn_data = InfrastructureModels.replicate(generic_network_data, 3)
+
+    @test length(mn_data) == 6
+    @test mn_data["multinetwork"]
+    @test haskey(mn_data, "per_unit")
+    @test haskey(mn_data, "a")
+    @test haskey(mn_data, "b")
+    @test haskey(mn_data, "list")
+
+    @test length(mn_data["nw"]) == 3
+    @test mn_data["nw"]["1"] == mn_data["nw"]["2"]
+    @test mn_data["nw"]["2"] == mn_data["nw"]["3"]
 end
 
 
