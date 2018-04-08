@@ -1,5 +1,6 @@
 using InfrastructureModels
 using Memento
+using JSON
 
 # Suppress warnings during testing.
 setlevel!(getlogger(InfrastructureModels), "error")
