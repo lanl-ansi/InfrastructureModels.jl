@@ -41,6 +41,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "library.html#InfrastructureModels.update_data!-Tuple{Dict{String,Any},Dict{String,Any}}",
+    "page": "Library",
+    "title": "InfrastructureModels.update_data!",
+    "category": "method",
+    "text": "recursively applies new_data to data, overwriting information\n\n\n\n"
+},
+
+{
     "location": "library.html#InfrastructureModels._bold-Tuple{String}",
     "page": "Library",
     "title": "InfrastructureModels._bold",
@@ -166,14 +174,6 @@ var documenterSearchIndex = {"docs": [
     "title": "InfrastructureModels.type_value",
     "category": "method",
     "text": "Attempts to determine the type of a string extracted from a matlab file\n\n\n\n"
-},
-
-{
-    "location": "library.html#InfrastructureModels.update_data!-Tuple{Dict{String,Any},Dict{String,Any}}",
-    "page": "Library",
-    "title": "InfrastructureModels.update_data!",
-    "category": "method",
-    "text": "recursively applies new_data to data, overwriting information\n\n\n\n"
 },
 
 {
