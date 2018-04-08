@@ -6,22 +6,25 @@
 &quot;component_2&quot;: {...},
 ...
 &quot;component_j&quot;: {...}
-}</code></pre><p>Each component collection is a lookup table of the form <code>index</code> to <code>component_data</code>, for convenience each component includes its <code>index</code> value as an internal parameter.  Each component additionally has a value called <code>status</code> which takes 1 or 0 indicating if the component is active or inactive, respectively.  A typical component collection as a form along these lines,</p><pre><code class="language-json">{
+}</code></pre><p>Each component collection is a lookup table of the form <code>index</code> to <code>component_data</code>, for convenience each component includes its <code>index</code> value as an internal parameter.  Each component additionally has a required value called <code>status</code> which takes 1 or 0 indicating if the component is active or inactive, respectively, and on optional parameter called <code>name</code>, which is a human readable name for the component.  A typical component collection as a form along these lines,</p><pre><code class="language-json">{
 &quot;component_1&quot;:{
     &quot;1&quot;:{
         &quot;index&quot;: &lt;int&gt;,
         &quot;status&quot;: &lt;int&gt;,
+        &quot;name&quot;: &lt;string&gt;,
         ...
     },
     &quot;2&quot;:{
         &quot;index&quot;: &lt;int&gt;,
         &quot;status&quot; :&lt;int&gt;,
+        &quot;name&quot;: &lt;string&gt;,
         ...
     }
     ...
     &quot;k&quot;:{
         &quot;index&quot;: &lt;int&gt;,
         &quot;status&quot; &lt;int&gt;,
+        &quot;name&quot;: &lt;string&gt;,
         ...
     }
 },
