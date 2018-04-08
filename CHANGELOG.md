@@ -2,7 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Added basic documentation
 
 ### v0.0.1
 - Initial implementation (matlab data parsing)
