@@ -49,7 +49,7 @@ end
 end
 
 
-@testset "summary feature" begin
+@testset "summary feature matlab data" begin
     data = parse_matlab_file("../test/data/matlab_01.m")
 
     output = sprint(InfrastructureModels.summary, data)
@@ -59,6 +59,46 @@ end
     @test contains(output, "mpc.baseMVA")
     @test contains(output, "mpc.version")
     @test contains(output, "mpc.bus_name: [(2)]")
+end
+
+@testset "summary feature component data" begin
+    data = JSON.parse("""{
+        "multinetwork":false,
+        "per_unit":false,
+        "a":1,
+        "b":"bloop",
+        "list": [1, "two", 3.0, false],
+        "dict": {"a":1, "b":2.0, "c":true, "d":"bloop"},
+        "comp":{
+            "1":{
+                "a":1,
+                "b":2,
+                "c":"same",
+                "status":1
+            },
+            "2":{
+                "a":3,
+                "b":4,
+                "c":"same",
+                "status":0
+            },
+            "3":{
+                "a":5,
+                "b":6,
+                "c":"same"
+            }
+        }
+    }""")
+
+    output = sprint(InfrastructureModels.summary, data)
+
+    line_count = count(c -> c == '\n', output)
+    @test line_count >= 18 && line_count <= 22
+    @test contains(output, "dict: {(4)}")
+    @test contains(output, "list: [(4)]")
+    @test contains(output, "default values:")
+    @test contains(output, "Table Counts")
+    @test contains(output, "Table: comp")
 end
 
 
