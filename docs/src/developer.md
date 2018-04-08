@@ -24,7 +24,7 @@ These two parameters can be accompanied by collections of components, where the 
 ```
 
 
-Each component collection is a lookup table of the form `index` to `component_data`, for convenience each component includes its `index` value as an internal parameter.  Each component additionally has a value called `status` which takes 1 or 0 indicating if the component is active or inactive, respectively.  A typical component collection as a form along these lines,
+Each component collection is a lookup table of the form `index` to `component_data`, for convenience each component includes its `index` value as an internal parameter.  Each component additionally has a required value called `status` which takes 1 or 0 indicating if the component is active or inactive, respectively, and on optional parameter called `name`, which is a human readable name for the component.  A typical component collection as a form along these lines,
 
 ```json
 {
@@ -32,17 +32,20 @@ Each component collection is a lookup table of the form `index` to `component_da
     "1":{
         "index": <int>,
         "status": <int>,
+        "name": <string>,
         ...
     },
     "2":{
         "index": <int>,
         "status" :<int>,
+        "name": <string>,
         ...
     }
     ...
     "k":{
         "index": <int>,
         "status" <int>,
+        "name": <string>,
         ...
     }
 },
