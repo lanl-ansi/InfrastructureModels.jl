@@ -47,3 +47,69 @@ end
         @test length(data[k][1]) == length(v)
     end
 end
+
+
+@testset "summary feature" begin
+    data = parse_matlab_file("../test/data/matlab_01.m")
+
+    output = sprint(InfrastructureModels.summary, data)
+
+    line_count = count(c -> c == '\n', output)
+    @test line_count >= 5 && line_count <= 10 
+    @test contains(output, "mpc.baseMVA")
+    @test contains(output, "mpc.version")
+    @test contains(output, "mpc.bus_name: [(2)]")
+end
+
+
+@testset "update_data! feature" begin
+    data = JSON.parse("{
+        \"per_unit\":false,
+        \"a\":1,
+        \"b\":\"bloop\",
+        \"c\":{
+            \"1\":{
+                \"a\":2,
+                \"b\":3
+            },
+            \"3\":{
+                \"a\":2,
+                \"b\":3
+            }
+        }
+    }")
+
+    mod = JSON.parse("{
+        \"per_unit\":false,
+        \"e\":1.23,
+        \"b\":[4,5,6],
+        \"c\":{
+            \"1\":{
+                \"a\":4,
+                \"b\":\"bloop\"
+            },
+            \"2\":{
+                \"a\":4,
+                \"b\":false
+            }
+        }
+    }")
+
+    InfrastructureModels.update_data!(data, mod)
+
+    @test length(data) == 5
+    @test data["a"] == 1
+    @test data["b"][2] == 5
+    @test length(data["c"]) == 3
+    @test data["e"] == 1.23
+
+    @test data["c"]["1"]["a"] == 4
+    @test data["c"]["1"]["b"] == "bloop"
+
+    @test data["c"]["2"]["a"] == 4
+    @test data["c"]["2"]["b"] == false
+
+    @test data["c"]["3"]["a"] == 2
+    @test data["c"]["3"]["b"] == 3
+end
+

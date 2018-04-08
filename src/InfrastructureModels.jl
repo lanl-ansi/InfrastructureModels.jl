@@ -14,6 +14,8 @@ const LOGGER = getlogger(@__MODULE__)
 __init__() = Memento.register(LOGGER)
 
 
+include("core/data.jl")
+
 include("io/matlab.jl")
 
 end
