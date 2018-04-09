@@ -49,6 +49,25 @@ end
 end
 
 
+@testset "summary feature non-standard dict structure" begin
+    data = Dict{String,Any}(
+        "a" => 1,
+        "b" => [1,2,3],
+        "c" => Dict{String,Any}(
+            "e" => 1.2,
+            "d" => 2.3
+        )
+    )
+    output = sprint(InfrastructureModels.summary, data)
+
+    line_count = count(c -> c == '\n', output)
+    @test line_count >= 3 && line_count <= 6 
+    @test contains(output, "Metadata")
+    @test contains(output, "a: 1")
+    @test contains(output, "b: [(3)]")
+    @test contains(output, "c: {(2)}")
+end
+
 @testset "summary feature matlab data" begin
     data = parse_matlab_file("../test/data/matlab_01.m")
 
