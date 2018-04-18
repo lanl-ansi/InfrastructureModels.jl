@@ -134,7 +134,6 @@ end
         @test mn_data["nw"]["2"] == mn_data["nw"]["3"]
     end
 
-
     @testset "update_data! feature" begin
         data = JSON.parse("{
             \"per_unit\":false,
@@ -227,3 +226,20 @@ end
 
 end
 
+
+@testset "data comparison" begin
+
+    @testset "dict comparison" begin
+        mn_data = InfrastructureModels.replicate(generic_network_data, 3)
+
+        nw_1 = mn_data["nw"]["1"]
+        nw_2 = mn_data["nw"]["2"]
+        nw_3 = mn_data["nw"]["3"]
+
+        nw_1["dict"]["b"] = 2.00000001
+
+        @test InfrastructureModels.compare_dict(nw_1, nw_2)
+        @test InfrastructureModels.compare_dict(nw_1, nw_3)
+    end
+
+end
