@@ -17,6 +17,7 @@ function parse_matlab_string(data_string::String; extended=false)
     data_lines = split(data_string, '\n')
 
     matlab_dict = Dict{String,Any}()
+    struct_name = nothing
     function_name = nothing
     column_names = Dict{String,Any}()
 
@@ -32,9 +33,14 @@ function parse_matlab_string(data_string::String; extended=false)
         end
 
         if contains(line, "function")
-            name, value = extract_matlab_assignment(line)
+            func, value = extract_matlab_assignment(line)
+            struct_name = strip(replace(func, "function", ""))
             function_name = value
         elseif contains(line, "=")
+            if struct_name != nothing && !contains(line, "$(struct_name).")
+                warn(LOGGER, "assignments are expected to be made to \"$(struct_name)\" but given: $(line)")
+            end
+
             if contains(line, "[")
                 matrix_dict = parse_matlab_matrix(data_lines, index)
                 matlab_dict[matrix_dict["name"]] = matrix_dict["data"]
@@ -128,7 +134,7 @@ function parse_matlab_data(lines, index, start_char, end_char)
     matrix_assignment = split(lines[index+line_count], '%')[1]
     matrix_assignment = strip(matrix_assignment)
 
-    assert(contains(matrix_assignment, "mpc."))
+    assert(contains(matrix_assignment, "."))
     matrix_assignment_parts = split(matrix_assignment, '=')
     matrix_name = strip(matrix_assignment_parts[1])
 

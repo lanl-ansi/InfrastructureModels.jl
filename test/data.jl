@@ -33,6 +33,21 @@ end
     @test data["mpc.areas_cells"][1][3] == 987
 end
 
+@testset "parsing matlab struct name" begin
+    data = parse_matlab_file("../test/data/matlab_03.m")
+
+    @test length(data) == 8
+    @test length(data["udc.bus"]) == 3
+    @test length(data["udc.gen"]) == 3
+    @test length(data["udc.branch"]) == 3
+
+    @test isa(data["udc.version"], SubString{String})
+    @test isa(data["udc.baseMVA"], Float64)
+
+    @test isa(data["bloop.baseMVA"], Float64)
+end
+
+
 @testset "parsing matlab extended features" begin
     data, func, columns = parse_matlab_file("../test/data/matlab_02.m", extended=true)
 
