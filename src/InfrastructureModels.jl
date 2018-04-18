@@ -16,6 +16,7 @@ __init__() = Memento.register(LOGGER)
 
 include("core/data.jl")
 
+include("io/common.jl")
 include("io/matlab.jl")
 
 end
