@@ -113,6 +113,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "library.html#InfrastructureModels.compare_dict-Tuple{Any,Any}",
+    "page": "Library",
+    "title": "InfrastructureModels.compare_dict",
+    "category": "method",
+    "text": "tests if two dicts are equal, up to floating point precision\n\n\n\n"
+},
+
+{
+    "location": "library.html#InfrastructureModels.compare_numbers-Tuple{Any,Any}",
+    "page": "Library",
+    "title": "InfrastructureModels.compare_numbers",
+    "category": "method",
+    "text": "tests if two numbers are equal, up to floating point precision\n\n\n\n"
+},
+
+{
     "location": "library.html#InfrastructureModels.extract_matlab_assignment-Tuple{AbstractString}",
     "page": "Library",
     "title": "InfrastructureModels.extract_matlab_assignment",
