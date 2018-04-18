@@ -97,9 +97,9 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "library.html#InfrastructureModels.arrays_to_dicts-Tuple{Dict{String,Any}}",
+    "location": "library.html#InfrastructureModels.arrays_to_dicts!-Tuple{Dict{String,Any}}",
     "page": "Library",
-    "title": "InfrastructureModels.arrays_to_dicts",
+    "title": "InfrastructureModels.arrays_to_dicts!",
     "category": "method",
     "text": "turns top level arrays into dicts\n\n\n\n"
 },
