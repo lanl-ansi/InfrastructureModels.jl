@@ -47,7 +47,6 @@ end
     @test isa(data["bloop.baseMVA"], Float64)
 end
 
-
 @testset "parsing matlab extended features" begin
     data, func, columns = parse_matlab_file("../test/data/matlab_02.m", extended=true)
 
@@ -61,6 +60,42 @@ end
         @test haskey(data, k)
         @test length(data[k][1]) == length(v)
     end
+end
+
+@testset "transform arrays to dicts" begin
+    data = parse_matlab_file("../test/data/matlab_01.m")
+
+    for (k,v) in data
+        if isa(v, Array)
+            items = Array{Any,1}()
+            
+            for item in v
+                dict = Dict{String,Any}()
+                for (i,value) in enumerate(item)
+                    dict["col_$(i)"] = value
+                end
+                push!(items, dict)
+            end
+
+            data[k] = items
+        end
+    end
+
+    InfrastructureModels.arrays_to_dicts!(data)
+
+    @test length(data) == 6
+    @test length(data["mpc.bus"]) == 2
+    @test length(data["mpc.gen"]) == 1
+    @test length(data["mpc.branch"]) == 1
+
+    @test isa(data["mpc.version"], SubString{String})
+    @test isa(data["mpc.baseMVA"], Float64)
+    @test isa(data["mpc.bus"], Dict{String,Any})
+    @test isa(data["mpc.gen"], Dict{String,Any})
+    @test isa(data["mpc.branch"], Dict{String,Any})
+    @test isa(data["mpc.bus_name"], Dict{String,Any})
+
+    @test data["mpc.gen"]["1"]["col_2"] == 1098.17
 end
 
 
