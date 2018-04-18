@@ -2,7 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- none
+- Fixed bug when matlab function returns a value that is not called "mpc"
 
 ### v0.0.2
 - Added dict summary function
