@@ -97,11 +97,35 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "library.html#InfrastructureModels.arrays_to_dicts!-Tuple{Dict{String,Any}}",
+    "page": "Library",
+    "title": "InfrastructureModels.arrays_to_dicts!",
+    "category": "method",
+    "text": "turns top level arrays into dicts\n\n\n\n"
+},
+
+{
     "location": "library.html#InfrastructureModels.check_type-Tuple{Any,Any}",
     "page": "Library",
     "title": "InfrastructureModels.check_type",
     "category": "method",
     "text": "Checks if the given value is of a given type, if not tries to make it that type\n\n\n\n"
+},
+
+{
+    "location": "library.html#InfrastructureModels.compare_dict-Tuple{Any,Any}",
+    "page": "Library",
+    "title": "InfrastructureModels.compare_dict",
+    "category": "method",
+    "text": "tests if two dicts are equal, up to floating point precision\n\n\n\n"
+},
+
+{
+    "location": "library.html#InfrastructureModels.compare_numbers-Tuple{Any,Any}",
+    "page": "Library",
+    "title": "InfrastructureModels.compare_numbers",
+    "category": "method",
+    "text": "tests if two numbers are equal, up to floating point precision\n\n\n\n"
 },
 
 {
