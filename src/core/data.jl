@@ -332,13 +332,17 @@ function compare_dict(d1, d2)
             end
         else
             #println("2")
-            if v1 != v2
+            if !isapprox(v1, v2)
                 #println(v1, " ", v2)
                 return false
             end
         end
     end
     return true
+end
+
+function Base.isapprox(a::Any, b::Any; kwargs...)
+    return a == b
 end
 
 "tests if two numbers are equal, up to floating point precision"

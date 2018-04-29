@@ -2,7 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Making compare_dict extensible via isapprox function
 
 ### v0.0.3
 - Added compare_dict function
