@@ -5,7 +5,8 @@ InfrastructureModels.jl Change Log
 - nothing
 
 ### v0.0.4
-- Making compare_dict extensible via isapprox function
+- Added relaxation schemes for some typical non-convex constraints
+- Made compare_dict extensible via isapprox function
 
 ### v0.0.3
 - Added compare_dict function
