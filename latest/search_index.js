@@ -153,6 +153,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "library.html#InfrastructureModels.ismultinetwork-Tuple{Dict{String,Any}}",
+    "page": "Library",
+    "title": "InfrastructureModels.ismultinetwork",
+    "category": "method",
+    "text": "checks if a given network data is a multinetwork\n\n\n\n"
+},
+
+{
     "location": "library.html#InfrastructureModels.parse_matlab_cells-Tuple{Any,Any}",
     "page": "Library",
     "title": "InfrastructureModels.parse_matlab_cells",
