@@ -73,6 +73,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "library.html#InfrastructureModels._iscomponentdict-Tuple{Dict}",
+    "page": "Library",
+    "title": "InfrastructureModels._iscomponentdict",
+    "category": "method",
+    "text": "Attempts to determine if the given data is a component dictionary\n\n\n\n"
+},
+
+{
     "location": "library.html#InfrastructureModels._update_data!-Tuple{Dict{String,Any},Dict{String,Any}}",
     "page": "Library",
     "title": "InfrastructureModels._update_data!",
@@ -126,6 +134,14 @@ var documenterSearchIndex = {"docs": [
     "title": "InfrastructureModels.compare_numbers",
     "category": "method",
     "text": "tests if two numbers are equal, up to floating point precision\n\n\n\n"
+},
+
+{
+    "location": "library.html#InfrastructureModels.component_table-Tuple{Dict{String,Any},String,Array{String,1}}",
+    "page": "Library",
+    "title": "InfrastructureModels.component_table",
+    "category": "method",
+    "text": "builds a table of component data\n\n\n\n"
 },
 
 {
