@@ -2,6 +2,9 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+- nothing
+
+### v0.0.5
 - Added component_table for building matrices from component dictionaries
 
 ### v0.0.4
