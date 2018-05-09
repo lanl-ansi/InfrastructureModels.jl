@@ -164,7 +164,6 @@ end
 
         rows_to_dict!(data)
         InfrastructureModels.arrays_to_dicts!(data)
-        data["multinetwork"] = false
 
         mn_data = InfrastructureModels.replicate(data, 3)
 

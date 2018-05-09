@@ -1,6 +1,5 @@
 
 generic_network_data = JSON.parse("""{
-    "multinetwork":false,
     "per_unit":false,
     "a":1,
     "b":"bloop",

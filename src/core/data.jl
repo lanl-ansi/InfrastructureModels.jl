@@ -29,11 +29,13 @@ function _update_data!(data::Dict{String,Any}, new_data::Dict{String,Any})
     end
 end
 
+"checks if a given network data is a multinetwork"
+ismultinetwork(data::Dict{String,Any}) = (haskey(data, "multinetwork") && data["multinetwork"] == true)
 
 "Transforms a single network into a multinetwork with several deepcopies of the original network"
 function replicate(sn_data::Dict{String,Any}, count::Int)
     @assert count > 1
-    if !haskey(sn_data, "multinetwork") || sn_data["multinetwork"] == true
+    if ismultinetwork(sn_data)
         error("replicate can only be used on single networks")
     end
 
@@ -71,7 +73,7 @@ end
 
 "builds a table of component data"
 function component_table(data::Dict{String,Any}, component::String, fields::Vector{String})
-    if haskey(data, "multinetwork") && data["multinetwork"] == true
+    if ismultinetwork(data)
         return Dict((i, _component_table(nw_data, component, fields)) for (i,nw_data) in data["nw"])
     else
         return _component_table(data, component, fields)
@@ -112,7 +114,7 @@ end
 
 "prints the text summary for a data dictionary to IO"
 function summary(io::IO, data::Dict{String,Any}; float_precision::Int = 3)
-    if haskey(data, "multinetwork") && data["multinetwork"]
+    if ismultinetwork(data)
         error("summary does not yet support multinetwork data")
     end
 
