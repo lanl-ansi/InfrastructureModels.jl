@@ -114,6 +114,91 @@ end
 
 end
 
+@testset "data component table" begin
+
+    @testset "single network" begin
+        data = parse_matlab_file("../test/data/matlab_02.m")
+
+        rows_to_dict!(data)
+        InfrastructureModels.arrays_to_dicts!(data)
+
+        ct1 = InfrastructureModels.component_table(data, "mpc.bus", "col_3")
+        @test length(ct1) == 6
+        @test size(ct1,1) == 3
+        @test size(ct1,2) == 2
+
+        ct2 = InfrastructureModels.component_table(data, "mpc.bus", ["col_2", "col_4"])
+        @test length(ct2) == 9
+        @test size(ct2,1) == 3
+        @test size(ct2,2) == 3
+
+        ct3 = InfrastructureModels.component_table(data, "mpc.gen", ["col_2", "col_4"])
+        @test length(ct3) == 9
+        @test size(ct3,1) == 3
+        @test size(ct3,2) == 3
+
+        ct4 = InfrastructureModels.component_table(data, "mpc.branch", ["col_2", "col_4", "col_6"])
+        @test length(ct4) == 12
+        @test size(ct4,1) == 3
+        @test size(ct4,2) == 4
+    end
+
+    @testset "mixed data types" begin
+        data = parse_matlab_file("../test/data/matlab_02.m")
+
+        rows_to_dict!(data)
+        InfrastructureModels.arrays_to_dicts!(data)
+
+        for (i,bus) in data["mpc.bus"]
+            bus["name"] = "bus_$(i)"
+        end
+
+        ct1 = InfrastructureModels.component_table(data, "mpc.bus", ["col_2", "col_4", "name"])
+        @test length(ct1) == 12
+        @test size(ct1,1) == 3
+        @test size(ct1,2) == 4
+    end
+
+    @testset "multi network" begin
+        data = parse_matlab_file("../test/data/matlab_02.m")
+
+        rows_to_dict!(data)
+        InfrastructureModels.arrays_to_dicts!(data)
+        data["multinetwork"] = false
+
+        mn_data = InfrastructureModels.replicate(data, 3)
+
+        ct1 = InfrastructureModels.component_table(mn_data, "mpc.bus", "col_3")
+        for (i, nw) in mn_data["nw"]
+            @test length(ct1[i]) == 6
+            @test size(ct1[i],1) == 3
+            @test size(ct1[i],2) == 2
+        end
+
+        ct2 = InfrastructureModels.component_table(mn_data, "mpc.bus", ["col_2", "col_4"])
+        for (i, nw) in mn_data["nw"]
+            @test length(ct2[i]) == 9
+            @test size(ct2[i],1) == 3
+            @test size(ct2[i],2) == 3
+        end
+
+        ct3 = InfrastructureModels.component_table(mn_data, "mpc.gen", ["col_2", "col_4"])
+        for (i, nw) in mn_data["nw"]
+            @test length(ct3[i]) == 9
+            @test size(ct3[i],1) == 3
+            @test size(ct3[i],2) == 3
+        end
+
+        ct4 = InfrastructureModels.component_table(mn_data, "mpc.branch", ["col_2", "col_4", "col_6"])
+        for (i, nw) in mn_data["nw"]
+            @test length(ct4[i]) == 12
+            @test size(ct4[i],1) == 3
+            @test size(ct4[i],2) == 4
+        end
+    end
+
+end
+
 
 @testset "data transformation" begin
 
@@ -191,21 +276,7 @@ end
 
         data["mpc.tmp"] = []
 
-        for (k,v) in data
-            if isa(v, Array)
-                items = Array{Any,1}()
-
-                for item in v
-                    dict = Dict{String,Any}()
-                    for (i,value) in enumerate(item)
-                        dict["col_$(i)"] = value
-                    end
-                    push!(items, dict)
-                end
-
-                data[k] = items
-            end
-        end
+        rows_to_dict!(data)
 
         InfrastructureModels.arrays_to_dicts!(data)
 

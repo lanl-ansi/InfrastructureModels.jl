@@ -68,6 +68,42 @@ function replicate(sn_data::Dict{String,Any}, count::Int)
 end
 
 
+
+"builds a table of component data"
+function component_table(data::Dict{String,Any}, component::String, fields::Vector{String})
+    if haskey(data, "multinetwork") && data["multinetwork"] == true
+        return Dict((i, _component_table(nw_data, component, fields)) for (i,nw_data) in data["nw"])
+    else
+        return _component_table(data, component, fields)
+    end
+end
+component_table(data::Dict{String,Any}, component::String, field::String) = component_table(data, component, [field])
+
+function _component_table(data::Dict{String,Any}, component::String, fields::Vector{String})
+    comps = data[component]
+    if !_iscomponentdict(comps)
+        error(LOGGER, "$(component) does not appear to refer to a component list")
+    end
+
+    items = []
+    sorted_comps = sort(collect(comps); by=x->parse(Int, x[1]))
+    for (i,comp) in sorted_comps
+        push!(items, parse(Int, i))
+    end
+    for key in fields
+        for (i,comp) in sorted_comps
+            if haskey(comp, key)
+                push!(items, comp[key])
+            else
+                push!(items, NaN)
+            end
+        end
+    end
+
+    return reshape(items, length(comps), length(fields)+1)
+end
+
+
 "prints the text summary for a data dictionary to STDOUT"
 function print_summary(obj::Dict{String,Any}; kwargs...)
     summary(STDOUT, obj; kwargs...)
@@ -122,11 +158,9 @@ function summary(io::IO, data::Dict{String,Any}; float_precision::Int = 3)
 
     println(io, _bold("Metadata"))
     for (k,v) in sort(collect(data); by=x->x[1])
-        if typeof(v) <: Dict
-            if sum([!(typeof(comp) <: Dict) for (i, comp) in v]) == 0
-                push!(component_types, k)
-                continue
-            end
+        if typeof(v) <: Dict && _iscomponentdict(v)
+            push!(component_types, k)
+            continue
         end
 
         println(io, "  $(k): $(_value2string(v, float_precision))")
@@ -251,6 +285,11 @@ function summary(io::IO, data::Dict{String,Any}; float_precision::Int = 3)
         end
     end
 
+end
+
+"Attempts to determine if the given data is a component dictionary"
+function _iscomponentdict(data::Dict)
+    return all( typeof(comp) <: Dict for (i, comp) in data )
 end
 
 "Makes a string bold in the terminal"

@@ -2,7 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Added component_table for building matrices from component dictionaries
 
 ### v0.0.4
 - Added relaxation schemes for some typical non-convex constraints
