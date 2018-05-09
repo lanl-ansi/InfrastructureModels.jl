@@ -2,7 +2,10 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- Added ismultinetwork for testing if network data is a multinetwork
+- nothing
+
+### v0.0.6
+- Added ismultinetwork for checking if network data is a multinetwork
 
 ### v0.0.5
 - Added component_table for building matrices from component dictionaries
