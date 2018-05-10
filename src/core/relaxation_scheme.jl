@@ -124,7 +124,8 @@ function relaxation_trilinear(m, x, y, z, w, lambda)
     z_ub = JuMP.upperbound(z)
     z_lb = JuMP.lowerbound(z)
 
-    @assert length(lambda) == 8
+    @assert length(indices(lambda)) == 1
+    @assert length.(indices(lambda))[1] == 8
 
     w_val = [x_lb * y_lb * z_lb 
              x_lb * y_lb * z_ub  
