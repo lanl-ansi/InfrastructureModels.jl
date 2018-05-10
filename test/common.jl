@@ -1,6 +1,5 @@
 
 generic_network_data = JSON.parse("""{
-    "multinetwork":false,
     "per_unit":false,
     "a":1,
     "b":"bloop",
@@ -27,3 +26,21 @@ generic_network_data = JSON.parse("""{
     }
 }""")
 
+
+function rows_to_dict!(data::Dict{String,Any})
+    for (k,v) in data
+        if isa(v, Array)
+            items = Array{Any,1}()
+
+            for item in v
+                dict = Dict{String,Any}()
+                for (i,value) in enumerate(item)
+                    dict["col_$(i)"] = value
+                end
+                push!(items, dict)
+            end
+
+            data[k] = items
+        end
+    end
+end

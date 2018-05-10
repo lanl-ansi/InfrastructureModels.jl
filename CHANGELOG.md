@@ -4,6 +4,12 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.0.6
+- Added ismultinetwork for checking if network data is a multinetwork
+
+### v0.0.5
+- Added component_table for building matrices from component dictionaries
+
 ### v0.0.4
 - Added relaxation schemes for some typical non-convex constraints
 - Made compare_dict extensible via isapprox function
