@@ -2,6 +2,9 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+- nothing
+
+### v0.0.7
 - Removed Memento depreciation warnings
 
 ### v0.0.6
