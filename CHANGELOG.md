@@ -2,7 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Removed Memento depreciation warnings
 
 ### v0.0.6
 - Added ismultinetwork for checking if network data is a multinetwork
