@@ -4,6 +4,9 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.0.8
+- Added conic form of the complex product relaxation
+
 ### v0.0.7
 - Removed Memento depreciation warnings
 
