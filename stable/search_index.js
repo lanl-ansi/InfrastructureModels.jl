@@ -201,6 +201,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "library.html#InfrastructureModels.relaxation_complex_product_conic-NTuple{5,Any}",
+    "page": "Library",
+    "title": "InfrastructureModels.relaxation_complex_product_conic",
+    "category": "method",
+    "text": "a conic encoding of constraint: c^2 + d^2 <= a*b\n\n\n\n"
+},
+
+{
     "location": "library.html#InfrastructureModels.relaxation_complex_product_on_off-NTuple{6,Any}",
     "page": "Library",
     "title": "InfrastructureModels.relaxation_complex_product_on_off",
