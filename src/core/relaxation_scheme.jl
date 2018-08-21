@@ -4,6 +4,11 @@ function relaxation_complex_product(m, a, b, c, d)
     @constraint(m, c^2 + d^2 <= a*b)
 end
 
+"a conic encoding of constraint: `c^2 + d^2 <= a*b`"
+function relaxation_complex_product_conic(m, a, b, c, d)
+    @assert (getlowerbound(a) >= 0 && getlowerbound(b) >= 0) || (getupperbound(a) <= 0 && getupperbound(b) <= 0)
+    @constraint(m, norm([(a - b); 2.0*c; 2.0*d]) <= (a + b))
+end
 
 """
 ```
