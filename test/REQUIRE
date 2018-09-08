@@ -2,5 +2,7 @@ julia 0.6
 
 JSON 0.6.0
 
+MathOptInterface 0.6
+
 Ipopt
 Juniper 0.2.0
