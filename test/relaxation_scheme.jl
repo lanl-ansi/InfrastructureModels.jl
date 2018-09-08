@@ -5,9 +5,11 @@ const MOI = MathOptInterface
 const MOIU = MOI.Utilities
 
 using Ipopt
+using ECOS
 #using Juniper
 
 ipopt_solver = Ipopt.Optimizer(print_level=0)
+ecos_solver = ECOS.Optimizer(verbose=0)
 #juniper_solver = JuniperSolver(ipopt_solver, log_levels=[])
 
 tolerance = 1e-5
@@ -195,6 +197,52 @@ end
             =#
         end
     end
+
+    @testset "relaxation_complex_product_conic" begin
+        for r in 1:replicates
+            a_lb, a_ub = 0, 10*rand()
+            b_lb, b_ub = 0, 10*rand()
+            c_lb, c_ub = 10*rand(2).*[-1,1]
+            d_lb, d_ub = 10*rand(2).*[-1,1]
+
+            m = Model()
+            MOI.empty!(ipopt_solver)
+            MOIU.resetoptimizer!(m, ipopt_solver)
+            @variable(m, a_lb <= a <= a_ub)
+            @variable(m, b_lb <= b <= b_ub)
+            @variable(m, c_lb <= c <= c_ub)
+            @variable(m, d_lb <= d <= d_ub)
+            @objective(m, Min, a + b)
+            @NLconstraint(m, c^2 + d^2 == a*b)
+            optimize!(m)
+
+            rm = Model()
+            MOI.empty!(ecos_solver)
+            MOIU.resetoptimizer!(rm, ecos_solver)
+            @variable(rm, a_lb <= a <= a_ub)
+            @variable(rm, b_lb <= b <= b_ub)
+            @variable(rm, c_lb <= c <= c_ub)
+            @variable(rm, d_lb <= d <= d_ub)
+            @objective(rm, Min, a + b)
+            InfrastructureModels.relaxation_complex_product_conic(rm, a, b, c, d)
+            optimize!(rm)
+
+            @test(JuMP.objective_value(rm) <= JuMP.objective_value(m) + tolerance)
+            test_status(m, rm)
+
+            #=
+            setobjectivesense(m, :Max)
+            setobjectivesense(rm, :Max)
+
+            optimize!(m)
+            optimize!(rm)
+
+            @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance)
+            test_status(m, rm)
+            =#
+        end
+    end
+
 
     #=
     @testset "relaxation_equality_on_off" begin
