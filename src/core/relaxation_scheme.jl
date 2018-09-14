@@ -7,7 +7,7 @@ end
 "a conic encoding of constraint: `c^2 + d^2 <= a*b`"
 function relaxation_complex_product_conic(m, a, b, c, d)
     @assert (JuMP.lower_bound(a) >= 0 && JuMP.lower_bound(b) >= 0) || (JuMP.upper_bound(a) <= 0 && JuMP.upper_bound(b) <= 0)
-    @constraint(m, [(a + b), (a - b), 2.0*c, 2.0*d] in MOI.SecondOrderCone(4))
+    @constraint(m, [a, b, c, d] in RotatedSecondOrderCone())
 end
 
 """
