@@ -1,6 +1,7 @@
 using InfrastructureModels
 using Memento
 using JSON
+using Compat
 
 if VERSION > v"0.7.0-"
     using Test
