@@ -1,7 +1,10 @@
 using InfrastructureModels
 using Memento
 using JSON
-using Test
+
+if VERSION > v"0.7.0-"
+    using Tests
+end
 
 # Suppress warnings during testing.
 setlevel!(getlogger(InfrastructureModels), "error")
