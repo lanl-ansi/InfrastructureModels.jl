@@ -3,7 +3,11 @@ using Memento
 using JSON
 
 if VERSION > v"0.7.0-"
-    using Tests
+    using Test
+end
+
+if VERSION < v"0.7.0-"
+    using Base.Test
 end
 
 # Suppress warnings during testing.

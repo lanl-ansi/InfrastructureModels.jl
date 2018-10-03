@@ -330,7 +330,7 @@ sprintf would do the job but this work around is needed because
 sprintf cannot take format strings during runtime
 """
 function _float2string(v::AbstractFloat, float_precision::Int)
-    str = "$(round(v, float_precision))"
+    str = "$(round(v; digits=float_precision))"
     lhs = length(split(str, '.')[1])
     return rpad(str, lhs + 1 + float_precision, "0")
 end
