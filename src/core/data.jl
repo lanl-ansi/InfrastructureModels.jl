@@ -1,4 +1,4 @@
-import Compat
+using Compat
 export update_data!
 
 "recursively applies new_data to data, overwriting information"

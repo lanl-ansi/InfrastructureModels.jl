@@ -10,8 +10,13 @@ const MOI = MathOptInterface
 using Memento
 
 import Compat: @__MODULE__
-import Compat: occursin
-import Compat: round
+
+if VERSION < v"0.7.0-"
+    import Compat: occursin
+    import Compat: Nothing
+    import Compat: round
+end
+
 
 # Create our module level logger (this will get precompiled)
 const LOGGER = getlogger(@__MODULE__)
