@@ -11,6 +11,7 @@ using Memento
 
 import Compat: @__MODULE__
 import Compat: occursin
+import Compat: round
 
 # Create our module level logger (this will get precompiled)
 const LOGGER = getlogger(@__MODULE__)
