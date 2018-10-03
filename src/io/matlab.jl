@@ -34,7 +34,7 @@ function parse_matlab_string(data_string::String; extended=false)
 
         if occursin("function", line)
             func, value = extract_matlab_assignment(line)
-            struct_name = strip(replace(func, "function", ""))
+            struct_name = strip(replace(func, "function" => ""))
             function_name = value
         elseif occursin("=",line)
             if struct_name != nothing && !occursin("$(struct_name).", line)
@@ -171,7 +171,7 @@ function parse_matlab_data(lines, index, start_char, end_char)
     #print(matrix_body_lines)
 
     matrix_body = join(matrix_body_lines, ' ')
-    matrix_body = strip(replace(strip(strip(matrix_body), start_char), "$(end_char);", ""))
+    matrix_body = strip(replace(strip(strip(matrix_body), start_char), "$(end_char);" => ""))
     matrix_body_rows = split(matrix_body, ';')
     matrix_body_rows = matrix_body_rows[1:(length(matrix_body_rows)-1)]
 
@@ -198,7 +198,7 @@ function parse_matlab_data(lines, index, start_char, end_char)
 
     if index > 1 && occursin("%column_names%", lines[index-1])
         column_names_string = lines[index-1]
-        column_names_string = replace(column_names_string, "%column_names%", "")
+        column_names_string = replace(column_names_string, "%column_names%" => "")
         column_names = split(column_names_string)
         if length(matrix[1]) != length(column_names)
             error(LOGGER, "column name parsing error, data rows $(length(matrix[1])), column names $(length(column_names)) \n$(column_names)")
@@ -229,7 +229,7 @@ function split_line(mp_line::AbstractString)
             if m.offset > 1
                 push!(tokens, mp_line[1:m.offset-1])
             end
-            push!(tokens, replace(m.match, "\\'", "'")) # replace escaped quotes
+            push!(tokens, replace(m.match, "\\'" => "'")) # replace escaped quotes
 
             mp_line = mp_line[m.offset+length(m.match):end]
         end
@@ -270,7 +270,7 @@ function add_line_delimiter(mp_line::AbstractString, start_char, end_char)
     if occursin(string(end_char),mp_line)
         prefix = strip(split(mp_line, end_char)[1])
         if length(prefix) > 0 && ! occursin(";",prefix)
-            mp_line = replace(mp_line, end_char, ";$(end_char)")
+            mp_line = replace(mp_line, end_char => ";$(end_char)")
         end
     end
 
