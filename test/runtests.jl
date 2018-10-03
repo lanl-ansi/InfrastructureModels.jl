@@ -1,11 +1,10 @@
 using InfrastructureModels
 using Memento
 using JSON
+using Test
 
 # Suppress warnings during testing.
 setlevel!(getlogger(InfrastructureModels), "error")
-
-using Base.Test
 
 include("common.jl")
 
