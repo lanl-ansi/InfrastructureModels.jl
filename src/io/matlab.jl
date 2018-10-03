@@ -9,7 +9,7 @@
 export parse_matlab_file, parse_matlab_string
 
 function parse_matlab_file(file_string::String; kwargs...)
-    data_string = readstring(open(file_string))
+    data_string = read(open(file_string),String)
     return parse_matlab_string(data_string; kwargs...)
 end
 
@@ -79,7 +79,7 @@ end
 function extract_matlab_assignment(string::AbstractString)
     statement = split(string, ';')[1]
     statement_parts = split(statement, '=')
-    assert(length(statement_parts) == 2)
+    @assert(length(statement_parts) == 2)
     name = strip(statement_parts[1])
     value = strip(statement_parts[2])
     return name, value
@@ -130,11 +130,11 @@ function parse_matlab_data(lines, index, start_char, end_char)
     line_count = 0
     columns = -1
 
-    assert(contains(lines[index+line_count], "="))
+    @assert(contains(lines[index+line_count], "="))
     matrix_assignment = split(lines[index+line_count], '%')[1]
     matrix_assignment = strip(matrix_assignment)
 
-    assert(contains(matrix_assignment, "."))
+    @assert(contains(matrix_assignment, "."))
     matrix_assignment_parts = split(matrix_assignment, '=')
     matrix_name = strip(matrix_assignment_parts[1])
 
