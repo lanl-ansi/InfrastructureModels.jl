@@ -216,13 +216,13 @@ const single_quote_expr = r"\'((\\.|[^\'])*?)\'"
 
 ""
 function split_line(mp_line::AbstractString)
-    if ismatch(single_quote_expr, mp_line)
+    if occursin(single_quote_expr, mp_line)
         # splits a string on white space while escaping text quoted with "'"
         # note that quotes will be stripped later, when data typing occurs
 
         #println(mp_line)
         tokens = []
-        while length(mp_line) > 0 && ismatch(single_quote_expr, mp_line)
+        while length(mp_line) > 0 && occursin(single_quote_expr, mp_line)
             #println(mp_line)
             m = match(single_quote_expr, mp_line)
 
