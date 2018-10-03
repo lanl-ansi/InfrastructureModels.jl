@@ -15,8 +15,6 @@ ecos_solver = ECOS.Optimizer(verbose=0)
 
 tolerance = 1e-5
 replicates = 10
-# setup random number generator
-Compat.Random.srand(0)
 
 if VERSION > v"0.7.0-"
     using Random
