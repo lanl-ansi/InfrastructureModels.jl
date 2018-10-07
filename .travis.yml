@@ -16,12 +16,16 @@ addons:
   apt_packages:
     - gfortran
 
+
 before_install:
     # don't keep an old version of the code in the cache
   - julia -e 'if "InfrastructureModels" in keys(Pkg.installed()) Pkg.rm("InfrastructureModels"); Pkg.rm("InfrastructureModels") end'
   - julia -e 'Pkg.update()'
   - julia -e 'if !("Coverage" in keys(Pkg.installed())) Pkg.add("Coverage") end'
   - julia -e 'if !("Documenter" in keys(Pkg.installed())) Pkg.add("Documenter") end'
+
+if VERSION < v"0.7.-"
+
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - julia -e 'Pkg.clone(pwd())'
@@ -30,3 +34,21 @@ script:
 after_success:
   - julia -e  'using Coverage; cd(Pkg.dir("InfrastructureModels")); LCOV.writefile("lcov.info", process_folder(".")); run(pipeline(`curl -s https://codecov.io/bash`, `bash`))'
   - julia -e 'cd(Pkg.dir("InfrastructureModels")); include(joinpath("docs", "make.jl"))'
+
+end
+
+if VERSION >= v"0.7.-"
+
+script:
+
+  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+  - julia --project --color=yes -e "import Pkg; Pkg.instantiate(); Pkg.build();" #make sure the depedencies are working properly
+  - julia --check-bounds=yes --depwarn=no --color=yes --project -e "import Pkg; Pkg.test(coverage=true);"
+
+after_success:
+  - julia -e  'using Coverage; import InfrastructureModels; joinpath(dirname(pathof(InfrastructureModels)); LCOV.writefile("lcov.info", process_folder(".")); run(pipeline(`curl -s https://codecov.io/bash`, `bash`))'
+  - julia -e 'import InfrastructureModels; joinpath(dirname(pathof(InfrastructureModels)); include(joinpath("docs", "make.jl"))'
+
+end
+
+
