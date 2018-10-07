@@ -22,7 +22,7 @@ if VERSION > v"0.7.0-"
 end
 
 if VERSION < v"0.7.0-"
-    Compat.Random.srand(0)
+    Random.srand(0)
 end
 
 function test_status(m1, m2)
