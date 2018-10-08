@@ -18,7 +18,16 @@ addons:
 
 
 before_install:
-- julia -e 'using Pkg; Pkg.update()'
+- | 
+    if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then 
+      julia -e 'if "InfrastructureModels" in keys(Pkg.installed()) Pkg.rm("InfrastructureModels"); Pkg.rm("InfrastructureModels") end'
+      julia -e 'Pkg.update()'
+      julia -e 'if !("Coverage" in keys(Pkg.installed())) Pkg.add("Coverage") end'
+      julia -e 'if !("Documenter" in keys(Pkg.installed())) Pkg.add("Documenter") end'
+    else
+      julia -e 'using Pkg; Pkg.update()'
+    fi
+
 
 
 script:
