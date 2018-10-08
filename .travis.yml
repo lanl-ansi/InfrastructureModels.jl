@@ -24,31 +24,28 @@ before_install:
   - julia -e 'if !("Coverage" in keys(Pkg.installed())) Pkg.add("Coverage") end'
   - julia -e 'if !("Documenter" in keys(Pkg.installed())) Pkg.add("Documenter") end'
 
-if VERSION < v"0.7.-"
+
 
 script:
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'Pkg.clone(pwd())'
-  - julia -e 'Pkg.test("InfrastructureModels", coverage=true)'
-
-after_success:
-  - julia -e  'using Coverage; cd(Pkg.dir("InfrastructureModels")); LCOV.writefile("lcov.info", process_folder(".")); run(pipeline(`curl -s https://codecov.io/bash`, `bash`))'
-  - julia -e 'cd(Pkg.dir("InfrastructureModels")); include(joinpath("docs", "make.jl"))'
+- if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+- | 
+  if [TRAVIS_JULIA_VERSION = "0.6"]; then 
+    julia -e 'Pkg.clone(pwd()); Pkg.test("InfrastructureModels", coverage=true)'; 
+  else
+    julia --project --color=yes -e "import Pkg; Pkg.instantiate(); Pkg.build();" #make sure the depedencies are working properly
+    julia --check-bounds=yes --depwarn=no --color=yes --project -e "import Pkg; Pkg.test(coverage=true);";  
+ fi
 
 end
 
-if VERSION >= v"0.7.-"
-
-script:
-
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia --project --color=yes -e "import Pkg; Pkg.instantiate(); Pkg.build();" #make sure the depedencies are working properly
-  - julia --check-bounds=yes --depwarn=no --color=yes --project -e "import Pkg; Pkg.test(coverage=true);"
-
 after_success:
-  - julia -e  'using Coverage; import InfrastructureModels; joinpath(dirname(pathof(InfrastructureModels)); LCOV.writefile("lcov.info", process_folder(".")); run(pipeline(`curl -s https://codecov.io/bash`, `bash`))'
-  - julia -e 'import InfrastructureModels; joinpath(dirname(pathof(InfrastructureModels)); include(joinpath("docs", "make.jl"))'
-
+- |
+  if [TRAVIS_JULIA_VERSION = "0.6"]; then
+    julia -e  'using Coverage; cd(Pkg.dir("InfrastructureModels")); LCOV.writefile("lcov.info", process_folder(".")); run(pipeline(`curl -s https://codecov.io/bash`, `bash`))'
+    julia -e 'cd(Pkg.dir("InfrastructureModels")); include(joinpath("docs", "make.jl"))'; fi
+  else
+    julia -e  'using Coverage; import InfrastructureModels; joinpath(dirname(pathof(InfrastructureModels)); LCOV.writefile("lcov.info", process_folder(".")); run(pipeline(`curl -s https://codecov.io/bash`, `bash`))'
+    julia -e 'import InfrastructureModels; joinpath(dirname(pathof(InfrastructureModels)); include(joinpath("docs", "make.jl"))'; fi
 end
 
 
