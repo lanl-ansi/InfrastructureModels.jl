@@ -3,10 +3,6 @@ isdefined(Base, :__precompile__) && __precompile__()
 module InfrastructureModels
 
 using JuMP
-
-using MathOptInterface
-const MOI = MathOptInterface
-
 using Memento
 
 import Compat: @__MODULE__
