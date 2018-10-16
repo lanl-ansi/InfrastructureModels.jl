@@ -2,10 +2,13 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Add support for Julia v0.7/v1.0 (thanks to @jd-lara)
+
+### v0.0.9
+- Adding conic form of the complex product relaxation
 
 ### v0.0.8
-- Added conic form of the complex product relaxation
+- Update to Memento v0.8 and simplified logging config
 
 ### v0.0.7
 - Removed Memento depreciation warnings
