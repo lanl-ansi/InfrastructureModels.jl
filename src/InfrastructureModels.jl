@@ -4,7 +4,6 @@ module InfrastructureModels
 
 using JuMP
 using Memento
-using LinearAlgebra
 
 import Compat: @__MODULE__
 
@@ -14,6 +13,9 @@ if VERSION < v"0.7.0-"
     import Compat: round
 end
 
+if VERSION > v"0.7.0-"
+    using LinearAlgebra
+end
 
 # Create our module level logger (this will get precompiled)
 const LOGGER = getlogger(@__MODULE__)
