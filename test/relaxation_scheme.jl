@@ -1,10 +1,6 @@
 using JuMP
 using Compat
 
-using MathOptInterface
-const MOI = MathOptInterface
-const MOIU = MOI.Utilities
-
 using Ipopt
 using ECOS
 using Juniper
