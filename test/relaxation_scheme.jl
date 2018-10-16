@@ -22,7 +22,7 @@ if VERSION > v"0.7.0-"
 end
 
 if VERSION < v"0.7.0-"
-    Random.srand(0)
+    srand(0)
 end
 
 @testset "relaxation schemes" begin
