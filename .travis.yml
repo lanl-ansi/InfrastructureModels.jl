@@ -5,9 +5,11 @@ os:
 julia:
   - 0.6
   - 0.7
+  - 1.0
   - nightly
 matrix:
   allow_failures:
+    - julia: 1.0
     - julia: nightly
 cache:
  directories:
@@ -18,8 +20,8 @@ addons:
 
 
 before_install:
-- | 
-    if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then 
+- |
+    if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
       julia -e 'if "InfrastructureModels" in keys(Pkg.installed()) Pkg.rm("InfrastructureModels"); Pkg.rm("InfrastructureModels") end'
       julia -e 'Pkg.update()'
       julia -e 'if !("Coverage" in keys(Pkg.installed())) Pkg.add("Coverage") end'
@@ -32,13 +34,13 @@ before_install:
 
 script:
 - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-- | 
-    if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then 
-      julia -e "Pkg.clone(pwd())" 
+- |
+    if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
+      julia -e "Pkg.clone(pwd())"
       julia -e 'Pkg.test("InfrastructureModels", coverage=true)'
     else
       julia --project --color=yes -e "import Pkg; Pkg.instantiate(); Pkg.build();" #make sure the depedencies are working properly
-      julia --check-bounds=yes --depwarn=no --color=yes --project -e "import Pkg; Pkg.test(coverage=true);";  
+      julia --check-bounds=yes --depwarn=no --color=yes --project -e "import Pkg; Pkg.test(coverage=true);";
     fi
 
 
@@ -49,7 +51,7 @@ after_success:
       julia -e 'cd(Pkg.dir("InfrastructureModels")); include(joinpath("docs", "make.jl"))'
     else
       julia -e  'using Coverage; import InfrastructureModels; joinpath(dirname(pathof(InfrastructureModels)); LCOV.writefile("lcov.info", process_folder(".")); run(pipeline(`curl -s https://codecov.io/bash`, `bash`))'
-      julia -e 'import InfrastructureModels; joinpath(dirname(pathof(InfrastructureModels)); include(joinpath("docs", "make.jl"))'; 
+      julia -e 'import InfrastructureModels; joinpath(dirname(pathof(InfrastructureModels)); include(joinpath("docs", "make.jl"))';
     fi
 
 

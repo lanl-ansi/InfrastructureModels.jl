@@ -4,6 +4,7 @@ module InfrastructureModels
 
 using JuMP
 using Memento
+using LinearAlgebra
 
 import Compat: @__MODULE__
 

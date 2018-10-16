@@ -122,16 +122,15 @@ z = (λ₁ + λ₃ + λ₅ + λ₇)*getlowerbound(x) + (λ₂ + λ₄ + λ₆ + 
 ```
 """
 function relaxation_trilinear(m, x, y, z, w, lambda)
-    x_ub = JuMP.upper_bound(x)
-    x_lb = JuMP.lower_bound(x)
-    y_ub = JuMP.upper_bound(y)
-    y_lb = JuMP.lower_bound(y)
-    z_ub = JuMP.upper_bound(z)
-    z_lb = JuMP.lower_bound(z)
+    x_ub = getupperbound(x)
+    x_lb = getlowerbound(x)
+    y_ub = getupperbound(y)
+    y_lb = getlowerbound(y)
+    z_ub = getupperbound(z)
+    z_lb = getlowerbound(z)
 
 
-    @assert length(JuMP.axes(lambda)) == 1
-    @assert length.(JuMP.axes(lambda))[1] == 8
+    @assert length(lambda) == 8
 
     w_val = [x_lb * y_lb * z_lb
              x_lb * y_lb * z_ub
