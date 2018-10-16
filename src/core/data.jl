@@ -242,7 +242,7 @@ function summary(io::IO, data::Dict{String,Any}; float_precision::Int = 3)
         if length(display_components) == 1
             default_values = Dict{String, Any}()
         else
-            default_values = filter(x -> !isa(x.second, Nothing), default_values)
+            default_values = Dict{String, Any}([x for x in default_values if !isa(x.second, Nothing)])
         end
 
         #display(default_values)
