@@ -1,4 +1,3 @@
-
 @testset "matlab parsing" begin
 
     @testset "parsing simple matlab file" begin
@@ -81,7 +80,7 @@ end
         output = sprint(InfrastructureModels.summary, data)
 
         line_count = count(c -> c == '\n', output)
-        @test line_count >= 3 && line_count <= 6 
+        @test line_count >= 3 && line_count <= 6
         @test occursin("Metadata", output)
         @test occursin("a: 1", output)
         @test occursin("b: [(3)]", output)
@@ -94,7 +93,7 @@ end
         output = sprint(InfrastructureModels.summary, data)
 
         line_count = count(c -> c == '\n', output)
-        @test line_count >= 5 && line_count <= 10 
+        @test line_count >= 5 && line_count <= 10
         @test occursin( "mpc.baseMVA", output)
         @test occursin( "mpc.version", output)
         @test occursin( "mpc.bus_name: [(2)]", output)
