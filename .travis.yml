@@ -50,7 +50,7 @@ after_success:
       julia -e 'cd(Pkg.dir("InfrastructureModels")); include(joinpath("docs", "make.jl"))'
     else
       julia -e  'using Coverage; import InfrastructureModels; joinpath(dirname(pathof(InfrastructureModels)); LCOV.writefile("lcov.info", process_folder(".")); run(pipeline(`curl -s https://codecov.io/bash`, `bash`))'
-      julia -e 'import InfrastructureModels; joinpath(dirname(pathof(InfrastructureModels)); include(joinpath("docs", "make.jl"))';
+      julia -e 'using Pkg; Pkg.add("Documenter"); import InfrastructureModels; include(joinpath(dirname(pathof(InfrastructureModels)), "..", "docs", "make.jl"))'      
     fi
 
 
