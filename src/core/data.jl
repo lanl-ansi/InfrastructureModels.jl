@@ -242,7 +242,7 @@ function summary(io::IO, data::Dict{String,Any}; float_precision::Int = 3)
         if length(display_components) == 1
             default_values = Dict{String, Any}()
         else
-            default_values = filter((k, v) -> v != nothing, default_values)
+            default_values = Dict{String, Any}([x for x in default_values if !isa(x.second, Nothing)])
         end
 
         #display(default_values)
@@ -330,7 +330,8 @@ sprintf would do the job but this work around is needed because
 sprintf cannot take format strings during runtime
 """
 function _float2string(v::AbstractFloat, float_precision::Int)
-    str = "$(round(v, float_precision))"
+    #str = "$(round(v; digits=float_precision))"
+    str = "$(round(v; digits=float_precision))"
     lhs = length(split(str, '.')[1])
     return rpad(str, lhs + 1 + float_precision, "0")
 end

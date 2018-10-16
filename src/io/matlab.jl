@@ -9,7 +9,7 @@
 export parse_matlab_file, parse_matlab_string
 
 function parse_matlab_file(file_string::String; kwargs...)
-    data_string = readstring(open(file_string))
+    data_string = read(open(file_string),String)
     return parse_matlab_string(data_string; kwargs...)
 end
 
@@ -32,23 +32,23 @@ function parse_matlab_string(data_string::String; extended=false)
             continue
         end
 
-        if contains(line, "function")
+        if occursin("function", line)
             func, value = extract_matlab_assignment(line)
-            struct_name = strip(replace(func, "function", ""))
+            struct_name = strip(replace(func, "function" => ""))
             function_name = value
-        elseif contains(line, "=")
-            if struct_name != nothing && !contains(line, "$(struct_name).")
+        elseif occursin("=",line)
+            if struct_name != nothing && !occursin("$(struct_name).", line)
                 warn(LOGGER, "assignments are expected to be made to \"$(struct_name)\" but given: $(line)")
             end
 
-            if contains(line, "[")
+            if occursin("[", line)
                 matrix_dict = parse_matlab_matrix(data_lines, index)
                 matlab_dict[matrix_dict["name"]] = matrix_dict["data"]
                 if haskey(matrix_dict, "column_names") 
                     column_names[matrix_dict["name"]] = matrix_dict["column_names"]
                 end
                 index = index + matrix_dict["line_count"]-1
-            elseif contains(line, "{")
+            elseif occursin("{", line)
                 cell_dict = parse_matlab_cells(data_lines, index)
                 matlab_dict[cell_dict["name"]] = cell_dict["data"]
                 if haskey(cell_dict, "column_names")
@@ -79,7 +79,7 @@ end
 function extract_matlab_assignment(string::AbstractString)
     statement = split(string, ';')[1]
     statement_parts = split(statement, '=')
-    assert(length(statement_parts) == 2)
+    @assert(length(statement_parts) == 2)
     name = strip(statement_parts[1])
     value = strip(statement_parts[2])
     return name, value
@@ -90,11 +90,11 @@ end
 function type_value(value_string::AbstractString)
     value_string = strip(value_string)
 
-    if contains(value_string, "'") # value is a string
+    if occursin("'", value_string) # value is a string
         value = strip(value_string, '\'')
     else
         # if value is a float
-        if contains(value_string, ".") || contains(value_string, "e")
+        if occursin(".", value_string) || occursin("e", value_string)
             value = check_type(Float64, value_string)
         else # otherwise assume it is an int
             value = check_type(Int, value_string)
@@ -105,12 +105,12 @@ function type_value(value_string::AbstractString)
 end
 
 "Attempts to determine the type of an array of strings extracted from a matlab file"
-function type_array{T <: AbstractString}(string_array::Vector{T})
+function type_array(string_array::Vector{T}) where {T <: AbstractString}
     value_string = [strip(value_string) for value_string in string_array]
 
-    return if any(contains(value_string, "'") for value_string in string_array)
+    return if any(occursin("'",value_string) for value_string in string_array)
         [strip(value_string, '\'') for value_string in string_array]
-    elseif any(contains(value_string, ".") || contains(value_string, "e") for value_string in string_array)
+    elseif any(occursin(".", value_string) || occursin("e", value_string) for value_string in string_array)
         [check_type(Float64, value_string) for value_string in string_array]
     else # otherwise assume it is an int
         [check_type(Int, value_string) for value_string in string_array]
@@ -130,11 +130,11 @@ function parse_matlab_data(lines, index, start_char, end_char)
     line_count = 0
     columns = -1
 
-    assert(contains(lines[index+line_count], "="))
+    @assert(occursin("=",lines[index+line_count]))
     matrix_assignment = split(lines[index+line_count], '%')[1]
     matrix_assignment = strip(matrix_assignment)
 
-    assert(contains(matrix_assignment, "."))
+    @assert(occursin(".",matrix_assignment))
     matrix_assignment_parts = split(matrix_assignment, '=')
     matrix_name = strip(matrix_assignment_parts[1])
 
@@ -145,7 +145,7 @@ function parse_matlab_data(lines, index, start_char, end_char)
 
     line_count = line_count + 1
     matrix_body_lines = [matrix_assignment_rhs]
-    found_close_bracket = contains(matrix_assignment_rhs, string(end_char))
+    found_close_bracket = occursin(string(end_char),matrix_assignment_rhs)
 
     while index + line_count < last_index && !found_close_bracket
         line = strip(lines[index+line_count])
@@ -157,7 +157,7 @@ function parse_matlab_data(lines, index, start_char, end_char)
 
         line = strip(split(line, '%')[1])
 
-        if contains(line, string(end_char))
+        if occursin(string(end_char),line)
             found_close_bracket = true
         end
 
@@ -171,7 +171,7 @@ function parse_matlab_data(lines, index, start_char, end_char)
     #print(matrix_body_lines)
 
     matrix_body = join(matrix_body_lines, ' ')
-    matrix_body = strip(replace(strip(strip(matrix_body), start_char), "$(end_char);", ""))
+    matrix_body = strip(replace(strip(strip(matrix_body), start_char), "$(end_char);" => ""))
     matrix_body_rows = split(matrix_body, ';')
     matrix_body_rows = matrix_body_rows[1:(length(matrix_body_rows)-1)]
 
@@ -196,9 +196,9 @@ function parse_matlab_data(lines, index, start_char, end_char)
 
     matrix_dict = Dict("name" => matrix_name, "data" => matrix, "line_count" => line_count)
 
-    if index > 1 && contains(lines[index-1], "%column_names%")
+    if index > 1 && occursin("%column_names%", lines[index-1])
         column_names_string = lines[index-1]
-        column_names_string = replace(column_names_string, "%column_names%", "")
+        column_names_string = replace(column_names_string, "%column_names%" => "")
         column_names = split(column_names_string)
         if length(matrix[1]) != length(column_names)
             error(LOGGER, "column name parsing error, data rows $(length(matrix[1])), column names $(length(column_names)) \n$(column_names)")
@@ -216,20 +216,20 @@ const single_quote_expr = r"\'((\\.|[^\'])*?)\'"
 
 ""
 function split_line(mp_line::AbstractString)
-    if ismatch(single_quote_expr, mp_line)
+    if occursin(single_quote_expr, mp_line)
         # splits a string on white space while escaping text quoted with "'"
         # note that quotes will be stripped later, when data typing occurs
 
         #println(mp_line)
         tokens = []
-        while length(mp_line) > 0 && ismatch(single_quote_expr, mp_line)
+        while length(mp_line) > 0 && occursin(single_quote_expr, mp_line)
             #println(mp_line)
             m = match(single_quote_expr, mp_line)
 
             if m.offset > 1
                 push!(tokens, mp_line[1:m.offset-1])
             end
-            push!(tokens, replace(m.match, "\\'", "'")) # replace escaped quotes
+            push!(tokens, replace(m.match, "\\'" => "'")) # replace escaped quotes
 
             mp_line = mp_line[m.offset+length(m.match):end]
         end
@@ -240,7 +240,7 @@ function split_line(mp_line::AbstractString)
 
         items = []
         for token in tokens
-            if contains(token, "'")
+            if occursin("'",token)
                 push!(items, strip(token))
             else
                 for parts in split(token)
@@ -263,14 +263,14 @@ function add_line_delimiter(mp_line::AbstractString, start_char, end_char)
         return mp_line
     end
 
-    if !contains(mp_line, ";") && !contains(mp_line, string(end_char))
+    if !occursin(";",mp_line,) && !occursin(string(end_char),mp_line)
         mp_line = "$(mp_line);"
     end
 
-    if contains(mp_line, string(end_char))
+    if occursin(string(end_char),mp_line)
         prefix = strip(split(mp_line, end_char)[1])
-        if length(prefix) > 0 && ! contains(prefix, ";")
-            mp_line = replace(mp_line, end_char, ";$(end_char)")
+        if length(prefix) > 0 && ! occursin(";",prefix)
+            mp_line = replace(mp_line, end_char => ";$(end_char)")
         end
     end
 

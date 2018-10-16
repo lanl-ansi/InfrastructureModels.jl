@@ -1,11 +1,18 @@
 using InfrastructureModels
 using Memento
 using JSON
+using Compat
+
+if VERSION > v"0.7.0-"
+    using Test
+end
+
+if VERSION < v"0.7.0-"
+    using Base.Test
+end
 
 # Suppress warnings during testing.
 setlevel!(getlogger(InfrastructureModels), "error")
-
-using Base.Test
 
 include("common.jl")
 

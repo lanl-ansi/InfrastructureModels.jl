@@ -1,4 +1,3 @@
-
 @testset "matlab parsing" begin
 
     @testset "parsing simple matlab file" begin
@@ -81,11 +80,11 @@ end
         output = sprint(InfrastructureModels.summary, data)
 
         line_count = count(c -> c == '\n', output)
-        @test line_count >= 3 && line_count <= 6 
-        @test contains(output, "Metadata")
-        @test contains(output, "a: 1")
-        @test contains(output, "b: [(3)]")
-        @test contains(output, "c: {(2)}")
+        @test line_count >= 3 && line_count <= 6
+        @test occursin("Metadata", output)
+        @test occursin("a: 1", output)
+        @test occursin("b: [(3)]", output)
+        @test occursin("c: {(2)}",output)
     end
 
     @testset "summary feature matlab data" begin
@@ -94,10 +93,10 @@ end
         output = sprint(InfrastructureModels.summary, data)
 
         line_count = count(c -> c == '\n', output)
-        @test line_count >= 5 && line_count <= 10 
-        @test contains(output, "mpc.baseMVA")
-        @test contains(output, "mpc.version")
-        @test contains(output, "mpc.bus_name: [(2)]")
+        @test line_count >= 5 && line_count <= 10
+        @test occursin( "mpc.baseMVA", output)
+        @test occursin( "mpc.version", output)
+        @test occursin( "mpc.bus_name: [(2)]", output)
     end
 
     @testset "summary feature component data" begin
@@ -105,11 +104,11 @@ end
 
         line_count = count(c -> c == '\n', output)
         @test line_count >= 18 && line_count <= 22
-        @test contains(output, "dict: {(4)}")
-        @test contains(output, "list: [(4)]")
-        @test contains(output, "default values:")
-        @test contains(output, "Table Counts")
-        @test contains(output, "Table: comp")
+        @test occursin("dict: {(4)}",output)
+        @test occursin("list: [(4)]",output)
+        @test occursin("default values:",output)
+        @test occursin("Table Counts",output)
+        @test occursin("Table: comp",output)
     end
 
 end

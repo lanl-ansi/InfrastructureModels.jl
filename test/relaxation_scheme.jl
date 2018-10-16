@@ -1,4 +1,10 @@
 using JuMP
+using Compat
+
+using MathOptInterface
+const MOI = MathOptInterface
+const MOIU = MOI.Utilities
+
 using Ipopt
 using ECOS
 using Juniper
@@ -9,8 +15,15 @@ juniper_solver = JuniperSolver(ipopt_solver, log_levels=[])
 
 tolerance = 1e-5
 replicates = 10
-# setup random number generator
-srand(0)
+
+if VERSION > v"0.7.0-"
+    using Random
+    Random.seed!(0)
+end
+
+if VERSION < v"0.7.0-"
+    srand(0)
+end
 
 @testset "relaxation schemes" begin
 
