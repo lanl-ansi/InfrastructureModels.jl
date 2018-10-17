@@ -34,7 +34,7 @@ ismultinetwork(data::Dict{String,Any}) = (haskey(data, "multinetwork") && data["
 
 "Transforms a single network into a multinetwork with several deepcopies of the original network"
 function replicate(sn_data::Dict{String,Any}, count::Int)
-    @assert count > 1
+    @assert count > 0
     if ismultinetwork(sn_data)
         error("replicate can only be used on single networks")
     end
