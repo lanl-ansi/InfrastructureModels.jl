@@ -129,24 +129,24 @@ function relaxation_trilinear(m, x, y, z, w, lambda)
     z_ub = JuMP.upper_bound(z)
     z_lb = JuMP.lower_bound(z)
 
-    @assert length(indices(lambda)) == 1
-    @assert length.(indices(lambda))[1] == 8
+    @assert length(JuMP.axes(lambda)) == 1
+    @assert length.(JuMP.axes(lambda))[1] == 8
 
-    w_val = [x_lb * y_lb * z_lb 
-             x_lb * y_lb * z_ub  
+    w_val = [x_lb * y_lb * z_lb
+             x_lb * y_lb * z_ub
              x_lb * y_ub * z_lb
-             x_lb * y_ub * z_ub 
+             x_lb * y_ub * z_ub
              x_ub * y_lb * z_lb
              x_ub * y_lb * z_ub
              x_ub * y_ub * z_lb
              x_ub * y_ub * z_ub]
 
     @constraint(m, w == sum(w_val[i]*lambda[i] for i in 1:8))
-    @constraint(m, x == (lambda[1] + lambda[2] + lambda[3] + lambda[4])*x_lb + 
+    @constraint(m, x == (lambda[1] + lambda[2] + lambda[3] + lambda[4])*x_lb +
                         (lambda[5] + lambda[6] + lambda[7] + lambda[8])*x_ub)
-    @constraint(m, y == (lambda[1] + lambda[2] + lambda[5] + lambda[6])*y_lb + 
+    @constraint(m, y == (lambda[1] + lambda[2] + lambda[5] + lambda[6])*y_lb +
                         (lambda[3] + lambda[4] + lambda[7] + lambda[8])*y_ub)
-    @constraint(m, z == (lambda[1] + lambda[3] + lambda[5] + lambda[7])*z_lb + 
+    @constraint(m, z == (lambda[1] + lambda[3] + lambda[5] + lambda[7])*z_lb +
                         (lambda[2] + lambda[4] + lambda[6] + lambda[8])*z_ub)
     @constraint(m, sum(lambda) == 1)
 end
