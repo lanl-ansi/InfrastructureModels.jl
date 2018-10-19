@@ -45,7 +45,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.update_data!",
     "category": "method",
-    "text": "recursively applies new_data to data, overwriting information\n\n\n\n"
+    "text": "recursively applies new_data to data, overwriting information\n\n\n\n\n\n"
 },
 
 {
@@ -53,7 +53,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels._bold",
     "category": "method",
-    "text": "Makes a string bold in the terminal\n\n\n\n"
+    "text": "Makes a string bold in the terminal\n\n\n\n\n\n"
 },
 
 {
@@ -61,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels._float2string",
     "category": "method",
-    "text": "converts a float value into a string of fixed precision\n\nsprintf would do the job but this work around is needed because sprintf cannot take format strings during runtime\n\n\n\n"
+    "text": "converts a float value into a string of fixed precision\n\nsprintf would do the job but this work around is needed because sprintf cannot take format strings during runtime\n\n\n\n\n\n"
 },
 
 {
@@ -69,7 +69,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels._grey",
     "category": "method",
-    "text": "Makes a string grey in the terminal, does not seem to work well on Windows terminals more info can be found at https://en.wikipedia.org/wiki/ANSI_escape_code\n\n\n\n"
+    "text": "Makes a string grey in the terminal, does not seem to work well on Windows terminals more info can be found at https://en.wikipedia.org/wiki/ANSIescapecode\n\n\n\n\n\n"
 },
 
 {
@@ -77,7 +77,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels._iscomponentdict",
     "category": "method",
-    "text": "Attempts to determine if the given data is a component dictionary\n\n\n\n"
+    "text": "Attempts to determine if the given data is a component dictionary\n\n\n\n\n\n"
 },
 
 {
@@ -85,7 +85,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels._update_data!",
     "category": "method",
-    "text": "recursive call of _update_data\n\n\n\n"
+    "text": "recursive call of updatedata\n\n\n\n\n\n"
 },
 
 {
@@ -93,7 +93,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels._value2string",
     "category": "method",
-    "text": "converts any value to a string, summarizes arrays and dicts\n\n\n\n"
+    "text": "converts any value to a string, summarizes arrays and dicts\n\n\n\n\n\n"
 },
 
 {
@@ -101,7 +101,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.add_line_delimiter",
     "category": "method",
-    "text": "\n\n"
+    "text": "\n\n\n\n"
 },
 
 {
@@ -109,7 +109,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.arrays_to_dicts!",
     "category": "method",
-    "text": "turns top level arrays into dicts\n\n\n\n"
+    "text": "turns top level arrays into dicts\n\n\n\n\n\n"
 },
 
 {
@@ -117,7 +117,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.check_type",
     "category": "method",
-    "text": "Checks if the given value is of a given type, if not tries to make it that type\n\n\n\n"
+    "text": "Checks if the given value is of a given type, if not tries to make it that type\n\n\n\n\n\n"
 },
 
 {
@@ -125,7 +125,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.compare_dict",
     "category": "method",
-    "text": "tests if two dicts are equal, up to floating point precision\n\n\n\n"
+    "text": "tests if two dicts are equal, up to floating point precision\n\n\n\n\n\n"
 },
 
 {
@@ -133,7 +133,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.compare_numbers",
     "category": "method",
-    "text": "tests if two numbers are equal, up to floating point precision\n\n\n\n"
+    "text": "tests if two numbers are equal, up to floating point precision\n\n\n\n\n\n"
 },
 
 {
@@ -141,7 +141,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.component_table",
     "category": "method",
-    "text": "builds a table of component data\n\n\n\n"
+    "text": "builds a table of component data\n\n\n\n\n\n"
 },
 
 {
@@ -149,7 +149,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.extract_matlab_assignment",
     "category": "method",
-    "text": "breaks up matlab strings of the form \'name = value;\'\n\n\n\n"
+    "text": "breaks up matlab strings of the form \'name = value;\'\n\n\n\n\n\n"
 },
 
 {
@@ -157,7 +157,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.ismultinetwork",
     "category": "method",
-    "text": "checks if a given network data is a multinetwork\n\n\n\n"
+    "text": "checks if a given network data is a multinetwork\n\n\n\n\n\n"
 },
 
 {
@@ -165,7 +165,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.parse_matlab_cells",
     "category": "method",
-    "text": "\n\n"
+    "text": "\n\n\n\n"
 },
 
 {
@@ -173,7 +173,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.parse_matlab_data",
     "category": "method",
-    "text": "\n\n"
+    "text": "\n\n\n\n"
 },
 
 {
@@ -181,7 +181,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.parse_matlab_matrix",
     "category": "method",
-    "text": "\n\n"
+    "text": "\n\n\n\n"
 },
 
 {
@@ -189,7 +189,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.print_summary",
     "category": "method",
-    "text": "prints the text summary for a data dictionary to STDOUT\n\n\n\n"
+    "text": "prints the text summary for a data dictionary to STDOUT\n\n\n\n\n\n"
 },
 
 {
@@ -197,7 +197,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.relaxation_complex_product",
     "category": "method",
-    "text": "constraint: c^2 + d^2 <= a*b\n\n\n\n"
+    "text": "constraint: c^2 + d^2 <= a*b\n\n\n\n\n\n"
 },
 
 {
@@ -205,7 +205,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.relaxation_complex_product_conic",
     "category": "method",
-    "text": "a conic encoding of constraint: c^2 + d^2 <= a*b\n\n\n\n"
+    "text": "a conic encoding of constraint: c^2 + d^2 <= a*b\n\n\n\n\n\n"
 },
 
 {
@@ -213,7 +213,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.relaxation_complex_product_on_off",
     "category": "method",
-    "text": "c^2 + d^2 <= a*b*getupperbound(z)\nc^2 + d^2 <= getupperbound(a)*b*getupperbound(z)\nc^2 + d^2 <= a*getupperbound(b)*z\n\n\n\n"
+    "text": "c^2 + d^2 <= a*b*getupperbound(z)\nc^2 + d^2 <= getupperbound(a)*b*getupperbound(z)\nc^2 + d^2 <= a*getupperbound(b)*z\n\n\n\n\n\n"
 },
 
 {
@@ -221,7 +221,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.relaxation_equality_on_off",
     "category": "method",
-    "text": "x - getupperbound(x)*(1-z) <= y <= x - getlowerbound(x)*(1-z)\n\n\n\n"
+    "text": "x - getupperbound(x)*(1-z) <= y <= x - getlowerbound(x)*(1-z)\n\n\n\n\n\n"
 },
 
 {
@@ -229,7 +229,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.relaxation_product",
     "category": "method",
-    "text": "general relaxation of binlinear term (McCormick)\n\nz >= getlowerbound(x)*y + getlowerbound(y)*x - getlowerbound(x)*getlowerbound(y)\nz >= getupperbound(x)*y + getupperbound(y)*x - getupperbound(x)*getupperbound(y)\nz <= getlowerbound(x)*y + getupperbound(y)*x - getlowerbound(x)*getupperbound(y)\nz <= getupperbound(x)*y + getlowerbound(y)*x - getupperbound(x)*getlowerbound(y)\n\n\n\n"
+    "text": "general relaxation of binlinear term (McCormick)\n\nz >= getlowerbound(x)*y + getlowerbound(y)*x - getlowerbound(x)*getlowerbound(y)\nz >= getupperbound(x)*y + getupperbound(y)*x - getupperbound(x)*getupperbound(y)\nz <= getlowerbound(x)*y + getupperbound(y)*x - getlowerbound(x)*getupperbound(y)\nz <= getupperbound(x)*y + getlowerbound(y)*x - getupperbound(x)*getlowerbound(y)\n\n\n\n\n\n"
 },
 
 {
@@ -237,7 +237,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.relaxation_product_on_off",
     "category": "method",
-    "text": "On/Off variant of binlinear term (McCormick) requires that all variables (x,y,z) go to zero with ind\n\n\n\n"
+    "text": "On/Off variant of binlinear term (McCormick) requires that all variables (x,y,z) go to zero with ind\n\n\n\n\n\n"
 },
 
 {
@@ -245,7 +245,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.relaxation_sqr",
     "category": "method",
-    "text": "general relaxation of a square term\n\nx^2 <= y <= (getupperbound(x)+getlowerbound(x))*x - getupperbound(x)*getlowerbound(x)\n\n\n\n"
+    "text": "general relaxation of a square term\n\nx^2 <= y <= (getupperbound(x)+getlowerbound(x))*x - getupperbound(x)*getlowerbound(x)\n\n\n\n\n\n"
 },
 
 {
@@ -253,7 +253,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.relaxation_trilinear",
     "category": "method",
-    "text": "convex hull relaxation of trilinear term\n\nw₁ = getlowerbound(x)*getlowerbound(y)*getlowerbound(z)\nw₂ = getlowerbound(x)*getlowerbound(y)*getupperbound(z)\nw₃ = getlowerbound(x)*getupperbound(y)*getlowerbound(z)\nw₄ = getlowerbound(x)*getupperbound(y)*getupperbound(z)\nw₅ = getupperbound(x)*getlowerbound(y)*getlowerbound(z)\nw₆ = getupperbound(x)*getlowerbound(y)*getupperbound(z)\nw₇ = getupperbound(x)*getupperbound(y)*getlowerbound(z)\nw₈ = getupperbound(x)*getupperbound(y)*getupperbound(z)\nw = λ₁*w₁ + λ₂*w₂ + λ₃*w₃ + λ₄*w₄ + λ₅*w₅ + λ₆*w₆ + λ₇*w₇ + λ₈*w₈\nx = (λ₁ + λ₂ + λ₃ + λ₄)*getlowerbound(x) + (λ₅ + λ₆ + λ₇ + λ₈)*getupperbound(x)\ny = (λ₁ + λ₂ + λ₅ + λ₆)*getlowerbound(x) + (λ₃ + λ₄ + λ₇ + λ₈)*getupperbound(x)\nz = (λ₁ + λ₃ + λ₅ + λ₇)*getlowerbound(x) + (λ₂ + λ₄ + λ₆ + λ₈)*getupperbound(x)\nλ₁ + λ₂ + λ₃ + λ₄ + λ₅ + λ₆ + λ₇ + λ₈ = 1\n\n\n\n"
+    "text": "convex hull relaxation of trilinear term\n\nw₁ = getlowerbound(x)*getlowerbound(y)*getlowerbound(z)\nw₂ = getlowerbound(x)*getlowerbound(y)*getupperbound(z)\nw₃ = getlowerbound(x)*getupperbound(y)*getlowerbound(z)\nw₄ = getlowerbound(x)*getupperbound(y)*getupperbound(z)\nw₅ = getupperbound(x)*getlowerbound(y)*getlowerbound(z)\nw₆ = getupperbound(x)*getlowerbound(y)*getupperbound(z)\nw₇ = getupperbound(x)*getupperbound(y)*getlowerbound(z)\nw₈ = getupperbound(x)*getupperbound(y)*getupperbound(z)\nw = λ₁*w₁ + λ₂*w₂ + λ₃*w₃ + λ₄*w₄ + λ₅*w₅ + λ₆*w₆ + λ₇*w₇ + λ₈*w₈\nx = (λ₁ + λ₂ + λ₃ + λ₄)*getlowerbound(x) + (λ₅ + λ₆ + λ₇ + λ₈)*getupperbound(x)\ny = (λ₁ + λ₂ + λ₅ + λ₆)*getlowerbound(x) + (λ₃ + λ₄ + λ₇ + λ₈)*getupperbound(x)\nz = (λ₁ + λ₃ + λ₅ + λ₇)*getlowerbound(x) + (λ₂ + λ₄ + λ₆ + λ₈)*getupperbound(x)\nλ₁ + λ₂ + λ₃ + λ₄ + λ₅ + λ₆ + λ₇ + λ₈ = 1\n\n\n\n\n\n"
 },
 
 {
@@ -261,7 +261,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.replicate",
     "category": "method",
-    "text": "Transforms a single network into a multinetwork with several deepcopies of the original network\n\n\n\n"
+    "text": "Transforms a single network into a multinetwork with several deepcopies of the original network\n\n\n\n\n\n"
 },
 
 {
@@ -269,7 +269,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.split_line",
     "category": "method",
-    "text": "\n\n"
+    "text": "\n\n\n\n"
 },
 
 {
@@ -277,7 +277,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.summary",
     "category": "method",
-    "text": "prints the text summary for a data dictionary to IO\n\n\n\n"
+    "text": "prints the text summary for a data dictionary to IO\n\n\n\n\n\n"
 },
 
 {
@@ -285,7 +285,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.type_array",
     "category": "method",
-    "text": "Attempts to determine the type of an array of strings extracted from a matlab file\n\n\n\n"
+    "text": "Attempts to determine the type of an array of strings extracted from a matlab file\n\n\n\n\n\n"
 },
 
 {
@@ -293,7 +293,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.type_value",
     "category": "method",
-    "text": "Attempts to determine the type of a string extracted from a matlab file\n\n\n\n"
+    "text": "Attempts to determine the type of a string extracted from a matlab file\n\n\n\n\n\n"
 },
 
 {
