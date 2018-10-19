@@ -2,6 +2,9 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+- nothing
+
+### v0.0.10
 - Add support for Julia v0.7/v1.0 (thanks to @jd-lara)
 
 ### v0.0.9
