@@ -16,8 +16,6 @@ cache:
 addons:
   apt_packages:
     - gfortran
-
-
 before_install:
 - |
     if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
@@ -28,9 +26,6 @@ before_install:
     else
       julia -e 'using Pkg; Pkg.update()'
     fi
-
-
-
 script:
 - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
 - |
@@ -41,8 +36,6 @@ script:
       julia --project --color=yes -e "import Pkg; Pkg.instantiate(); Pkg.build();" #make sure the depedencies are working properly
       julia --check-bounds=yes --depwarn=no --color=yes --project -e "import Pkg; Pkg.test(coverage=true);";
     fi
-
-
 after_success:
 - |
     if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
@@ -50,7 +43,13 @@ after_success:
       julia -e 'cd(Pkg.dir("InfrastructureModels")); include(joinpath("docs", "make.jl"))'
     else
       julia -e  'using Coverage; import InfrastructureModels; joinpath(dirname(pathof(InfrastructureModels)); LCOV.writefile("lcov.info", process_folder(".")); run(pipeline(`curl -s https://codecov.io/bash`, `bash`))'
-      julia -e 'import InfrastructureModels; joinpath(dirname(pathof(InfrastructureModels)); include(joinpath("docs", "make.jl"))';
     fi
-
-
+jobs:
+  include:
+    - stage: "Documentation"
+      julia: 1.0
+      os: linux
+      script:
+        - julia --project=docs/ -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
+        - julia --project=docs/ docs/make.jl
+      after_success: skip

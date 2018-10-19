@@ -6,6 +6,7 @@ InfrastructureModels.jl Change Log
 
 ### v0.0.10
 - Add support for Julia v0.7/v1.0 (thanks to @jd-lara)
+- Lower replicate count bound to 1 instead of 2
 
 ### v0.0.9
 - Adding conic form of the complex product relaxation

@@ -217,6 +217,19 @@ end
         @test mn_data["nw"]["2"] == mn_data["nw"]["3"]
     end
 
+
+    @testset "network replicate data, single network" begin
+        mn_data = InfrastructureModels.replicate(generic_network_data, 1)
+
+        @test length(mn_data) == 7
+        @test mn_data["multinetwork"]
+        @test haskey(mn_data, "per_unit")
+        @test haskey(mn_data, "name")
+
+        @test length(mn_data["nw"]) == 1
+    end
+
+
     @testset "update_data! feature" begin
         data = JSON.parse("{
             \"per_unit\":false,
