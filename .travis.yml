@@ -27,8 +27,12 @@ before_install:
       julia -e 'using Pkg; Pkg.update()'
     fi
 script:
-  julia -e 'using Pkg; Pkg.clone(pwd())'
-  julia -e 'using Pkg; Pkg.test("InfrastructureModels", coverage=true)'
+- |
+    if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
+      julia -e 'Pkg.clone(pwd()); Pkg.test("InfrastructureModels", coverage=true)'
+    else
+      julia -e 'using Pkg; Pkg.clone(pwd()); Pkg.test("InfrastructureModels", coverage=true)'
+    fi
 after_success:
 - |
     if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
