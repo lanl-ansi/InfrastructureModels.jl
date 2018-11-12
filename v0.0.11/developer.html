@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Developer · InfrastructureModels</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>InfrastructureModels</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="index.html">Home</a></li><li><a class="toctext" href="library.html">Library</a></li><li class="current"><a class="toctext" href="developer.html">Developer</a><ul class="internal"><li><a class="toctext" href="#JSON-Data-Format-1">JSON Data Format</a></li><li><a class="toctext" href="#Variable-Naming-Conventions-1">Variable Naming Conventions</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href="developer.html">Developer</a></li></ul><a class="edit-page" href="https://github.com/lanl-ansi/InfrastructureModels.jl/blob/master/docs/src/developer.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Developer</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Developer-Documentation-1" href="#Developer-Documentation-1">Developer Documentation</a></h1><h2><a class="nav-anchor" id="JSON-Data-Format-1" href="#JSON-Data-Format-1">JSON Data Format</a></h2><p>InfrastructureModels and dependent packages leverage an extensible JSON-based data format.  This allows arbitrary extensions by the dependent packages and their users.  This section discusses the data standards that are consistent across dependent packages and extensions.</p><h3><a class="nav-anchor" id="Single-Network-Data-1" href="#Single-Network-Data-1">Single Network Data</a></h3><p>All network data has two required parameters,</p><ul><li><code>multinetwork</code>: a boolean value indicating if the data represents a single network or multiple networks</li><li><code>per_unit</code>: a boolean value indicating if the parameter units are in mixed-units or per unit</li></ul><p>component lists These two parameters can be accompanied by collections of components, where the component name is the key of the collection.  The <code>name</code> parameter is optional and can be used to give a human readable name for the network data.  A minimalist network dataset would be,</p><pre><code class="language-json">{
+&quot;multinetwork&quot;: false,
+&quot;per_unit&quot;: &lt;boolean&gt;,
+&quot;name&quot;: &lt;string&gt;,
+&quot;component_1&quot;: {...},
+&quot;component_2&quot;: {...},
+...
+&quot;component_j&quot;: {...}
+}</code></pre><p>Each component collection is a lookup table of the form <code>index</code> to <code>component_data</code>, for convenience each component includes its <code>index</code> value as an internal parameter.  Each component additionally has a required value called <code>status</code> which takes 1 or 0 indicating if the component is active or inactive, respectively, and on optional parameter called <code>name</code>, which is a human readable name for the component.  A typical component collection as a form along these lines,</p><pre><code class="language-json">{
+&quot;component_1&quot;:{
+    &quot;1&quot;:{
+        &quot;index&quot;: &lt;int&gt;,
+        &quot;status&quot;: &lt;int&gt;,
+        &quot;name&quot;: &lt;string&gt;,
+        ...
+    },
+    &quot;2&quot;:{
+        &quot;index&quot;: &lt;int&gt;,
+        &quot;status&quot; :&lt;int&gt;,
+        &quot;name&quot;: &lt;string&gt;,
+        ...
+    }
+    ...
+    &quot;k&quot;:{
+        &quot;index&quot;: &lt;int&gt;,
+        &quot;status&quot; &lt;int&gt;,
+        &quot;name&quot;: &lt;string&gt;,
+        ...
+    }
+},
+...
+}</code></pre><h3><a class="nav-anchor" id="Multi-Network-Data-1" href="#Multi-Network-Data-1">Multi Network Data</a></h3><p>If the <code>multinetwork</code> parameter is <code>true</code> then several single network data objects are wrapped in a <code>nw</code> lookup table, like so,</p><pre><code class="language-json">{
+&quot;multinetwork&quot;: true,
+&quot;per_unit&quot;: &lt;boolean&gt;,
+&quot;name&quot;: &lt;string&gt;,
+&quot;nw&quot;:{
+    &quot;1&quot;:{
+        &quot;index&quot;: &lt;int&gt;,
+        &quot;name&quot;: &lt;string&gt;,
+        &quot;component_1&quot;: {...},
+        ...
+        &quot;component_j&quot;: {...}
+    },
+    &quot;2&quot;:{
+        &quot;index&quot;: &lt;int&gt;,
+        &quot;name&quot;: &lt;string&gt;,
+        &quot;component_1&quot;: {...},
+        ...
+        &quot;component_j&quot;: {...}
+    },
+    ...
+    &quot;i&quot;:{
+        &quot;index&quot;: &lt;int&gt;,
+        &quot;name&quot;: &lt;string&gt;,
+        &quot;component_1&quot;: {...},
+        ...
+        &quot;component_j&quot;: {...}
+    },
+}
+}</code></pre><h3><a class="nav-anchor" id="Multi-Infrastructure-Data-(proposed)-1" href="#Multi-Infrastructure-Data-(proposed)-1">Multi Infrastructure Data (proposed)</a></h3><p>If the data include the parameter <code>multiinfrastructure</code>, then network data objects are wrapped in a <code>mi</code> lookup table, that uses special string names for each type of infrastructure.  Each infrastructure data object can include a single network or a multi network of that infrastructure type.  Multi network lookup keys are assumed to be consistent across multiple infrastructure datasets.</p><pre><code class="language-json">{
+&quot;multiinfrastructure&quot;: true,
+&quot;mi&quot;:{
+    &quot;ep&quot;: {...},
+    &quot;ng&quot;: {...},
+    &quot;pw&quot;: {...},
+    ...
+}
+}</code></pre><h2><a class="nav-anchor" id="Variable-Naming-Conventions-1" href="#Variable-Naming-Conventions-1">Variable Naming Conventions</a></h2><h3><a class="nav-anchor" id="Suffixes-1" href="#Suffixes-1">Suffixes</a></h3><ul><li><code>_fr</code>: from-side (&#39;i&#39;-node)</li><li><code>_to</code>: to-side (&#39;j&#39;-node)</li></ul><footer><hr/><a class="previous" href="library.html"><span class="direction">Previous</span><span class="title">Library</span></a></footer></article></body></html>
