@@ -6,10 +6,6 @@ julia:
   - 0.6
   - 0.7
   - 1.0
-  - nightly
-matrix:
-  allow_failures:
-    - julia: nightly
 cache:
  directories:
    - /home/travis/.julia
@@ -17,25 +13,10 @@ addons:
   apt_packages:
     - gfortran
 before_install:
-- |
-    if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
-      julia -e 'if "InfrastructureModels" in keys(Pkg.installed()) Pkg.rm("InfrastructureModels"); Pkg.rm("InfrastructureModels") end'
-      julia -e 'Pkg.update()'
-      julia -e 'if !("Coverage" in keys(Pkg.installed())) Pkg.add("Coverage") end'
-      julia -e 'if !("Documenter" in keys(Pkg.installed())) Pkg.add("Documenter") end'
-    else
-      julia -e 'using Pkg; Pkg.update()'
-    fi
-script:
-  julia -e '(VERSION >= v"0.7" && using Pkg); Pkg.clone(pwd()); Pkg.test("InfrastructureModels", coverage=true)'
+  - julia -e '(VERSION >= v"0.7" && using Pkg); Pkg.rm("InfrastructureModels"); Pkg.rm("InfrastructureModels")'
+  - julia -e '(VERSION >= v"0.7" && using Pkg); Pkg.update()'
 after_success:
-- |
-    if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
-      julia -e  'using Coverage; cd(Pkg.dir("InfrastructureModels")); LCOV.writefile("lcov.info", process_folder(".")); run(pipeline(`curl -s https://codecov.io/bash`, `bash`))'
-      julia -e 'cd(Pkg.dir("InfrastructureModels")); include(joinpath("docs", "make.jl"))'
-    else
-      julia -e  'using Coverage; import InfrastructureModels; joinpath(dirname(pathof(InfrastructureModels)); LCOV.writefile("lcov.info", process_folder(".")); run(pipeline(`curl -s https://codecov.io/bash`, `bash`))'
-    fi
+  - julia -e '(VERSION >= v"0.7" && using Pkg); Pkg.add("Coverage"); cd(Pkg.dir("InfrastructureModels")); using Coverage; Codecov.submit(process_folder())'
 jobs:
   include:
     - stage: "Documentation"
