@@ -201,7 +201,7 @@ end
 @testset "data transformation" begin
 
     @testset "network replicate data" begin
-        mn_data = InfrastructureModels.replicate(generic_network_data, 3)
+        mn_data = InfrastructureModels.replicate(generic_network_data, 3, global_keys=Set(["a", "b", "per_unit", "list"]))
 
         @test length(mn_data) == 7
         @test mn_data["multinetwork"]
@@ -219,9 +219,9 @@ end
 
 
     @testset "network replicate data, single network" begin
-        mn_data = InfrastructureModels.replicate(generic_network_data, 1)
+        mn_data = InfrastructureModels.replicate(generic_network_data, 1, global_keys=Set(["per_unit","undefined_key"]))
 
-        @test length(mn_data) == 7
+        @test length(mn_data) == 4
         @test mn_data["multinetwork"]
         @test haskey(mn_data, "per_unit")
         @test haskey(mn_data, "name")

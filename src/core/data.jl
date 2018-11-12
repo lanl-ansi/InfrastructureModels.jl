@@ -33,10 +33,21 @@ end
 ismultinetwork(data::Dict{String,Any}) = (haskey(data, "multinetwork") && data["multinetwork"] == true)
 
 "Transforms a single network into a multinetwork with several deepcopies of the original network"
-function replicate(sn_data::Dict{String,Any}, count::Int)
+function replicate(sn_data::Dict{String,Any}, count::Int; global_keys::Set{String} = Set{String}())
     @assert count > 0
     if ismultinetwork(sn_data)
         error("replicate can only be used on single networks")
+    end
+
+    if length(global_keys) <= 0
+        warn(LOGGER, "deprecation warning, calls to replicate should explicitly specify a set of global_keys")
+        # old default
+        for (k,v) in sn_data
+             if !(typeof(v) <: Dict)
+                warn(LOGGER, "adding global key $(k)")
+                push!(global_keys, k)
+             end
+        end
     end
 
     name = get(sn_data, "name", "anonymous")
@@ -45,22 +56,19 @@ function replicate(sn_data::Dict{String,Any}, count::Int)
         "nw" => Dict{String,Any}()
     )
 
-    global_keys = Set()
-    for (k,v) in sn_data
-        # Question: should this only copy component lists?
-        if !(typeof(v) <: Dict)
-            mn_data[k] = deepcopy(v)
-            push!(global_keys, k)
-        end
-    end
-
     mn_data["multinetwork"] = true
-    mn_data["name"] = "$(count) replicates of $(name)"
 
     sn_data_tmp = deepcopy(sn_data)
     for k in global_keys
+        if haskey(sn_data_tmp, k)
+            mn_data[k] = sn_data_tmp[k]
+        end
+
+        # note this is robust to cases where k is not present in sn_data_tmp
         delete!(sn_data_tmp, k)
     end
+
+    mn_data["name"] = "$(count) replicates of $(name)"
 
     for n in 1:count
         mn_data["nw"]["$n"] = deepcopy(sn_data_tmp)
