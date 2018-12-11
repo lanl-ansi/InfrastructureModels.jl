@@ -4,10 +4,10 @@ export update_data!
 function update_data!(data::Dict{String,Any}, new_data::Dict{String,Any})
     if haskey(data, "per_unit") && haskey(new_data, "per_unit")
         if data["per_unit"] != new_data["per_unit"]
-            error("update_data requires datasets in the same units, try make_per_unit and make_mixed_units")
+            throw(error("update_data requires datasets in the same units, try make_per_unit and make_mixed_units"))
         end
     else
-        warn(LOGGER, "running update_data with data that does not include per_unit field, units may be incorrect")
+        @warn "running update_data with data that does not include per_unit field, units may be incorrect"
     end
     _update_data!(data, new_data)
 end
@@ -36,15 +36,15 @@ ismultinetwork(data::Dict{String,Any}) = (haskey(data, "multinetwork") && data["
 function replicate(sn_data::Dict{String,Any}, count::Int; global_keys::Set{String} = Set{String}())
     @assert count > 0
     if ismultinetwork(sn_data)
-        error("replicate can only be used on single networks")
+        throw(error("replicate can only be used on single networks"))
     end
 
     if length(global_keys) <= 0
-        warn(LOGGER, "deprecation warning, calls to replicate should explicitly specify a set of global_keys")
+        @warn "deprecation warning, calls to replicate should explicitly specify a set of global_keys"
         # old default
         for (k,v) in sn_data
              if !(typeof(v) <: Dict)
-                warn(LOGGER, "adding global key $(k)")
+                @warn "adding global key $(k)"
                 push!(global_keys, k)
              end
         end
@@ -92,7 +92,7 @@ component_table(data::Dict{String,Any}, component::String, field::String) = comp
 function _component_table(data::Dict{String,Any}, component::String, fields::Vector{String})
     comps = data[component]
     if !_iscomponentdict(comps)
-        error(LOGGER, "$(component) does not appear to refer to a component list")
+        throw(error("$(component) does not appear to refer to a component list"))
     end
 
     items = []
@@ -123,7 +123,7 @@ end
 "prints the text summary for a data dictionary to IO"
 function summary(io::IO, data::Dict{String,Any}; float_precision::Int = 3)
     if ismultinetwork(data)
-        error("summary does not yet support multinetwork data")
+        throw(error("summary does not yet support multinetwork data"))
     end
 
     component_types_order = Dict(
