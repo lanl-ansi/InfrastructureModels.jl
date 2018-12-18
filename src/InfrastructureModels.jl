@@ -11,6 +11,7 @@ if VERSION < v"0.7.0-"
     import Compat: occursin
     import Compat: Nothing
     import Compat: round
+    import Compat: stdout
 end
 
 if VERSION > v"0.7.0-"

@@ -114,9 +114,9 @@ function _component_table(data::Dict{String,Any}, component::String, fields::Vec
 end
 
 
-"prints the text summary for a data dictionary to STDOUT"
+"prints the text summary for a data dictionary to stdout"
 function print_summary(obj::Dict{String,Any}; kwargs...)
-    summary(STDOUT, obj; kwargs...)
+    summary(stdout, obj; kwargs...)
 end
 
 
