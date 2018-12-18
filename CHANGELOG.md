@@ -4,6 +4,9 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.0.12
+- Fixed print_summary in Julia v1.0
+
 ### v0.0.11
 - Added explicit global keys argument to replicate
 
