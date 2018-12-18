@@ -5,6 +5,7 @@ InfrastructureModels.jl Change Log
 - nothing
 
 ### v0.0.12
+- Added JuMP version upper bound
 - Fixed print_summary in Julia v1.0
 
 ### v0.0.11
