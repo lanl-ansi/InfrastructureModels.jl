@@ -189,7 +189,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.print_summary",
     "category": "method",
-    "text": "prints the text summary for a data dictionary to STDOUT\n\n\n\n\n\n"
+    "text": "prints the text summary for a data dictionary to stdout\n\n\n\n\n\n"
 },
 
 {
