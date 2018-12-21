@@ -8,13 +8,14 @@
 &quot;component_2&quot;: {...},
 ...
 &quot;component_j&quot;: {...}
-}</code></pre><p>Each component collection is a lookup table of the form <code>index</code>-to-<code>component_data</code>.  Each component has two required parameters,</p><ul><li><code>index</code>: the component&#39;s unique integer value, which is also its lookup id</li><li><code>status</code>: an integer that takes 1 or 0 indicating if the component is active or inactive, respectively</li></ul><p>and two optional parameters,</p><ul><li><code>name</code>: a human readable name for the component</li><li><code>source_id</code>: a string representation of a unique id from a source dataset</li></ul><p>A typical component collection has a form along these lines,</p><pre><code class="language-json">{
+}</code></pre><p>Each component collection is a lookup table of the form <code>index</code>-to-<code>component_data</code>.  Each component has two required parameters,</p><ul><li><code>index</code>: the component&#39;s unique integer value, which is also its lookup id</li><li><code>status</code>: an integer that takes 1 or 0 indicating if the component is active or inactive, respectively</li></ul><p>and three optional parameters,</p><ul><li><code>name</code>: a human readable name for the component</li><li><code>source_id</code>: a string representation of a unique id from a source dataset</li><li><code>dispatchable</code>: a boolean value indicating the component can be controlled or not.  The default value is component dependent and some component types may ignore this parameter.</li></ul><p>A typical component collection has a form along these lines,</p><pre><code class="language-json">{
 &quot;component_1&quot;:{
     &quot;1&quot;:{
         &quot;index&quot;: 1,
         &quot;status&quot;: &lt;int&gt;,
         (&quot;name&quot;: &lt;string&gt;,)
         (&quot;source_id&quot;: &lt;string&gt;,)
+        (&quot;dispatchable&quot;: &lt;boolean&gt;,)
         ...
     },
     &quot;2&quot;:{
@@ -22,6 +23,7 @@
         &quot;status&quot; :&lt;int&gt;,
         (&quot;name&quot;: &lt;string&gt;,)
         (&quot;source_id&quot;: &lt;string&gt;,)
+        (&quot;dispatchable&quot;: &lt;boolean&gt;,)
         ...
     }
     ...
@@ -30,6 +32,7 @@
         &quot;status&quot; &lt;int&gt;,
         (&quot;name&quot;: &lt;string&gt;,)
         (&quot;source_id&quot;: &lt;string&gt;,)
+        (&quot;dispatchable&quot;: &lt;boolean&gt;,)
         ...
     }
 },
