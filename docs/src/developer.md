@@ -6,17 +6,21 @@ InfrastructureModels and dependent packages leverage an extensible JSON-based da
 
 ### Single Network Data
 
-All network data has two required parameters,
-* `multinetwork`: a boolean value indicating if the data represents a single network or multiple networks
-* `per_unit`: a boolean value indicating if the parameter units are in mixed-units or per unit
-component lists
-These two parameters can be accompanied by collections of components, where the component name is the key of the collection.  The `name` parameter is optional and can be used to give a human readable name for the network data.  A minimalist network dataset would be,
+All network data has one required parameter,
+* `per_unit`: a boolean value indicating if component parameters are in mixed-units or per unit
+and three optional parameters,
+* `multinetwork`: a boolean value indicating if the data represents a single network or multiple networks (assumed to be `false` when not present)
+* `name`: a human readable name for the network
+* `description`: a textual description of the network and any related notes
+
+These top level parameters can be accompanied by collections of components, where the component name is the key of the collection.  A minimalist network dataset would be,
 
 ```json
 {
-"multinetwork": false,
 "per_unit": <boolean>,
-"name": <string>,
+("multinetwork": false,)
+("name": <string>,)
+("description": <string>,)
 "component_1": {...},
 "component_2": {...},
 ...
@@ -25,28 +29,38 @@ These two parameters can be accompanied by collections of components, where the 
 ```
 
 
-Each component collection is a lookup table of the form `index` to `component_data`, for convenience each component includes its `index` value as an internal parameter.  Each component additionally has a required value called `status` which takes 1 or 0 indicating if the component is active or inactive, respectively, and on optional parameter called `name`, which is a human readable name for the component.  A typical component collection as a form along these lines,
+Each component collection is a lookup table of the form `index`-to-`component_data`.  Each component has two required parameters,
+* `index`: the component's unique integer value, which is also its lookup id
+* `status`: an integer that takes 1 or 0 indicating if the component is active or inactive, respectively
+and two optional parameters,
+* `name`: a human readable name for the component
+* `source_id`: a string representation of a unique id from a source dataset
+
+A typical component collection has a form along these lines,
 
 ```json
 {
 "component_1":{
     "1":{
-        "index": <int>,
+        "index": 1,
         "status": <int>,
-        "name": <string>,
+        ("name": <string>,)
+        ("source_id": <string>,)
         ...
     },
     "2":{
-        "index": <int>,
+        "index": 2,
         "status" :<int>,
-        "name": <string>,
+        ("name": <string>,)
+        ("source_id": <string>,)
         ...
     }
     ...
     "k":{
-        "index": <int>,
+        "index": k,
         "status" <int>,
-        "name": <string>,
+        ("name": <string>,)
+        ("source_id": <string>,)
         ...
     }
 },
@@ -63,18 +77,21 @@ If the `multinetwork` parameter is `true` then several single network data objec
 {
 "multinetwork": true,
 "per_unit": <boolean>,
-"name": <string>,
+("name": <string>,)
+("description": <string>,)
 "nw":{
     "1":{
         "index": <int>,
-        "name": <string>,
+        ("name": <string>,)
+        ("description": <string>,)
         "component_1": {...},
         ...
         "component_j": {...}
     },
     "2":{
         "index": <int>,
-        "name": <string>,
+        ("name": <string>,)
+        ("description": <string>,)
         "component_1": {...},
         ...
         "component_j": {...}
@@ -82,7 +99,8 @@ If the `multinetwork` parameter is `true` then several single network data objec
     ...
     "i":{
         "index": <int>,
-        "name": <string>,
+        ("name": <string>,)
+        ("description": <string>,)
         "component_1": {...},
         ...
         "component_j": {...}
