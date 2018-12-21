@@ -121,47 +121,17 @@ end
 
 
 "prints the text summary for a data dictionary to IO"
-function summary(io::IO, data::Dict{String,Any}; float_precision::Int = 3)
+function summary(io::IO, data::Dict{String,Any};
+    float_precision::Int = 3,
+    component_types_order = Dict(),
+    component_parameter_order = Dict(),
+    max_parameter_value = 999.0,
+    component_status_parameters = Set(["status"])
+    )
+
     if ismultinetwork(data)
         error("summary does not yet support multinetwork data")
     end
-
-    component_types_order = Dict(
-        "bus" => 1.0, "load" => 2.0, "shunt" => 3.0, "gen" => 4.0,
-        "branch" => 5.0, "dcline" => 6.0
-    )
-
-    component_parameter_order = Dict(
-        "bus_i" => 1.0, "load_bus" => 2.0, "shunt_bus" => 3.0, "gen_bus" => 4.0,
-        "f_bus" => 5.0, "t_bus" => 6.0,
-
-        "bus_name" => 9.1, "base_kv" => 9.2, "bus_type" => 9.3,
-
-        "vm" => 10.0, "va" => 11.0,
-        "pd" => 20.0, "qd" => 21.0,
-        "gs" => 30.0, "bs" => 31.0,
-        "pg" => 40.0, "qg" => 41.0, "vg" => 42.0, "mbase" => 43.0,
-        "br_r" => 50.0, "br_x" => 51.0, "g_fr" => 52.0, "b_fr" => 53.0,
-        "g_to" => 54.0, "b_to" => 55.0, "tap" => 56.0, "shift" => 57.0,
-        "vf" => 58.1, "pf" => 58.2, "qf" => 58.3,
-        "vt" => 58.4, "pt" => 58.5, "qt" => 58.6,
-        "loss0" => 58.7, "loss1" => 59.8,
-
-        "vmin" => 60.0, "vmax" => 61.0,
-        "pmin" => 62.0, "pmax" => 63.0,
-        "qmin" => 64.0, "qmax" => 65.0,
-        "rate_a" => 66.0, "rate_b" => 67.0, "rate_c" => 68.0,
-        "pminf" => 69.0, "pmaxf" => 70.0, "qminf" => 71.0, "qmaxf" => 72.0,
-        "pmint" => 73.0, "pmaxt" => 74.0, "qmint" => 75.0, "qmaxt" => 76.0,
-
-        "status" => 80.0, "gen_status" => 81.0, "br_status" => 82.0,
-
-        "model" => 90.0, "ncost" => 91.0, "cost" => 92.0, "startup" => 93.0, "shutdown" => 94.0
-    )
-    max_parameter_value = 999.0
-
-    component_status_parameters = Set(["status", "gen_status", "br_status", "bus_type"])
-
 
     component_types = []
     other_types = []
@@ -181,11 +151,11 @@ function summary(io::IO, data::Dict{String,Any}; float_precision::Int = 3)
         println(io, "")
         println(io, _bold("Table Counts"))
     end
-    for k in sort(component_types, by=x->get(component_types_order, x, 999))
+    for k in sort(component_types, by=x->get(component_types_order, x, max_parameter_value))
         println(io, "  $(k): $(length(data[k]))")
     end
 
-    for comp_type in sort(component_types, by=x->get(component_types_order, x, 999))
+    for comp_type in sort(component_types, by=x->get(component_types_order, x, max_parameter_value))
         if length(data[comp_type]) <= 0
             continue
         end
@@ -204,7 +174,7 @@ function summary(io::IO, data::Dict{String,Any}; float_precision::Int = 3)
             for (k, v) in disp_comp
                 if k in component_status_parameters
                     status_found = true
-                    if !(v == 0 || v == 4)
+                    if !(v == 0)
                         push!(active_components, i)
                     end
                 end
