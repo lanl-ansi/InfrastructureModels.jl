@@ -33,10 +33,7 @@ function rows_to_dict!(data::Dict{String,Any})
             items = Array{Any,1}()
 
             for item in v
-                dict = Dict{String,Any}()
-                for (i,value) in enumerate(item)
-                    dict["col_$(i)"] = value
-                end
+                dict = InfrastructureModels.row_to_dict(item)
                 push!(items, dict)
             end
 

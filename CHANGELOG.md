@@ -2,7 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Added row_to_typed_dict and row_to_dict helper functions
 
 ### v0.0.12
 - Added JuMP version upper bound

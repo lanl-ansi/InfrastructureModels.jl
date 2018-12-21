@@ -282,7 +282,7 @@ end
     end
 
 
-    @testset "transform arrays to dicts" begin
+    @testset "transform dict-of-arrays to dict-of-dicts" begin
         data = parse_matlab_file("../test/data/matlab_01.m")
 
         data["mpc.tmp"] = []
@@ -306,6 +306,77 @@ end
         @test data["mpc.gen"]["1"]["col_2"] == 1098.17
     end
 
+    @testset "transform an array into a typed dict" begin
+        data = parse_matlab_file("../test/data/matlab_03.m")
+
+        bus_columns = [
+            ("bus_i", Int),
+            ("bus_type", Int),
+            ("pd", Float64), ("qd", Float64),
+            ("gs", Float64), ("bs", Float64),
+            ("area", Int),
+            ("vm", Float64), ("va", Float64),
+            ("base_kv", Float64),
+            ("zone", Complex)
+        ]
+
+        buses = []
+        for bus_row in data["udc.bus"]
+            bus_data = InfrastructureModels.row_to_typed_dict(bus_row, bus_columns)
+            push!(buses, bus_data)
+        end
+
+        @test length(buses) == length(data["udc.bus"])
+
+        bus = buses[1]
+
+        @test bus["bus_i"] == 1
+        @test bus["qd"] == 40.0
+        @test bus["zone"] == 1 + 0im
+        @test bus["col_12"] == 1.1
+
+        @test typeof(bus["bus_i"]) == Int64
+        @test typeof(bus["qd"]) == Float64
+        @test typeof(bus["zone"]) == Complex{Int64}
+        @test typeof(bus["col_12"]) == Float64
+
+    end
+
+    @testset "transform an array into a dict" begin
+        data = parse_matlab_file("../test/data/matlab_03.m")
+
+        bus_columns = [
+            "bus_i",
+            "bus_type",
+            "pd", "qd",
+            "gs", "bs",
+            "area",
+            "vm", "va",
+            "base_kv",
+            "zone"
+        ]
+
+        buses = []
+        for bus_row in data["udc.bus"]
+            bus_data = InfrastructureModels.row_to_dict(bus_row, bus_columns)
+            push!(buses, bus_data)
+        end
+
+        @test length(buses) == length(data["udc.bus"])
+
+        bus = buses[1]
+
+        @test bus["bus_i"] == 1
+        @test bus["qd"] == 40.0
+        @test bus["zone"] == 1
+        @test bus["col_12"] == 1.1
+
+        @test typeof(bus["bus_i"]) == Int64
+        @test typeof(bus["qd"]) == Float64
+        @test typeof(bus["zone"]) == Int64
+        @test typeof(bus["col_12"]) == Float64
+
+    end
 end
 
 

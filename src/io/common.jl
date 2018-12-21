@@ -25,3 +25,32 @@ function arrays_to_dicts!(data::Dict{String,Any})
     end
 end
 
+"takes a row from a matrix and assigns the values names and types"
+function row_to_typed_dict(row_data, columns)
+    dict_data = Dict{String,Any}()
+    for (i,v) in enumerate(row_data)
+        if i <= length(columns)
+            name, typ = columns[i]
+            dict_data[name] = check_type(typ, v)
+        else
+            dict_data["col_$(i)"] = v
+        end
+    end
+    return dict_data
+end
+
+"takes a row from a matrix and assigns the values names"
+function row_to_dict(row_data, columns)
+    dict_data = Dict{String,Any}()
+    for (i,v) in enumerate(row_data)
+        if i <= length(columns)
+            dict_data[columns[i]] = v
+        else
+            dict_data["col_$(i)"] = v
+        end
+    end
+    return dict_data
+end
+
+row_to_dict(row_data) = row_to_dict(row_data, [])
+
