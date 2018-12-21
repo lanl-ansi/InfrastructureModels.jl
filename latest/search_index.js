@@ -265,6 +265,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "library.html#InfrastructureModels.row_to_dict-Tuple{Any,Any}",
+    "page": "Library",
+    "title": "InfrastructureModels.row_to_dict",
+    "category": "method",
+    "text": "takes a row from a matrix and assigns the values names\n\n\n\n\n\n"
+},
+
+{
+    "location": "library.html#InfrastructureModels.row_to_typed_dict-Tuple{Any,Any}",
+    "page": "Library",
+    "title": "InfrastructureModels.row_to_typed_dict",
+    "category": "method",
+    "text": "takes a row from a matrix and assigns the values names and types\n\n\n\n\n\n"
+},
+
+{
     "location": "library.html#InfrastructureModels.split_line-Tuple{AbstractString}",
     "page": "Library",
     "title": "InfrastructureModels.split_line",
