@@ -4,7 +4,7 @@ InfrastructureModels.jl Change Log
 ### Staged
 - Added arguments to the summary function for presentation order configuration, #29
 - Added row_to_typed_dict and row_to_dict helper functions, #28
-- Improved data standard documentation, #23
+- Improved data standard documentation, #23, #24
 
 ### v0.0.12
 - Added JuMP version upper bound

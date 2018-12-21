@@ -32,9 +32,10 @@ These top level parameters can be accompanied by collections of components, wher
 Each component collection is a lookup table of the form `index`-to-`component_data`.  Each component has two required parameters,
 * `index`: the component's unique integer value, which is also its lookup id
 * `status`: an integer that takes 1 or 0 indicating if the component is active or inactive, respectively
-and two optional parameters,
+and three optional parameters,
 * `name`: a human readable name for the component
 * `source_id`: a string representation of a unique id from a source dataset
+* `dispatchable`: a boolean value indicating the component can be controlled or not.  The default value is component dependent and some component types may ignore this parameter.
 
 A typical component collection has a form along these lines,
 
@@ -46,6 +47,7 @@ A typical component collection has a form along these lines,
         "status": <int>,
         ("name": <string>,)
         ("source_id": <string>,)
+        ("dispatchable": <boolean>,)
         ...
     },
     "2":{
@@ -53,6 +55,7 @@ A typical component collection has a form along these lines,
         "status" :<int>,
         ("name": <string>,)
         ("source_id": <string>,)
+        ("dispatchable": <boolean>,)
         ...
     }
     ...
@@ -61,6 +64,7 @@ A typical component collection has a form along these lines,
         "status" <int>,
         ("name": <string>,)
         ("source_id": <string>,)
+        ("dispatchable": <boolean>,)
         ...
     }
 },
