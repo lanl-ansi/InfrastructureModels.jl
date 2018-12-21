@@ -2,6 +2,9 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+- nothing
+
+### v0.0.13
 - Added arguments to the summary function for presentation order configuration, #29
 - Added row_to_typed_dict and row_to_dict helper functions, #28
 - Improved data standard documentation, #23, #24
