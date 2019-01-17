@@ -2,7 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Remove support for Julia v0.6/v0.7
 
 ### v0.0.14
 - Update dict types to Dict{String,<:Any}
