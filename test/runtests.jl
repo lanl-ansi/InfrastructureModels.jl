@@ -3,6 +3,8 @@ using Memento
 using JSON
 using Compat
 
+import JuMP
+
 if VERSION > v"0.7.0-"
     using Test
 end

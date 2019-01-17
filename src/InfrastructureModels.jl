@@ -2,7 +2,7 @@ isdefined(Base, :__precompile__) && __precompile__()
 
 module InfrastructureModels
 
-using JuMP
+import JuMP
 using Memento
 
 import Compat: @__MODULE__
