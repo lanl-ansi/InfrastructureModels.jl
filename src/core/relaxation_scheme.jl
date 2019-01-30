@@ -8,7 +8,7 @@ end
 function relaxation_complex_product_conic(m, a, b, c, d)
     @assert (JuMP.lower_bound(a) >= 0 && JuMP.lower_bound(b) >= 0) || (JuMP.upper_bound(a) <= 0 && JuMP.upper_bound(b) <= 0)
     #JuMP.@constraint(m, [a, b, c, d] in JuMP.RotatedSecondOrderCone())
-    JuMP.@constraint(m, [a+b, a-b, c, d] in JuMP.SecondOrderCone())
+    JuMP.@constraint(m, [a+b, a-b, 2*c, 2*d] in JuMP.SecondOrderCone())
 end
 
 """
