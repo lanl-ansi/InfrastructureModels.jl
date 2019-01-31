@@ -5,8 +5,6 @@ module InfrastructureModels
 using JuMP
 import Memento
 
-import Compat: @__MODULE__
-
 # Create our module level logger (this will get precompiled)
 const LOGGER = Memento.getlogger(@__MODULE__)
 

@@ -1,5 +1,4 @@
 import JuMP
-import Compat
 
 import Ipopt
 import ECOS

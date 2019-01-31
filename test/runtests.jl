@@ -1,7 +1,6 @@
 using InfrastructureModels
 import Memento
 import JSON
-import Compat
 
 using Test
 
