@@ -2,7 +2,7 @@ isdefined(Base, :__precompile__) && __precompile__()
 
 module InfrastructureModels
 
-using JuMP
+import JuMP
 import Memento
 
 # Create our module level logger (this will get precompiled)
