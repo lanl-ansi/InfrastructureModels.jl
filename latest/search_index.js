@@ -41,7 +41,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "library.html#InfrastructureModels.update_data!-Tuple{Dict{String,Any},Dict{String,Any}}",
+    "location": "library.html#InfrastructureModels.update_data!-Tuple{Dict{String,#s14} where #s14,Dict{String,#s15} where #s15}",
     "page": "Library",
     "title": "InfrastructureModels.update_data!",
     "category": "method",
@@ -81,7 +81,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "library.html#InfrastructureModels._update_data!-Tuple{Dict{String,Any},Dict{String,Any}}",
+    "location": "library.html#InfrastructureModels._update_data!-Tuple{Dict{String,#s12} where #s12,Dict{String,#s17} where #s17}",
     "page": "Library",
     "title": "InfrastructureModels._update_data!",
     "category": "method",
@@ -105,7 +105,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "library.html#InfrastructureModels.arrays_to_dicts!-Tuple{Dict{String,Any}}",
+    "location": "library.html#InfrastructureModels.arrays_to_dicts!-Tuple{Dict{String,#s73} where #s73}",
     "page": "Library",
     "title": "InfrastructureModels.arrays_to_dicts!",
     "category": "method",
@@ -137,7 +137,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "library.html#InfrastructureModels.component_table-Tuple{Dict{String,Any},String,Array{String,1}}",
+    "location": "library.html#InfrastructureModels.component_table-Tuple{Dict{String,#s18} where #s18,String,Array{String,1}}",
     "page": "Library",
     "title": "InfrastructureModels.component_table",
     "category": "method",
@@ -153,7 +153,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "library.html#InfrastructureModels.ismultinetwork-Tuple{Dict{String,Any}}",
+    "location": "library.html#InfrastructureModels.ismultinetwork-Tuple{Dict{String,#s17} where #s17}",
     "page": "Library",
     "title": "InfrastructureModels.ismultinetwork",
     "category": "method",
@@ -185,7 +185,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "library.html#InfrastructureModels.print_summary-Tuple{Dict{String,Any}}",
+    "location": "library.html#InfrastructureModels.print_summary-Tuple{Dict{String,#s17} where #s17}",
     "page": "Library",
     "title": "InfrastructureModels.print_summary",
     "category": "method",
@@ -257,7 +257,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "library.html#InfrastructureModels.replicate-Tuple{Dict{String,Any},Int64}",
+    "location": "library.html#InfrastructureModels.replicate-Tuple{Dict{String,#s20} where #s20,Int64}",
     "page": "Library",
     "title": "InfrastructureModels.replicate",
     "category": "method",
@@ -289,7 +289,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "library.html#InfrastructureModels.summary-Tuple{IO,Dict{String,Any}}",
+    "location": "library.html#InfrastructureModels.summary-Tuple{IO,Dict{String,#s36} where #s36}",
     "page": "Library",
     "title": "InfrastructureModels.summary",
     "category": "method",
