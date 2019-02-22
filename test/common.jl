@@ -27,7 +27,7 @@ generic_network_data = JSON.parse("""{
 }""")
 
 
-function rows_to_dict!(data::Dict{String,Any})
+function rows_to_dict!(data::Dict{String,<:Any})
     for (k,v) in data
         if isa(v, Array)
             items = Array{Any,1}()

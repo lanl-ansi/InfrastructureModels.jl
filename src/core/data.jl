@@ -1,7 +1,7 @@
 export update_data!
 
 "recursively applies new_data to data, overwriting information"
-function update_data!(data::Dict{String,Any}, new_data::Dict{String,Any})
+function update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
     if haskey(data, "per_unit") && haskey(new_data, "per_unit")
         if data["per_unit"] != new_data["per_unit"]
             error("update_data requires datasets in the same units, try make_per_unit and make_mixed_units")
@@ -14,7 +14,7 @@ end
 
 
 "recursive call of _update_data"
-function _update_data!(data::Dict{String,Any}, new_data::Dict{String,Any})
+function _update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
     for (key, new_v) in new_data
         if haskey(data, key)
             v = data[key]
@@ -30,10 +30,10 @@ function _update_data!(data::Dict{String,Any}, new_data::Dict{String,Any})
 end
 
 "checks if a given network data is a multinetwork"
-ismultinetwork(data::Dict{String,Any}) = (haskey(data, "multinetwork") && data["multinetwork"] == true)
+ismultinetwork(data::Dict{String,<:Any}) = (haskey(data, "multinetwork") && data["multinetwork"] == true)
 
 "Transforms a single network into a multinetwork with several deepcopies of the original network"
-function replicate(sn_data::Dict{String,Any}, count::Int; global_keys::Set{String} = Set{String}())
+function replicate(sn_data::Dict{String,<:Any}, count::Int; global_keys::Set{String} = Set{String}())
     @assert count > 0
     if ismultinetwork(sn_data)
         error("replicate can only be used on single networks")
@@ -80,16 +80,16 @@ end
 
 
 "builds a table of component data"
-function component_table(data::Dict{String,Any}, component::String, fields::Vector{String})
+function component_table(data::Dict{String,<:Any}, component::String, fields::Vector{String})
     if ismultinetwork(data)
         return Dict((i, _component_table(nw_data, component, fields)) for (i,nw_data) in data["nw"])
     else
         return _component_table(data, component, fields)
     end
 end
-component_table(data::Dict{String,Any}, component::String, field::String) = component_table(data, component, [field])
+component_table(data::Dict{String,<:Any}, component::String, field::String) = component_table(data, component, [field])
 
-function _component_table(data::Dict{String,Any}, component::String, fields::Vector{String})
+function _component_table(data::Dict{String,<:Any}, component::String, fields::Vector{String})
     comps = data[component]
     if !_iscomponentdict(comps)
         error(LOGGER, "$(component) does not appear to refer to a component list")
@@ -115,13 +115,13 @@ end
 
 
 "prints the text summary for a data dictionary to stdout"
-function print_summary(obj::Dict{String,Any}; kwargs...)
+function print_summary(obj::Dict{String,<:Any}; kwargs...)
     summary(stdout, obj; kwargs...)
 end
 
 
 "prints the text summary for a data dictionary to IO"
-function summary(io::IO, data::Dict{String,Any};
+function summary(io::IO, data::Dict{String,<:Any};
     float_precision::Int = 3,
     component_types_order = Dict(),
     component_parameter_order = Dict(),

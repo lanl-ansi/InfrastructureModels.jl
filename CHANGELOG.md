@@ -2,7 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Update dict types to Dict{String,<:Any}
 
 ### v0.0.13
 - Added arguments to the summary function for presentation order configuration, #29
