@@ -2,6 +2,9 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+- nothing
+
+### v0.0.14
 - Update dict types to Dict{String,<:Any}
 
 ### v0.0.13
