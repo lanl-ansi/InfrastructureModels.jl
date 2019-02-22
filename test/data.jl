@@ -69,10 +69,10 @@ end
 @testset "data summary" begin
 
     @testset "summary feature non-standard dict structure" begin
-        data = Dict{String,Any}(
+        data = Dict(
             "a" => 1,
             "b" => [1,2,3],
-            "c" => Dict{String,Any}(
+            "c" => Dict(
                 "e" => 1.2,
                 "d" => 2.3
             )
