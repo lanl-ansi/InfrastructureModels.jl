@@ -184,7 +184,7 @@ Random.seed!(0)
             JuMP.@NLconstraint(m, c^2 + d^2 == a*b)
             status = JuMP.optimize!(m)
 
-            rm = Model(ecos_solver)
+            rm = JuMP.Model(ecos_solver)
             JuMP.@variable(rm, a_lb <= a <= a_ub)
             JuMP.@variable(rm, b_lb <= b <= b_ub)
             JuMP.@variable(rm, c_lb <= c <= c_ub)
