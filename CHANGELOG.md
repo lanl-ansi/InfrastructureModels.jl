@@ -3,6 +3,7 @@ InfrastructureModels.jl Change Log
 
 ### Staged
 - Remove support for Julia v0.6/v0.7
+- Updated to JuMP v0.19 / MathOptInterface
 
 ### v0.0.15
 - Remove support for Julia v0.6/v0.7
