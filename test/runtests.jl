@@ -1,18 +1,11 @@
 using InfrastructureModels
-using Memento
-using JSON
-using Compat
+import Memento
+import JSON
 
-if VERSION > v"0.7.0-"
-    using Test
-end
-
-if VERSION < v"0.7.0-"
-    using Base.Test
-end
+using Test
 
 # Suppress warnings during testing.
-setlevel!(getlogger(InfrastructureModels), "error")
+Memento.setlevel!(Memento.getlogger(InfrastructureModels), "error")
 
 include("common.jl")
 

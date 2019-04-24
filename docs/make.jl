@@ -18,5 +18,5 @@ deploydocs(
     make = nothing,
     target = "build",
     repo = "github.com/lanl-ansi/InfrastructureModels.jl.git",
-    julia = "1.0"
+    julia = "1.1"
 )
