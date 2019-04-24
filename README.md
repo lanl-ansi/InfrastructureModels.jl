@@ -1,9 +1,6 @@
 # InfrastructureModels.jl
 
-Release: 
-[![InfrastructureModels](http://pkg.julialang.org/badges/InfrastructureModels_0.6.svg)](http://pkg.julialang.org/detail/InfrastructureModels),
-[![InfrastructureModels](http://pkg.julialang.org/badges/InfrastructureModels_0.7.svg)](http://pkg.julialang.org/detail/InfrastructureModels),
-[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://lanl-ansi.github.io/InfrastructureModels.jl/stable)
+Release: [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://lanl-ansi.github.io/InfrastructureModels.jl/stable)
 
 Dev:
 [![Build Status](https://travis-ci.org/lanl-ansi/InfrastructureModels.jl.svg?branch=master)](https://travis-ci.org/lanl-ansi/InfrastructureModels.jl)

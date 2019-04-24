@@ -168,7 +168,7 @@ function summary(io::IO, data::Dict{String,<:Any};
         display_components = Dict()
         active_components = Set()
         for (i, component) in components
-            disp_comp = copy(component)
+            disp_comp = Dict{String,Any}(k => v for (k,v) in component)
 
             status_found = false
             for (k, v) in disp_comp

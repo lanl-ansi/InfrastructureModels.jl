@@ -4,6 +4,9 @@ InfrastructureModels.jl Change Log
 ### Staged
 - Remove support for Julia v0.6/v0.7
 
+### v0.0.15
+- Fixed support for Dict{String,<:Any} types in summary function
+
 ### v0.0.14
 - Update dict types to Dict{String,<:Any}
 
