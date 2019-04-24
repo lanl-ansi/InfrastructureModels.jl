@@ -1,21 +1,8 @@
-import JuMP
-
-import Ipopt
-import ECOS
-# import Juniper
-
-import MathOptInterface
-const MOI = MathOptInterface
-
-ipopt_solver = JuMP.with_optimizer(Ipopt.Optimizer, print_level=0)
-ecos_solver = JuMP.with_optimizer(ECOS.Optimizer, verbose=0)
-# juniper_solver = JuniperSolver(ipopt_solver, log_levels=[])  # MOI compatibility
 
 tolerance = 1e-5
 replicates = 10
 
-using Random
-Random.seed!(0)
+seed!(0)
 
 @testset "relaxation schemes" begin
 
@@ -207,7 +194,6 @@ Random.seed!(0)
         end
     end
 
-    #= Juniper not yet compatible with MOI
     @testset "relaxation_equality_on_off" begin
         for r in 1:replicates
             x_lb, x_ub = 10*rand(2).*[-1,1]
@@ -219,7 +205,7 @@ Random.seed!(0)
             JuMP.@variable(m, z, Bin)
             JuMP.@objective(m, Min, 10000*z + y)
             JuMP.@NLconstraint(m, z*x == z*y)
-            status = optimize!(m)
+            status = JuMP.optimize!(m)
 
             rm = JuMP.Model(juniper_solver)
             JuMP.@variable(rm, x_lb <= rx <= x_ub)
@@ -306,7 +292,6 @@ Random.seed!(0)
             @test(isapprox(JuMP.getvalue(rind), 1))
         end
     end
-    =#
 end
 
 
