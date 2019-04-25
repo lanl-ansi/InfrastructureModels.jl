@@ -213,7 +213,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.relaxation_complex_product_on_off",
     "category": "method",
-    "text": "c^2 + d^2 <= a*b*getupperbound(z)\nc^2 + d^2 <= getupperbound(a)*b*getupperbound(z)\nc^2 + d^2 <= a*getupperbound(b)*z\n\n\n\n\n\n"
+    "text": "c^2 + d^2 <= a*b*JuMP.getupperbound(z)\nc^2 + d^2 <= JuMP.getupperbound(a)*b*JuMP.getupperbound(z)\nc^2 + d^2 <= a*JuMP.getupperbound(b)*z\n\n\n\n\n\n"
 },
 
 {
@@ -221,7 +221,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.relaxation_equality_on_off",
     "category": "method",
-    "text": "x - getupperbound(x)*(1-z) <= y <= x - getlowerbound(x)*(1-z)\n\n\n\n\n\n"
+    "text": "x - JuMP.getupperbound(x)*(1-z) <= y <= x - JuMP.getlowerbound(x)*(1-z)\n\n\n\n\n\n"
 },
 
 {
@@ -229,7 +229,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.relaxation_product",
     "category": "method",
-    "text": "general relaxation of binlinear term (McCormick)\n\nz >= getlowerbound(x)*y + getlowerbound(y)*x - getlowerbound(x)*getlowerbound(y)\nz >= getupperbound(x)*y + getupperbound(y)*x - getupperbound(x)*getupperbound(y)\nz <= getlowerbound(x)*y + getupperbound(y)*x - getlowerbound(x)*getupperbound(y)\nz <= getupperbound(x)*y + getlowerbound(y)*x - getupperbound(x)*getlowerbound(y)\n\n\n\n\n\n"
+    "text": "general relaxation of binlinear term (McCormick)\n\nz >= JuMP.getlowerbound(x)*y + JuMP.getlowerbound(y)*x - JuMP.getlowerbound(x)*JuMP.getlowerbound(y)\nz >= JuMP.getupperbound(x)*y + JuMP.getupperbound(y)*x - JuMP.getupperbound(x)*JuMP.getupperbound(y)\nz <= JuMP.getlowerbound(x)*y + JuMP.getupperbound(y)*x - JuMP.getlowerbound(x)*JuMP.getupperbound(y)\nz <= JuMP.getupperbound(x)*y + JuMP.getlowerbound(y)*x - JuMP.getupperbound(x)*JuMP.getlowerbound(y)\n\n\n\n\n\n"
 },
 
 {
@@ -245,7 +245,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.relaxation_sqr",
     "category": "method",
-    "text": "general relaxation of a square term\n\nx^2 <= y <= (getupperbound(x)+getlowerbound(x))*x - getupperbound(x)*getlowerbound(x)\n\n\n\n\n\n"
+    "text": "general relaxation of a square term\n\nx^2 <= y <= (JuMP.getupperbound(x)+JuMP.getlowerbound(x))*x - JuMP.getupperbound(x)*JuMP.getlowerbound(x)\n\n\n\n\n\n"
 },
 
 {
@@ -253,7 +253,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "InfrastructureModels.relaxation_trilinear",
     "category": "method",
-    "text": "convex hull relaxation of trilinear term\n\nw₁ = getlowerbound(x)*getlowerbound(y)*getlowerbound(z)\nw₂ = getlowerbound(x)*getlowerbound(y)*getupperbound(z)\nw₃ = getlowerbound(x)*getupperbound(y)*getlowerbound(z)\nw₄ = getlowerbound(x)*getupperbound(y)*getupperbound(z)\nw₅ = getupperbound(x)*getlowerbound(y)*getlowerbound(z)\nw₆ = getupperbound(x)*getlowerbound(y)*getupperbound(z)\nw₇ = getupperbound(x)*getupperbound(y)*getlowerbound(z)\nw₈ = getupperbound(x)*getupperbound(y)*getupperbound(z)\nw = λ₁*w₁ + λ₂*w₂ + λ₃*w₃ + λ₄*w₄ + λ₅*w₅ + λ₆*w₆ + λ₇*w₇ + λ₈*w₈\nx = (λ₁ + λ₂ + λ₃ + λ₄)*getlowerbound(x) + (λ₅ + λ₆ + λ₇ + λ₈)*getupperbound(x)\ny = (λ₁ + λ₂ + λ₅ + λ₆)*getlowerbound(x) + (λ₃ + λ₄ + λ₇ + λ₈)*getupperbound(x)\nz = (λ₁ + λ₃ + λ₅ + λ₇)*getlowerbound(x) + (λ₂ + λ₄ + λ₆ + λ₈)*getupperbound(x)\nλ₁ + λ₂ + λ₃ + λ₄ + λ₅ + λ₆ + λ₇ + λ₈ = 1\n\n\n\n\n\n"
+    "text": "convex hull relaxation of trilinear term\n\nw₁ = JuMP.getlowerbound(x)*JuMP.getlowerbound(y)*JuMP.getlowerbound(z)\nw₂ = JuMP.getlowerbound(x)*JuMP.getlowerbound(y)*JuMP.getupperbound(z)\nw₃ = JuMP.getlowerbound(x)*JuMP.getupperbound(y)*JuMP.getlowerbound(z)\nw₄ = JuMP.getlowerbound(x)*JuMP.getupperbound(y)*JuMP.getupperbound(z)\nw₅ = JuMP.getupperbound(x)*JuMP.getlowerbound(y)*JuMP.getlowerbound(z)\nw₆ = JuMP.getupperbound(x)*JuMP.getlowerbound(y)*JuMP.getupperbound(z)\nw₇ = JuMP.getupperbound(x)*JuMP.getupperbound(y)*JuMP.getlowerbound(z)\nw₈ = JuMP.getupperbound(x)*JuMP.getupperbound(y)*JuMP.getupperbound(z)\nw = λ₁*w₁ + λ₂*w₂ + λ₃*w₃ + λ₄*w₄ + λ₅*w₅ + λ₆*w₆ + λ₇*w₇ + λ₈*w₈\nx = (λ₁ + λ₂ + λ₃ + λ₄)*JuMP.getlowerbound(x) + (λ₅ + λ₆ + λ₇ + λ₈)*JuMP.getupperbound(x)\ny = (λ₁ + λ₂ + λ₅ + λ₆)*JuMP.getlowerbound(x) + (λ₃ + λ₄ + λ₇ + λ₈)*JuMP.getupperbound(x)\nz = (λ₁ + λ₃ + λ₅ + λ₇)*JuMP.getlowerbound(x) + (λ₂ + λ₄ + λ₆ + λ₈)*JuMP.getupperbound(x)\nλ₁ + λ₂ + λ₃ + λ₄ + λ₅ + λ₆ + λ₇ + λ₈ = 1\n\n\n\n\n\n"
 },
 
 {
