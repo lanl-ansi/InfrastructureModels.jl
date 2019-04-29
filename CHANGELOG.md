@@ -4,6 +4,9 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.0.16
+- Increase Memento version bounds
+
 ### v0.0.15
 - Remove support for Julia v0.6/v0.7
 - Fixed support for Dict{String,<:Any} types in summary function
