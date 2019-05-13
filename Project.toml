@@ -10,7 +10,6 @@ Memento = "f28f55f0-a522-5efc-85c2-fe41dfb9b2d9"
 
 [compat]
 JuMP = "^0.19.1"
-JuMP = "< 0.19"
 Memento = "~0.10, ~0.11, ^0.12"
 julia = "^1"
 
