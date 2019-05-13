@@ -12,6 +12,9 @@ matrix:
 addons:
   apt_packages:
     - gfortran
+script:
+  - julia --project -e 'import Pkg; Pkg.build(); Pkg.instantiate()'
+  - julia --project -e 'import Pkg; Pkg.test(coverage=true);'
 after_success:
   - julia -e 'import Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
 jobs:

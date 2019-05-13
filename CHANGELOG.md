@@ -4,6 +4,9 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.2.0
+- Updated to JuMP v0.19 / MathOptInterface
+
 ### v0.0.16
 - Increase Memento version bounds
 

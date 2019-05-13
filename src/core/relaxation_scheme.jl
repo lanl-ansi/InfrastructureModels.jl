@@ -1,31 +1,31 @@
 "constraint: `c^2 + d^2 <= a*b`"
 function relaxation_complex_product(m, a, b, c, d)
-    @assert (JuMP.getlowerbound(a) >= 0 && JuMP.getlowerbound(b) >= 0) || (JuMP.getupperbound(a) <= 0 && JuMP.getupperbound(b) <= 0)
+    @assert (JuMP.lower_bound(a) >= 0 && JuMP.lower_bound(b) >= 0) || (JuMP.upper_bound(a) <= 0 && JuMP.upper_bound(b) <= 0)
     JuMP.@constraint(m, c^2 + d^2 <= a*b)
 end
 
 "a conic encoding of constraint: `c^2 + d^2 <= a*b`"
 function relaxation_complex_product_conic(m, a, b, c, d)
-    @assert (JuMP.getlowerbound(a) >= 0 && JuMP.getlowerbound(b) >= 0) || (JuMP.getupperbound(a) <= 0 && JuMP.getupperbound(b) <= 0)
-    JuMP.@constraint(m, JuMP.norm([(a - b); 2.0*c; 2.0*d]) <= (a + b))
+    @assert (JuMP.lower_bound(a) >= 0 && JuMP.lower_bound(b) >= 0) || (JuMP.upper_bound(a) <= 0 && JuMP.upper_bound(b) <= 0)
+    JuMP.@constraint(m, [a/sqrt(2), b/sqrt(2), c, d] in JuMP.RotatedSecondOrderCone())
 end
 
 """
 ```
-c^2 + d^2 <= a*b*JuMP.getupperbound(z)
-c^2 + d^2 <= JuMP.getupperbound(a)*b*JuMP.getupperbound(z)
-c^2 + d^2 <= a*JuMP.getupperbound(b)*z
+c^2 + d^2 <= a*b*JuMP.upper_bound(z)
+c^2 + d^2 <= JuMP.upper_bound(a)*b*JuMP.upper_bound(z)
+c^2 + d^2 <= a*JuMP.upper_bound(b)*z
 ```
 """
 function relaxation_complex_product_on_off(m, a, b, c, d, z)
-    @assert JuMP.getlowerbound(c) <= 0 && JuMP.getupperbound(c) >= 0
-    @assert JuMP.getlowerbound(d) <= 0 && JuMP.getupperbound(d) >= 0
+    @assert JuMP.lower_bound(c) <= 0 && JuMP.upper_bound(c) >= 0
+    @assert JuMP.lower_bound(d) <= 0 && JuMP.upper_bound(d) >= 0
     # assume c and d are already linked to z in other constraints
     # and will be forced to 0 when z is 0
 
-    a_ub = JuMP.getupperbound(a)
-    b_ub = JuMP.getupperbound(b)
-    z_ub = JuMP.getupperbound(z)
+    a_ub = JuMP.upper_bound(a)
+    b_ub = JuMP.upper_bound(b)
+    z_ub = JuMP.upper_bound(z)
 
     JuMP.@constraint(m, c^2 + d^2 <= a*b*z_ub)
     JuMP.@constraint(m, c^2 + d^2 <= a_ub*b*z)
@@ -33,12 +33,12 @@ function relaxation_complex_product_on_off(m, a, b, c, d, z)
 end
 
 
-"`x - JuMP.getupperbound(x)*(1-z) <= y <= x - JuMP.getlowerbound(x)*(1-z)`"
+"`x - JuMP.upper_bound(x)*(1-z) <= y <= x - JuMP.lower_bound(x)*(1-z)`"
 function relaxation_equality_on_off(m, x, y, z)
     # assumes 0 is in the domain of y when z is 0
 
-    x_ub = JuMP.getupperbound(x)
-    x_lb = JuMP.getlowerbound(x)
+    x_ub = JuMP.upper_bound(x)
+    x_lb = JuMP.lower_bound(x)
 
     JuMP.@constraint(m, y >= x - x_ub*(1-z))
     JuMP.@constraint(m, y <= x - x_lb*(1-z))
@@ -49,12 +49,12 @@ end
 general relaxation of a square term
 
 ```
-x^2 <= y <= (JuMP.getupperbound(x)+JuMP.getlowerbound(x))*x - JuMP.getupperbound(x)*JuMP.getlowerbound(x)
+x^2 <= y <= (JuMP.upper_bound(x)+JuMP.lower_bound(x))*x - JuMP.upper_bound(x)*JuMP.lower_bound(x)
 ```
 """
 function relaxation_sqr(m, x, y)
     JuMP.@constraint(m, y >= x^2)
-    JuMP.@constraint(m, y <= (JuMP.getupperbound(x)+JuMP.getlowerbound(x))*x - JuMP.getupperbound(x)*JuMP.getlowerbound(x))
+    JuMP.@constraint(m, y <= (JuMP.upper_bound(x)+JuMP.lower_bound(x))*x - JuMP.upper_bound(x)*JuMP.lower_bound(x))
 end
 
 
@@ -62,17 +62,17 @@ end
 general relaxation of binlinear term (McCormick)
 
 ```
-z >= JuMP.getlowerbound(x)*y + JuMP.getlowerbound(y)*x - JuMP.getlowerbound(x)*JuMP.getlowerbound(y)
-z >= JuMP.getupperbound(x)*y + JuMP.getupperbound(y)*x - JuMP.getupperbound(x)*JuMP.getupperbound(y)
-z <= JuMP.getlowerbound(x)*y + JuMP.getupperbound(y)*x - JuMP.getlowerbound(x)*JuMP.getupperbound(y)
-z <= JuMP.getupperbound(x)*y + JuMP.getlowerbound(y)*x - JuMP.getupperbound(x)*JuMP.getlowerbound(y)
+z >= JuMP.lower_bound(x)*y + JuMP.lower_bound(y)*x - JuMP.lower_bound(x)*JuMP.lower_bound(y)
+z >= JuMP.upper_bound(x)*y + JuMP.upper_bound(y)*x - JuMP.upper_bound(x)*JuMP.upper_bound(y)
+z <= JuMP.lower_bound(x)*y + JuMP.upper_bound(y)*x - JuMP.lower_bound(x)*JuMP.upper_bound(y)
+z <= JuMP.upper_bound(x)*y + JuMP.lower_bound(y)*x - JuMP.upper_bound(x)*JuMP.lower_bound(y)
 ```
 """
 function relaxation_product(m, x, y, z)
-    x_ub = JuMP.getupperbound(x)
-    x_lb = JuMP.getlowerbound(x)
-    y_ub = JuMP.getupperbound(y)
-    y_lb = JuMP.getlowerbound(y)
+    x_ub = JuMP.upper_bound(x)
+    x_lb = JuMP.lower_bound(x)
+    y_ub = JuMP.upper_bound(y)
+    y_lb = JuMP.lower_bound(y)
 
     JuMP.@constraint(m, z >= x_lb*y + y_lb*x - x_lb*y_lb)
     JuMP.@constraint(m, z >= x_ub*y + y_ub*x - x_ub*y_ub)
@@ -86,14 +86,14 @@ On/Off variant of binlinear term (McCormick)
 requires that all variables (x,y,z) go to zero with ind
 """
 function relaxation_product_on_off(m, x, y, z, ind)
-    @assert JuMP.getlowerbound(x) <= 0 && JuMP.getupperbound(x) >= 0
-    @assert JuMP.getlowerbound(y) <= 0 && JuMP.getupperbound(y) >= 0
-    @assert JuMP.getlowerbound(z) <= 0 && JuMP.getupperbound(z) >= 0
+    @assert JuMP.lower_bound(x) <= 0 && JuMP.upper_bound(x) >= 0
+    @assert JuMP.lower_bound(y) <= 0 && JuMP.upper_bound(y) >= 0
+    @assert JuMP.lower_bound(z) <= 0 && JuMP.upper_bound(z) >= 0
 
-    x_ub = JuMP.getupperbound(x)
-    x_lb = JuMP.getlowerbound(x)
-    y_ub = JuMP.getupperbound(y)
-    y_lb = JuMP.getlowerbound(y)
+    x_ub = JuMP.upper_bound(x)
+    x_lb = JuMP.lower_bound(x)
+    y_ub = JuMP.upper_bound(y)
+    y_lb = JuMP.lower_bound(y)
 
     JuMP.@constraint(m, z >= x_lb*y + y_lb*x - ind*x_lb*y_lb)
     JuMP.@constraint(m, z >= x_ub*y + y_ub*x - ind*x_ub*y_ub)
@@ -106,28 +106,28 @@ end
 convex hull relaxation of trilinear term
 
 ```
-w₁ = JuMP.getlowerbound(x)*JuMP.getlowerbound(y)*JuMP.getlowerbound(z)
-w₂ = JuMP.getlowerbound(x)*JuMP.getlowerbound(y)*JuMP.getupperbound(z)
-w₃ = JuMP.getlowerbound(x)*JuMP.getupperbound(y)*JuMP.getlowerbound(z)
-w₄ = JuMP.getlowerbound(x)*JuMP.getupperbound(y)*JuMP.getupperbound(z)
-w₅ = JuMP.getupperbound(x)*JuMP.getlowerbound(y)*JuMP.getlowerbound(z)
-w₆ = JuMP.getupperbound(x)*JuMP.getlowerbound(y)*JuMP.getupperbound(z)
-w₇ = JuMP.getupperbound(x)*JuMP.getupperbound(y)*JuMP.getlowerbound(z)
-w₈ = JuMP.getupperbound(x)*JuMP.getupperbound(y)*JuMP.getupperbound(z)
+w₁ = JuMP.lower_bound(x)*JuMP.lower_bound(y)*JuMP.lower_bound(z)
+w₂ = JuMP.lower_bound(x)*JuMP.lower_bound(y)*JuMP.upper_bound(z)
+w₃ = JuMP.lower_bound(x)*JuMP.upper_bound(y)*JuMP.lower_bound(z)
+w₄ = JuMP.lower_bound(x)*JuMP.upper_bound(y)*JuMP.upper_bound(z)
+w₅ = JuMP.upper_bound(x)*JuMP.lower_bound(y)*JuMP.lower_bound(z)
+w₆ = JuMP.upper_bound(x)*JuMP.lower_bound(y)*JuMP.upper_bound(z)
+w₇ = JuMP.upper_bound(x)*JuMP.upper_bound(y)*JuMP.lower_bound(z)
+w₈ = JuMP.upper_bound(x)*JuMP.upper_bound(y)*JuMP.upper_bound(z)
 w = λ₁*w₁ + λ₂*w₂ + λ₃*w₃ + λ₄*w₄ + λ₅*w₅ + λ₆*w₆ + λ₇*w₇ + λ₈*w₈
-x = (λ₁ + λ₂ + λ₃ + λ₄)*JuMP.getlowerbound(x) + (λ₅ + λ₆ + λ₇ + λ₈)*JuMP.getupperbound(x)
-y = (λ₁ + λ₂ + λ₅ + λ₆)*JuMP.getlowerbound(x) + (λ₃ + λ₄ + λ₇ + λ₈)*JuMP.getupperbound(x)
-z = (λ₁ + λ₃ + λ₅ + λ₇)*JuMP.getlowerbound(x) + (λ₂ + λ₄ + λ₆ + λ₈)*JuMP.getupperbound(x)
+x = (λ₁ + λ₂ + λ₃ + λ₄)*JuMP.lower_bound(x) + (λ₅ + λ₆ + λ₇ + λ₈)*JuMP.upper_bound(x)
+y = (λ₁ + λ₂ + λ₅ + λ₆)*JuMP.lower_bound(x) + (λ₃ + λ₄ + λ₇ + λ₈)*JuMP.upper_bound(x)
+z = (λ₁ + λ₃ + λ₅ + λ₇)*JuMP.lower_bound(x) + (λ₂ + λ₄ + λ₆ + λ₈)*JuMP.upper_bound(x)
 λ₁ + λ₂ + λ₃ + λ₄ + λ₅ + λ₆ + λ₇ + λ₈ = 1
 ```
 """
 function relaxation_trilinear(m, x, y, z, w, lambda)
-    x_ub = JuMP.getupperbound(x)
-    x_lb = JuMP.getlowerbound(x)
-    y_ub = JuMP.getupperbound(y)
-    y_lb = JuMP.getlowerbound(y)
-    z_ub = JuMP.getupperbound(z)
-    z_lb = JuMP.getlowerbound(z)
+    x_ub = JuMP.upper_bound(x)
+    x_lb = JuMP.lower_bound(x)
+    y_ub = JuMP.upper_bound(y)
+    y_lb = JuMP.lower_bound(y)
+    z_ub = JuMP.upper_bound(z)
+    z_lb = JuMP.lower_bound(z)
 
 
     @assert length(lambda) == 8
