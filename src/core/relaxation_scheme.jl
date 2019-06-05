@@ -154,7 +154,7 @@ z = (λ₁ + λ₃ + λ₅ + λ₇)*JuMP.lower_bound(x) + (λ₂ + λ₄ + λ₆
 λ₁ + λ₂ + λ₃ + λ₄ + λ₅ + λ₆ + λ₇ + λ₈ = 1
 ```
 """
-function relaxation_trilinear(m::JuMP.Model, x::JuMP.VariableRef, y::JuMP.VariableRef, z::JuMP.VariableRef, w::JuMP.VariableRef, lambda::Vector{JuMP.VariableRef})
+function relaxation_trilinear(m::JuMP.Model, x::JuMP.VariableRef, y::JuMP.VariableRef, z::JuMP.VariableRef, w::JuMP.VariableRef, lambda)
     @assert length(lambda) == 8
 
     x_lb, x_ub = variable_domain(x)
