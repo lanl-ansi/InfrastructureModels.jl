@@ -4,6 +4,10 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.2.1
+- Added variable_domain function
+- Added types to relaxation schemes
+
 ### v0.2.0
 - Updated to JuMP v0.19 / MathOptInterface
 
