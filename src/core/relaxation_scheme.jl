@@ -1,6 +1,6 @@
 
 """
-Computes the valid domain of a given JuMP varibale taking into account bounds
+Computes the valid domain of a given JuMP variable taking into account bounds
 and the varaible's implicit bounds (e.g. binary).
 """
 function variable_domain(var::JuMP.VariableRef)
