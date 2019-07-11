@@ -4,6 +4,9 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.2.2
+- Fixed bug by adding Memento. quantifier to all logging statements
+
 ### v0.2.1
 - Added variable_domain function
 - Added types to relaxation schemes
