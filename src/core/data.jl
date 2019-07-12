@@ -4,7 +4,7 @@ export update_data!
 function update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
     if haskey(data, "per_unit") && haskey(new_data, "per_unit")
         if data["per_unit"] != new_data["per_unit"]
-            error("update_data requires datasets in the same units, try make_per_unit and make_mixed_units")
+            Memento.error(LOGGER, "update_data requires datasets in the same units, try make_per_unit and make_mixed_units")
         end
     else
         Memento.warn(LOGGER, "running update_data with data that does not include per_unit field, units may be incorrect")
@@ -36,7 +36,7 @@ ismultinetwork(data::Dict{String,<:Any}) = (haskey(data, "multinetwork") && data
 function replicate(sn_data::Dict{String,<:Any}, count::Int; global_keys::Set{String} = Set{String}())
     @assert count > 0
     if ismultinetwork(sn_data)
-        error("replicate can only be used on single networks")
+        Memento.error(LOGGER, "replicate can only be used on single networks")
     end
 
     if length(global_keys) <= 0
@@ -130,7 +130,7 @@ function summary(io::IO, data::Dict{String,<:Any};
     )
 
     if ismultinetwork(data)
-        error("summary does not yet support multinetwork data")
+        Memento.error(LOGGER, "summary does not yet support multinetwork data")
     end
 
     component_types = []
