@@ -1,5 +1,7 @@
 # InfrastructureModels.jl
 
+<img src="https://lanl-ansi.github.io/InfrastructureModels.jl/dev/assets/logo.svg" align="left" width="200" alt="InfrastructureModels logo">
+
 Release: [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://lanl-ansi.github.io/InfrastructureModels.jl/stable)
 
 Dev:
