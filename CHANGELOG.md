@@ -2,6 +2,9 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+- nothing
+
+### v0.3.0
 - Added @def macro
 - Added automatic export, #44 (breaking)
 - Added tools for working with time_series blocks
