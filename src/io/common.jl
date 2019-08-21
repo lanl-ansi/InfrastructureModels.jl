@@ -17,7 +17,7 @@ function arrays_to_dicts!(data::Dict{String,<:Any})
                 if !(haskey(dict, key))
                     dict[key] = item
                 else
-                    Memento.warn(LOGGER, "skipping component $(item["index"]) from the $(k) table because a component with the same id already exists")
+                    Memento.warn(_LOGGER, "skipping component $(item["index"]) from the $(k) table because a component with the same id already exists")
                 end
             end
             data[k] = dict

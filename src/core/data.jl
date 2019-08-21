@@ -1,13 +1,11 @@
-export update_data!
-
 "recursively applies new_data to data, overwriting information"
 function update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
     if haskey(data, "per_unit") && haskey(new_data, "per_unit")
         if data["per_unit"] != new_data["per_unit"]
-            Memento.error(LOGGER, "update_data requires datasets in the same units, try make_per_unit and make_mixed_units")
+            Memento.error(_LOGGER, "update_data requires datasets in the same units, try make_per_unit and make_mixed_units")
         end
     else
-        Memento.warn(LOGGER, "running update_data with data that does not include per_unit field, units may be incorrect")
+        Memento.warn(_LOGGER, "running update_data with data that does not include per_unit field, units may be incorrect")
     end
     _update_data!(data, new_data)
 end
@@ -36,15 +34,15 @@ ismultinetwork(data::Dict{String,<:Any}) = (haskey(data, "multinetwork") && data
 function replicate(sn_data::Dict{String,<:Any}, count::Int; global_keys::Set{String} = Set{String}())
     @assert count > 0
     if ismultinetwork(sn_data)
-        Memento.error(LOGGER, "replicate can only be used on single networks")
+        Memento.error(_LOGGER, "replicate can only be used on single networks")
     end
 
     if length(global_keys) <= 0
-        Memento.warn(LOGGER, "deprecation warning, calls to replicate should explicitly specify a set of global_keys")
+        Memento.warn(_LOGGER, "deprecation warning, calls to replicate should explicitly specify a set of global_keys")
         # old default
         for (k,v) in sn_data
              if !(typeof(v) <: Dict)
-                Memento.warn(LOGGER, "adding global key $(k)")
+                Memento.warn(_LOGGER, "adding global key $(k)")
                 push!(global_keys, k)
              end
         end
@@ -92,7 +90,7 @@ component_table(data::Dict{String,<:Any}, component::String, field::String) = co
 function _component_table(data::Dict{String,<:Any}, component::String, fields::Vector{String})
     comps = data[component]
     if !_iscomponentdict(comps)
-        Memento.error(LOGGER, "$(component) does not appear to refer to a component list")
+        Memento.error(_LOGGER, "$(component) does not appear to refer to a component list")
     end
 
     items = []
@@ -130,7 +128,7 @@ function summary(io::IO, data::Dict{String,<:Any};
     )
 
     if ismultinetwork(data)
-        Memento.error(LOGGER, "summary does not yet support multinetwork data")
+        Memento.error(_LOGGER, "summary does not yet support multinetwork data")
     end
 
     component_types = []
@@ -326,7 +324,7 @@ function compare_dict(d1, d2)
         v2 = d2[k1]
 
         if isa(v1, Number)
-            if !compare_numbers(v1, v2)
+            if !_compare_numbers(v1, v2)
                 return false
             end
         elseif isa(v1, Array)
@@ -335,7 +333,7 @@ function compare_dict(d1, d2)
             end
             for i in 1:length(v1)
                 if isa(v1[i], Number)
-                    if !compare_numbers(v1[i], v2[i])
+                    if !_compare_numbers(v1[i], v2[i])
                         return false
                     end
                 else
@@ -366,7 +364,7 @@ function Base.isapprox(a::Any, b::Any; kwargs...)
 end
 
 "tests if two numbers are equal, up to floating point precision"
-function compare_numbers(v1, v2)
+function _compare_numbers(v1, v2)
     if isnan(v1)
         #println("1.1")
         if !isnan(v2)

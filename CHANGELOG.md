@@ -2,7 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Added automatic export (breaking)
 
 ### v0.2.2
 - Fixed bug by adding Memento. quantifier to all logging statements

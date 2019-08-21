@@ -6,8 +6,6 @@
 
 # this could benefit from a much more robust parser
 
-export parse_matlab_file, parse_matlab_string
-
 function parse_matlab_file(file_string::String; kwargs...)
     data_string = read(open(file_string),String)
     return parse_matlab_string(data_string; kwargs...)
@@ -33,35 +31,35 @@ function parse_matlab_string(data_string::String; extended=false)
         end
 
         if occursin("function", line)
-            func, value = extract_matlab_assignment(line)
+            func, value = _extract_matlab_assignment(line)
             struct_name = strip(replace(func, "function" => ""))
             function_name = value
         elseif occursin("=",line)
             if struct_name != nothing && !occursin("$(struct_name).", line)
-                Memento.warn(LOGGER, "assignments are expected to be made to \"$(struct_name)\" but given: $(line)")
+                Memento.warn(_LOGGER, "assignments are expected to be made to \"$(struct_name)\" but given: $(line)")
             end
 
             if occursin("[", line)
-                matrix_dict = parse_matlab_matrix(data_lines, index)
+                matrix_dict = _parse_matlab_matrix(data_lines, index)
                 matlab_dict[matrix_dict["name"]] = matrix_dict["data"]
                 if haskey(matrix_dict, "column_names")
                     column_names[matrix_dict["name"]] = matrix_dict["column_names"]
                 end
                 index = index + matrix_dict["line_count"]-1
             elseif occursin("{", line)
-                cell_dict = parse_matlab_cells(data_lines, index)
+                cell_dict = _parse_matlab_cells(data_lines, index)
                 matlab_dict[cell_dict["name"]] = cell_dict["data"]
                 if haskey(cell_dict, "column_names")
                     column_names[cell_dict["name"]] = cell_dict["column_names"]
                 end
                 index = index + cell_dict["line_count"]-1
             else
-                name, value = extract_matlab_assignment(line)
-                value = type_value(value)
+                name, value = _extract_matlab_assignment(line)
+                value = _type_value(value)
                 matlab_dict[name] = value
             end
         else
-            Memento.warn(LOGGER, "Matlab parser skipping the following line:\n  $(line)")
+            Memento.warn(_LOGGER, "Matlab parser skipping the following line:\n  $(line)")
         end
 
         index += 1
@@ -76,7 +74,7 @@ end
 
 
 "breaks up matlab strings of the form 'name = value;'"
-function extract_matlab_assignment(string::AbstractString)
+function _extract_matlab_assignment(string::AbstractString)
     statement = split(string, ';')[1]
     statement_parts = split(statement, '=')
     @assert(length(statement_parts) == 2)
@@ -87,7 +85,7 @@ end
 
 
 "Attempts to determine the type of a string extracted from a matlab file"
-function type_value(value_string::AbstractString)
+function _type_value(value_string::AbstractString)
     value_string = strip(value_string)
 
     if occursin("'", value_string) # value is a string
@@ -95,9 +93,9 @@ function type_value(value_string::AbstractString)
     else
         # if value is a float
         if occursin(".", value_string) || occursin("e", value_string)
-            value = check_type(Float64, value_string)
+            value = _check_type(Float64, value_string)
         else # otherwise assume it is an int
-            value = check_type(Int, value_string)
+            value = _check_type(Int, value_string)
         end
     end
 
@@ -105,27 +103,27 @@ function type_value(value_string::AbstractString)
 end
 
 "Attempts to determine the type of an array of strings extracted from a matlab file"
-function type_array(string_array::Vector{T}) where {T <: AbstractString}
+function _type_array(string_array::Vector{T}) where {T <: AbstractString}
     value_string = [strip(value_string) for value_string in string_array]
 
     return if any(occursin("'",value_string) for value_string in string_array)
         [strip(value_string, '\'') for value_string in string_array]
     elseif any(occursin(".", value_string) || occursin("e", value_string) for value_string in string_array)
-        [check_type(Float64, value_string) for value_string in string_array]
+        [_check_type(Float64, value_string) for value_string in string_array]
     else # otherwise assume it is an int
-        [check_type(Int, value_string) for value_string in string_array]
+        [_check_type(Int, value_string) for value_string in string_array]
     end
 end
 
 
 ""
-parse_matlab_cells(lines, index) = parse_matlab_data(lines, index, '{', '}')
+_parse_matlab_cells(lines, index) = _parse_matlab_data(lines, index, '{', '}')
 
 ""
-parse_matlab_matrix(lines, index) = parse_matlab_data(lines, index, '[', ']')
+_parse_matlab_matrix(lines, index) = _parse_matlab_data(lines, index, '[', ']')
 
 ""
-function parse_matlab_data(lines, index, start_char, end_char)
+function _parse_matlab_data(lines, index, start_char, end_char)
     last_index = length(lines)
     line_count = 0
     columns = -1
@@ -167,7 +165,7 @@ function parse_matlab_data(lines, index, start_char, end_char)
     end
 
     #print(matrix_body_lines)
-    matrix_body_lines = [add_line_delimiter(line, start_char, end_char) for line in matrix_body_lines]
+    matrix_body_lines = [_add_line_delimiter(line, start_char, end_char) for line in matrix_body_lines]
     #print(matrix_body_lines)
 
     matrix_body = join(matrix_body_lines, ' ')
@@ -183,12 +181,12 @@ function parse_matlab_data(lines, index, start_char, end_char)
         if columns < 0
             columns = length(row_items)
         elseif columns != length(row_items)
-            Memento.error(LOGGER, "matrix parsing error, inconsistent number of items in each row\n$(row)")
+            Memento.error(_LOGGER, "matrix parsing error, inconsistent number of items in each row\n$(row)")
         end
     end
 
     rows = length(matrix)
-    typed_columns = [type_array([ matrix[r][c] for r in 1:rows ]) for c in 1:columns]
+    typed_columns = [_type_array([ matrix[r][c] for r in 1:rows ]) for c in 1:columns]
     for r in 1:rows
         matrix[r] = [typed_columns[c][r] for c in 1:columns]
     end
@@ -201,10 +199,10 @@ function parse_matlab_data(lines, index, start_char, end_char)
         column_names_string = replace(column_names_string, "%column_names%" => "")
         column_names = split(column_names_string)
         if length(matrix[1]) != length(column_names)
-            Memento.error(LOGGER, "column name parsing error, data rows $(length(matrix[1])), column names $(length(column_names)) \n$(column_names)")
+            Memento.error(_LOGGER, "column name parsing error, data rows $(length(matrix[1])), column names $(length(column_names)) \n$(column_names)")
         end
         if any([column_name == "index" for column_name in column_names])
-            Memento.error(LOGGER, "column name parsing error, \"index\" is a reserved column name \n$(column_names)")
+            Memento.error(_LOGGER, "column name parsing error, \"index\" is a reserved column name \n$(column_names)")
         end
         matrix_dict["column_names"] = column_names
     end
@@ -258,7 +256,7 @@ function split_line(mp_line::AbstractString)
 end
 
 ""
-function add_line_delimiter(mp_line::AbstractString, start_char, end_char)
+function _add_line_delimiter(mp_line::AbstractString, start_char, end_char)
     if strip(mp_line) == string(start_char)
         return mp_line
     end
@@ -280,7 +278,7 @@ end
 
 
 "Checks if the given value is of a given type, if not tries to make it that type"
-function check_type(typ, value)
+function _check_type(typ, value)
     if isa(value, typ)
         return value
     elseif isa(value, String) || isa(value, SubString)
@@ -288,7 +286,7 @@ function check_type(typ, value)
             value = parse(typ, value)
             return value
         catch e
-            Memento.error(LOGGER, "parsing error, the matlab string \"$(value)\" can not be parsed to $(typ) data")
+            Memento.error(_LOGGER, "parsing error, the matlab string \"$(value)\" can not be parsed to $(typ) data")
             rethrow(e)
         end
     else
@@ -296,7 +294,7 @@ function check_type(typ, value)
             value = typ(value)
             return value
         catch e
-            Memento.error(LOGGER, "parsing error, the matlab value $(value) of type $(typeof(value)) can not be parsed to $(typ) data")
+            Memento.error(_LOGGER, "parsing error, the matlab value $(value) of type $(typeof(value)) can not be parsed to $(typ) data")
             rethrow(e)
         end
     end
