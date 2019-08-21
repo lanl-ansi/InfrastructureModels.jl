@@ -215,11 +215,11 @@ seed!(0)
             InfrastructureModels.relaxation_equality_on_off(rm, rx, ry, rz)
             rstatus = JuMP.optimize!(rm)
 
-            @test(isapprox(JuMP.getvalue(z), 0))
-            @test(isapprox(JuMP.getvalue(rz), 0))
+            @test(isapprox(JuMP.value(z), 0))
+            @test(isapprox(JuMP.value(rz), 0))
 
-            #@test(isapprox(JuMP.getvalue(y), y_lb))
-            #@test(isapprox(JuMP.getvalue(ry), y_lb))
+            #@test(isapprox(JuMP.value(y), y_lb))
+            #@test(isapprox(JuMP.value(ry), y_lb))
 
             @test(JuMP.objective_value(rm) <= JuMP.objective_value(m) + tolerance*100)
             @test(rstatus == status)
@@ -233,11 +233,11 @@ seed!(0)
             @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance*100)
             @test(rstatus == status)
 
-            @test(isapprox(JuMP.getvalue(z), 1))
-            @test(isapprox(JuMP.getvalue(rz), 1))
+            @test(isapprox(JuMP.value(z), 1))
+            @test(isapprox(JuMP.value(rz), 1))
 
-            #@test(isapprox(JuMP.getvalue(y), x_ub))
-            #@test(isapprox(JuMP.getvalue(ry), x_ub))
+            #@test(isapprox(JuMP.value(y), x_ub))
+            #@test(isapprox(JuMP.value(ry), x_ub))
         end
     end
 
@@ -276,8 +276,8 @@ seed!(0)
             @test(JuMP.objective_value(rm) <= JuMP.objective_value(m) + tolerance*100)
             @test(rstatus == status)
 
-            @test(isapprox(JuMP.getvalue(ind), 0))
-            @test(isapprox(JuMP.getvalue(rind), 0))
+            @test(isapprox(JuMP.value(ind), 0))
+            @test(isapprox(JuMP.value(rind), 0))
 
             JuMP.set_objective_sense(m, MOI.MAX_SENSE)
             JuMP.set_objective_sense(rm, MOI.MAX_SENSE)
@@ -288,8 +288,8 @@ seed!(0)
             @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance*100)
             @test(rstatus == status)
 
-            @test(isapprox(JuMP.getvalue(ind), 1))
-            @test(isapprox(JuMP.getvalue(rind), 1))
+            @test(isapprox(JuMP.value(ind), 1))
+            @test(isapprox(JuMP.value(rind), 1))
         end
     end
 end

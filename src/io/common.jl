@@ -31,7 +31,7 @@ function row_to_typed_dict(row_data, columns)
     for (i,v) in enumerate(row_data)
         if i <= length(columns)
             name, typ = columns[i]
-            dict_data[name] = check_type(typ, v)
+            dict_data[name] = _check_type(typ, v)
         else
             dict_data["col_$(i)"] = v
         end
