@@ -4,6 +4,7 @@ InfrastructureModels.jl Change Log
 ### Staged
 - Added @def macro
 - Added automatic export, #44 (breaking)
+- Added fixed variants of on/off constraints
 - Made global_keys required by replicate, #25 (breaking)
 
 ### v0.2.2

@@ -44,13 +44,8 @@ function relaxation_complex_product_conic(m::JuMP.Model, a::JuMP.VariableRef, b:
     JuMP.@constraint(m, [a/sqrt(2), b/sqrt(2), c, d] in JuMP.RotatedSecondOrderCone())
 end
 
-"""
-```
-c^2 + d^2 <= a*b*JuMP.upper_bound(z)
-c^2 + d^2 <= JuMP.upper_bound(a)*b*JuMP.upper_bound(z)
-c^2 + d^2 <= a*JuMP.upper_bound(b)*z
-```
-"""
+
+"on/off variant of relaxation_complex_product controlled by indicator variable z"
 function relaxation_complex_product_on_off(m::JuMP.Model, a::JuMP.VariableRef, b::JuMP.VariableRef, c::JuMP.VariableRef, d::JuMP.VariableRef, z::JuMP.VariableRef)
     a_lb, a_ub = variable_domain(a)
     b_lb, b_ub = variable_domain(b)
@@ -68,14 +63,39 @@ function relaxation_complex_product_on_off(m::JuMP.Model, a::JuMP.VariableRef, b
     JuMP.@constraint(m, c^2 + d^2 <= a*b_ub*z)
 end
 
+"on/off variant of relaxation_complex_product controlled by indicator variable z, variant with a fixed value of z"
+function relaxation_complex_product_on_off(m::JuMP.Model, a::JuMP.VariableRef, b::JuMP.VariableRef, c::JuMP.VariableRef, d::JuMP.VariableRef, z::Real)
+    @assert isapprox(z, 1.0) || isapprox(z, 0.0)
 
-"`x - JuMP.upper_bound(x)*(1-z) <= y <= x - JuMP.lower_bound(x)*(1-z)`"
+    if isapprox(z, 1.0)
+        relaxation_complex_product(m, a, b, c, d)
+    else
+        @assert isapprox(z, 0.0)
+        JuMP.@constraint(m, c == 0.0)
+        JuMP.@constraint(m, d == 0.0)
+    end
+end
+
+
+
+"an on/off variant of x == y, controlled by the indicator variable z"
 function relaxation_equality_on_off(m::JuMP.Model, x::JuMP.VariableRef, y::JuMP.VariableRef, z::JuMP.VariableRef)
     # assumes 0 is in the domain of y when z is 0
     x_lb, x_ub = variable_domain(x)
 
     JuMP.@constraint(m, y >= x - x_ub*(1-z))
     JuMP.@constraint(m, y <= x - x_lb*(1-z))
+end
+
+"an on/off variant of x == y, controlled by the indicator variable z, a variant for fixed z"
+function relaxation_equality_on_off(m::JuMP.Model, x::JuMP.VariableRef, y::JuMP.VariableRef, z::Real)
+    @assert isapprox(z, 1.0) || isapprox(z, 0.0)
+
+    if isapprox(z, 1.0)
+        JuMP.@constraint(m, x == y)
+    else
+        @assert isapprox(z, 0.0)
+    end
 end
 
 
@@ -116,7 +136,7 @@ end
 
 
 """
-On/Off variant of binlinear term (McCormick)
+On/Off variant of a relaxed binlinear term (McCormick)
 requires that all variables (x,y,z) go to zero with ind
 """
 function relaxation_product_on_off(m::JuMP.Model, x::JuMP.VariableRef, y::JuMP.VariableRef, z::JuMP.VariableRef, ind::JuMP.VariableRef)
@@ -132,6 +152,23 @@ function relaxation_product_on_off(m::JuMP.Model, x::JuMP.VariableRef, y::JuMP.V
     JuMP.@constraint(m, z >= x_ub*y + y_ub*x - ind*x_ub*y_ub)
     JuMP.@constraint(m, z <= x_lb*y + y_ub*x - ind*x_lb*y_ub)
     JuMP.@constraint(m, z <= x_ub*y + y_lb*x - ind*x_ub*y_lb)
+end
+
+
+"""
+On/Off variant of a relaxed binlinear term (McCormick)
+requires that all variables (x,y,z) go to zero with ind
+Variant where ind is a fixed value and not a variable
+"""
+function relaxation_product_on_off(m::JuMP.Model, x::JuMP.VariableRef, y::JuMP.VariableRef, z::JuMP.VariableRef, ind::Real)
+    @assert isapprox(ind, 1.0) || isapprox(ind, 0.0)
+
+    if isapprox(ind, 1.0)
+        relaxation_product(m, x, y, z)
+    else
+        @assert isapprox(ind, 0.0)
+        JuMP.@constraint(m, z == 0.0)
+    end
 end
 
 

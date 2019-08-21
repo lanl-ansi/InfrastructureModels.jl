@@ -199,48 +199,89 @@ seed!(0)
             x_lb, x_ub = 10*rand(2).*[-1,1]
             y_lb, y_ub = 2.0*x_lb, 2.0*x_ub
 
-            m = JuMP.Model(juniper_solver)
-            JuMP.@variable(m, x_lb <= x <= x_ub)
-            JuMP.@variable(m, y_lb <= y <= y_ub)
-            JuMP.@variable(m, z, binary=true)
-            JuMP.@objective(m, Min, 10000*z + y)
-            JuMP.@NLconstraint(m, z*x == z*y)
-            status = JuMP.optimize!(m)
+            @testset "z fixed on" begin
+                z = 1.0
+                m = JuMP.Model(ipopt_solver)
+                JuMP.@variable(m, x_lb <= x <= x_ub)
+                JuMP.@variable(m, y_lb <= y <= y_ub)
+                JuMP.@objective(m, Min, 10000*z + y)
+                JuMP.@NLconstraint(m, z*x == z*y)
+                status = JuMP.optimize!(m)
 
-            rm = JuMP.Model(juniper_solver)
-            JuMP.@variable(rm, x_lb <= rx <= x_ub)
-            JuMP.@variable(rm, y_lb <= ry <= y_ub)
-            JuMP.@variable(rm, rz, binary=true)
-            JuMP.@NLobjective(rm, Min, 10000*rz + ry)
-            InfrastructureModels.relaxation_equality_on_off(rm, rx, ry, rz)
-            rstatus = JuMP.optimize!(rm)
+                rm = JuMP.Model(ipopt_solver)
+                JuMP.@variable(rm, x_lb <= rx <= x_ub)
+                JuMP.@variable(rm, y_lb <= ry <= y_ub)
+                JuMP.@NLobjective(rm, Min, 10000*z + ry)
+                InfrastructureModels.relaxation_equality_on_off(rm, rx, ry, z)
+                rstatus = JuMP.optimize!(rm)
 
-            @test(isapprox(JuMP.value(z), 0))
-            @test(isapprox(JuMP.value(rz), 0))
+                @test isapprox(JuMP.objective_value(rm), JuMP.objective_value(m))
+                @test(rstatus == status)
+            end
 
-            #@test(isapprox(JuMP.value(y), y_lb))
-            #@test(isapprox(JuMP.value(ry), y_lb))
+            @testset "z fixed off" begin
+                z = 0.0
+                m = JuMP.Model(ipopt_solver)
+                JuMP.@variable(m, x_lb <= x <= x_ub)
+                JuMP.@variable(m, y_lb <= y <= y_ub)
+                JuMP.@objective(m, Min, 10000*z + y)
+                JuMP.@NLconstraint(m, z*x == z*y)
+                status = JuMP.optimize!(m)
 
-            @test(JuMP.objective_value(rm) <= JuMP.objective_value(m) + tolerance*100)
-            @test(rstatus == status)
+                rm = JuMP.Model(ipopt_solver)
+                JuMP.@variable(rm, x_lb <= rx <= x_ub)
+                JuMP.@variable(rm, y_lb <= ry <= y_ub)
+                JuMP.@NLobjective(rm, Min, 10000*z + ry)
+                InfrastructureModels.relaxation_equality_on_off(rm, rx, ry, z)
+                rstatus = JuMP.optimize!(rm)
 
-            JuMP.set_objective_sense(m, MOI.MAX_SENSE)
-            JuMP.set_objective_sense(rm, MOI.MAX_SENSE)
+                @test isapprox(JuMP.objective_value(rm), JuMP.objective_value(m))
+                @test(rstatus == status)
+            end
 
-            status = JuMP.optimize!(m)
-            rstatus = JuMP.optimize!(rm)
+            @testset "z variable" begin
+                m = JuMP.Model(juniper_solver)
+                JuMP.@variable(m, x_lb <= x <= x_ub)
+                JuMP.@variable(m, y_lb <= y <= y_ub)
+                JuMP.@variable(m, z, binary=true)
+                JuMP.@objective(m, Min, 10000*z + y)
+                JuMP.@NLconstraint(m, z*x == z*y)
+                status = JuMP.optimize!(m)
 
-            @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance*100)
-            @test(rstatus == status)
+                rm = JuMP.Model(juniper_solver)
+                JuMP.@variable(rm, x_lb <= rx <= x_ub)
+                JuMP.@variable(rm, y_lb <= ry <= y_ub)
+                JuMP.@variable(rm, rz, binary=true)
+                JuMP.@NLobjective(rm, Min, 10000*rz + ry)
+                InfrastructureModels.relaxation_equality_on_off(rm, rx, ry, rz)
+                rstatus = JuMP.optimize!(rm)
 
-            @test(isapprox(JuMP.value(z), 1))
-            @test(isapprox(JuMP.value(rz), 1))
+                @test(isapprox(JuMP.value(z), 0))
+                @test(isapprox(JuMP.value(rz), 0))
 
-            #@test(isapprox(JuMP.value(y), x_ub))
-            #@test(isapprox(JuMP.value(ry), x_ub))
+                #@test(isapprox(JuMP.value(y), y_lb))
+                #@test(isapprox(JuMP.value(ry), y_lb))
+
+                @test(JuMP.objective_value(rm) <= JuMP.objective_value(m) + tolerance*100)
+                @test(rstatus == status)
+
+                JuMP.set_objective_sense(m, MOI.MAX_SENSE)
+                JuMP.set_objective_sense(rm, MOI.MAX_SENSE)
+
+                status = JuMP.optimize!(m)
+                rstatus = JuMP.optimize!(rm)
+
+                @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance*100)
+                @test(rstatus == status)
+
+                @test(isapprox(JuMP.value(z), 1))
+                @test(isapprox(JuMP.value(rz), 1))
+
+                #@test(isapprox(JuMP.value(y), x_ub))
+                #@test(isapprox(JuMP.value(ry), x_ub))
+            end
         end
     end
-
 
     @testset "relaxation_product_on_off" begin
         for r in 1:replicates
@@ -249,49 +290,202 @@ seed!(0)
             m = max(-x_lb, x_ub, -y_lb, y_ub)
             z_lb, z_ub = -m^2, m^2
 
-            m = JuMP.Model(juniper_solver)
-            JuMP.@variable(m, x_lb <= x <= x_ub)
-            JuMP.@variable(m, y_lb <= y <= y_ub)
-            JuMP.@variable(m, z_lb <= z <= z_ub)
-            JuMP.@variable(m, ind, binary=true)
-            JuMP.@objective(m, Min, 10000*ind + z)
-            JuMP.@NLconstraint(m, x*y == ind*z)
-            JuMP.@NLconstraint(m, z_lb*ind <= z)
-            JuMP.@NLconstraint(m, z_ub*ind >= z)
-            status = JuMP.optimize!(m)
+            @testset "ind fixed on" begin
+                ind = 1.0
 
-            rm = JuMP.Model(juniper_solver)
-            JuMP.@variable(rm, x_lb <= rx <= x_ub)
-            JuMP.@variable(rm, y_lb <= ry <= y_ub)
-            JuMP.@variable(rm, z_lb <= rz <= z_ub)
-            JuMP.@variable(rm, rind, binary=true)
-            JuMP.@NLobjective(rm, Min, 10000*rind + rz)
-            InfrastructureModels.relaxation_product_on_off(rm, rx, ry, rz, rind)
-            JuMP.@NLconstraint(rm, y_lb*rind <= ry)
-            JuMP.@NLconstraint(rm, y_ub*rind >= ry)
-            JuMP.@NLconstraint(rm, x_lb*rind <= rx)
-            JuMP.@NLconstraint(rm, x_ub*rind >= rx)
-            rstatus = JuMP.optimize!(rm)
+                m = JuMP.Model(ipopt_solver)
+                JuMP.@variable(m, x_lb <= x <= x_ub)
+                JuMP.@variable(m, y_lb <= y <= y_ub)
+                JuMP.@variable(m, z_lb <= z <= z_ub)
+                JuMP.@objective(m, Min, 10000*ind + z)
+                JuMP.@NLconstraint(m, x*y == ind*z)
+                JuMP.@NLconstraint(m, z_lb*ind <= z)
+                JuMP.@NLconstraint(m, z_ub*ind >= z)
+                status = JuMP.optimize!(m)
 
-            @test(JuMP.objective_value(rm) <= JuMP.objective_value(m) + tolerance*100)
-            @test(rstatus == status)
+                rm = JuMP.Model(ipopt_solver)
+                JuMP.@variable(rm, x_lb <= rx <= x_ub)
+                JuMP.@variable(rm, y_lb <= ry <= y_ub)
+                JuMP.@variable(rm, z_lb <= rz <= z_ub)
+                JuMP.@NLobjective(rm, Min, 10000*ind + rz)
+                InfrastructureModels.relaxation_product_on_off(rm, rx, ry, rz, ind)
+                JuMP.@NLconstraint(rm, y_lb*ind <= ry)
+                JuMP.@NLconstraint(rm, y_ub*ind >= ry)
+                JuMP.@NLconstraint(rm, x_lb*ind <= rx)
+                JuMP.@NLconstraint(rm, x_ub*ind >= rx)
+                rstatus = JuMP.optimize!(rm)
 
-            @test(isapprox(JuMP.value(ind), 0))
-            @test(isapprox(JuMP.value(rind), 0))
+                @test isapprox(JuMP.objective_value(rm), JuMP.objective_value(m), atol=1e0)
+                @test(rstatus == status)
+            end
 
-            JuMP.set_objective_sense(m, MOI.MAX_SENSE)
-            JuMP.set_objective_sense(rm, MOI.MAX_SENSE)
+            @testset "ind fixed off" begin
+                ind = 0.0
 
-            status = JuMP.optimize!(m)
-            rstatus = JuMP.optimize!(rm)
+                m = JuMP.Model(ipopt_solver)
+                JuMP.@variable(m, x_lb <= x <= x_ub)
+                JuMP.@variable(m, y_lb <= y <= y_ub)
+                JuMP.@variable(m, z_lb <= z <= z_ub)
+                JuMP.@objective(m, Min, 10000*ind + z)
+                JuMP.@NLconstraint(m, x*y == ind*z)
+                JuMP.@NLconstraint(m, z_lb*ind <= z)
+                JuMP.@NLconstraint(m, z_ub*ind >= z)
+                status = JuMP.optimize!(m)
 
-            @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance*100)
-            @test(rstatus == status)
+                rm = JuMP.Model(ipopt_solver)
+                JuMP.@variable(rm, x_lb <= rx <= x_ub)
+                JuMP.@variable(rm, y_lb <= ry <= y_ub)
+                JuMP.@variable(rm, z_lb <= rz <= z_ub)
+                JuMP.@NLobjective(rm, Min, 10000*ind + rz)
+                InfrastructureModels.relaxation_product_on_off(rm, rx, ry, rz, ind)
+                JuMP.@NLconstraint(rm, y_lb*ind <= ry)
+                JuMP.@NLconstraint(rm, y_ub*ind >= ry)
+                JuMP.@NLconstraint(rm, x_lb*ind <= rx)
+                JuMP.@NLconstraint(rm, x_ub*ind >= rx)
+                rstatus = JuMP.optimize!(rm)
 
-            @test(isapprox(JuMP.value(ind), 1))
-            @test(isapprox(JuMP.value(rind), 1))
+                @test isapprox(JuMP.objective_value(rm), JuMP.objective_value(m), atol=1e-6)
+                @test(rstatus == status)
+            end
+
+            @testset "ind variable" begin
+                m = JuMP.Model(juniper_solver)
+                JuMP.@variable(m, x_lb <= x <= x_ub)
+                JuMP.@variable(m, y_lb <= y <= y_ub)
+                JuMP.@variable(m, z_lb <= z <= z_ub)
+                JuMP.@variable(m, ind, binary=true)
+                JuMP.@objective(m, Min, 10000*ind + z)
+                JuMP.@NLconstraint(m, x*y == ind*z)
+                JuMP.@NLconstraint(m, z_lb*ind <= z)
+                JuMP.@NLconstraint(m, z_ub*ind >= z)
+                status = JuMP.optimize!(m)
+
+                rm = JuMP.Model(juniper_solver)
+                JuMP.@variable(rm, x_lb <= rx <= x_ub)
+                JuMP.@variable(rm, y_lb <= ry <= y_ub)
+                JuMP.@variable(rm, z_lb <= rz <= z_ub)
+                JuMP.@variable(rm, rind, binary=true)
+                JuMP.@NLobjective(rm, Min, 10000*rind + rz)
+                InfrastructureModels.relaxation_product_on_off(rm, rx, ry, rz, rind)
+                JuMP.@NLconstraint(rm, y_lb*rind <= ry)
+                JuMP.@NLconstraint(rm, y_ub*rind >= ry)
+                JuMP.@NLconstraint(rm, x_lb*rind <= rx)
+                JuMP.@NLconstraint(rm, x_ub*rind >= rx)
+                rstatus = JuMP.optimize!(rm)
+
+                @test(JuMP.objective_value(rm) <= JuMP.objective_value(m) + tolerance*100)
+                @test(rstatus == status)
+
+                @test(isapprox(JuMP.value(ind), 0))
+                @test(isapprox(JuMP.value(rind), 0))
+
+                JuMP.set_objective_sense(m, MOI.MAX_SENSE)
+                JuMP.set_objective_sense(rm, MOI.MAX_SENSE)
+
+                status = JuMP.optimize!(m)
+                rstatus = JuMP.optimize!(rm)
+
+                @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance*100)
+                @test(rstatus == status)
+
+                @test(isapprox(JuMP.value(ind), 1))
+                @test(isapprox(JuMP.value(rind), 1))
+            end
         end
     end
+
+    @testset "relaxation_complex_product_on_off" begin
+        for r in 1:replicates
+            a_lb, a_ub = 0, 10*rand()
+            b_lb, b_ub = 0, 10*rand()
+            c_lb, c_ub = 10*rand(2).*[-1,1]
+            d_lb, d_ub = 10*rand(2).*[-1,1]
+
+            @testset "z fixed on" begin
+                z = 1.0
+                m = JuMP.Model(ipopt_solver)
+                JuMP.@variable(m, a_lb <= a <= a_ub)
+                JuMP.@variable(m, b_lb <= b <= b_ub)
+                JuMP.@variable(m, c_lb <= c <= c_ub)
+                JuMP.@variable(m, d_lb <= d <= d_ub)
+                JuMP.@objective(m, Min, 10000*z + a + b)
+                JuMP.@NLconstraint(m, c^2 + d^2 == a*b*z)
+                status = JuMP.optimize!(m)
+
+                rm = JuMP.Model(ipopt_solver)
+                JuMP.@variable(rm, a_lb <= a <= a_ub)
+                JuMP.@variable(rm, b_lb <= b <= b_ub)
+                JuMP.@variable(rm, c_lb <= c <= c_ub)
+                JuMP.@variable(rm, d_lb <= d <= d_ub)
+                JuMP.@NLobjective(rm, Min, 10000*z + a + b)
+                InfrastructureModels.relaxation_complex_product_on_off(rm, a, b, c, d, z)
+                rstatus = JuMP.optimize!(rm)
+
+                @test isapprox(JuMP.objective_value(rm), JuMP.objective_value(m), atol=1e-6)
+                @test(rstatus == status)
+            end
+
+            @testset "z fixed off" begin
+                z = 0.0
+                m = JuMP.Model(ipopt_solver)
+                JuMP.@variable(m, a_lb <= a <= a_ub)
+                JuMP.@variable(m, b_lb <= b <= b_ub)
+                JuMP.@variable(m, c_lb <= c <= c_ub)
+                JuMP.@variable(m, d_lb <= d <= d_ub)
+                JuMP.@objective(m, Min, 10000*z + a + b)
+                JuMP.@NLconstraint(m, c^2 + d^2 == a*b*z)
+                status = JuMP.optimize!(m)
+
+                rm = JuMP.Model(ipopt_solver)
+                JuMP.@variable(rm, a_lb <= a <= a_ub)
+                JuMP.@variable(rm, b_lb <= b <= b_ub)
+                JuMP.@variable(rm, c_lb <= c <= c_ub)
+                JuMP.@variable(rm, d_lb <= d <= d_ub)
+                JuMP.@NLobjective(rm, Min, 10000*z + a + b)
+                InfrastructureModels.relaxation_complex_product_on_off(rm, a, b, c, d, z)
+                rstatus = JuMP.optimize!(rm)
+
+                @test isapprox(JuMP.objective_value(rm), JuMP.objective_value(m), atol=1e-6)
+                @test(rstatus == status)
+            end
+
+
+            @testset "z variable" begin
+                m = JuMP.Model(juniper_solver)
+                JuMP.@variable(m, a_lb <= a <= a_ub)
+                JuMP.@variable(m, b_lb <= b <= b_ub)
+                JuMP.@variable(m, c_lb <= c <= c_ub)
+                JuMP.@variable(m, d_lb <= d <= d_ub)
+                JuMP.@variable(m, z, binary=true)
+                JuMP.@objective(m, Min, 10000*z + a + b)
+                JuMP.@NLconstraint(m, c^2 + d^2 == a*b*z)
+                status = JuMP.optimize!(m)
+
+                rm = JuMP.Model(juniper_solver)
+                JuMP.@variable(rm, a_lb <= a <= a_ub)
+                JuMP.@variable(rm, b_lb <= b <= b_ub)
+                JuMP.@variable(rm, c_lb <= c <= c_ub)
+                JuMP.@variable(rm, d_lb <= d <= d_ub)
+                JuMP.@variable(rm, rz, binary=true)
+                JuMP.@NLobjective(rm, Min, 10000*rz + a + b)
+                InfrastructureModels.relaxation_complex_product_on_off(rm, a, b, c, d, rz)
+                rstatus = JuMP.optimize!(rm)
+
+                @test(JuMP.objective_value(rm) <= JuMP.objective_value(m) + tolerance)
+                @test(rstatus == status)
+
+                JuMP.set_objective_sense(m, MOI.MAX_SENSE)
+                JuMP.set_objective_sense(rm, MOI.MAX_SENSE)
+
+                status = JuMP.optimize!(m)
+                rstatus = JuMP.optimize!(rm)
+
+                @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance)
+                @test(rstatus == status)
+            end
+        end
+    end
+
 end
 
 
