@@ -85,7 +85,7 @@ function make_multinetwork(data::Dict{String, <:Any}, global_keys::Set{String})
 
     for i in 1:steps
         nw_data = mn_data["nw"]["$(i)"]
-        for (k,v) in data["time_series"]
+        for (k,v) in time_series
             if isa(v, Dict) && haskey(nw_data, k)
                 #println(k); println(v)
                 _update_data_timepoint!(nw_data[k], v, i)

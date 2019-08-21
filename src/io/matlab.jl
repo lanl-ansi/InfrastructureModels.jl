@@ -93,9 +93,9 @@ function _type_value(value_string::AbstractString)
     else
         # if value is a float
         if occursin(".", value_string) || occursin("e", value_string)
-            value = _check_type(Float64, value_string)
+            value = check_type(Float64, value_string)
         else # otherwise assume it is an int
-            value = _check_type(Int, value_string)
+            value = check_type(Int, value_string)
         end
     end
 
@@ -109,9 +109,9 @@ function _type_array(string_array::Vector{T}) where {T <: AbstractString}
     return if any(occursin("'",value_string) for value_string in string_array)
         [strip(value_string, '\'') for value_string in string_array]
     elseif any(occursin(".", value_string) || occursin("e", value_string) for value_string in string_array)
-        [_check_type(Float64, value_string) for value_string in string_array]
+        [check_type(Float64, value_string) for value_string in string_array]
     else # otherwise assume it is an int
-        [_check_type(Int, value_string) for value_string in string_array]
+        [check_type(Int, value_string) for value_string in string_array]
     end
 end
 
@@ -278,7 +278,7 @@ end
 
 
 "Checks if the given value is of a given type, if not tries to make it that type"
-function _check_type(typ, value)
+function check_type(typ, value)
     if isa(value, typ)
         return value
     elseif isa(value, String) || isa(value, SubString)
