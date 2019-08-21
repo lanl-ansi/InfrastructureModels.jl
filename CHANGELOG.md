@@ -3,7 +3,8 @@ InfrastructureModels.jl Change Log
 
 ### Staged
 - Added @def macro
-- Added automatic export (breaking)
+- Added automatic export, #44 (breaking)
+- Made global_keys required by replicate, #25 (breaking)
 
 ### v0.2.2
 - Fixed bug by adding Memento. quantifier to all logging statements

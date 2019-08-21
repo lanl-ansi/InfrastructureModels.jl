@@ -164,7 +164,7 @@ end
         rows_to_dict!(data)
         InfrastructureModels.arrays_to_dicts!(data)
 
-        mn_data = InfrastructureModels.replicate(data, 3)
+        mn_data = InfrastructureModels.replicate(data, 3, Set{String}())
 
         ct1 = InfrastructureModels.component_table(mn_data, "mpc.bus", "col_3")
         for (i, nw) in mn_data["nw"]
@@ -201,7 +201,7 @@ end
 @testset "data transformation" begin
 
     @testset "network replicate data" begin
-        mn_data = InfrastructureModels.replicate(generic_network_data, 3, global_keys=Set(["a", "b", "per_unit", "list"]))
+        mn_data = InfrastructureModels.replicate(generic_network_data, 3, Set(["a", "b", "per_unit", "list"]))
 
         @test length(mn_data) == 7
         @test mn_data["multinetwork"]
@@ -219,7 +219,7 @@ end
 
 
     @testset "network replicate data, single network" begin
-        mn_data = InfrastructureModels.replicate(generic_network_data, 1, global_keys=Set(["per_unit","undefined_key"]))
+        mn_data = InfrastructureModels.replicate(generic_network_data, 1, Set(["per_unit","undefined_key"]))
 
         @test length(mn_data) == 4
         @test mn_data["multinetwork"]
@@ -383,7 +383,7 @@ end
 @testset "data comparison" begin
 
     @testset "dict comparison" begin
-        mn_data = InfrastructureModels.replicate(generic_network_data, 3)
+        mn_data = InfrastructureModels.replicate(generic_network_data, 3, Set{String}())
 
         nw_1 = mn_data["nw"]["1"]
         nw_2 = mn_data["nw"]["2"]

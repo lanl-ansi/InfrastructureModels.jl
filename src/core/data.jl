@@ -31,21 +31,10 @@ end
 ismultinetwork(data::Dict{String,<:Any}) = (haskey(data, "multinetwork") && data["multinetwork"] == true)
 
 "Transforms a single network into a multinetwork with several deepcopies of the original network"
-function replicate(sn_data::Dict{String,<:Any}, count::Int; global_keys::Set{String} = Set{String}())
+function replicate(sn_data::Dict{String,<:Any}, count::Int, global_keys::Set{String})
     @assert count > 0
     if ismultinetwork(sn_data)
         Memento.error(_LOGGER, "replicate can only be used on single networks")
-    end
-
-    if length(global_keys) <= 0
-        Memento.warn(_LOGGER, "deprecation warning, calls to replicate should explicitly specify a set of global_keys")
-        # old default
-        for (k,v) in sn_data
-             if !(typeof(v) <: Dict)
-                Memento.warn(_LOGGER, "adding global key $(k)")
-                push!(global_keys, k)
-             end
-        end
     end
 
     name = get(sn_data, "name", "anonymous")
