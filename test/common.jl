@@ -27,6 +27,15 @@ generic_network_data = JSON.parse("""{
 }""")
 
 
+generic_network_time_series_data = Dict(
+    "num_steps" => 3,
+    "comp" => Dict(
+        "1" => Dict("a" => [3, 5, 7]),
+        "2" => Dict("c" => ["three", "five", "seven"])
+    )
+)
+
+
 function rows_to_dict!(data::Dict{String,<:Any})
     for (k,v) in data
         if isa(v, Array)

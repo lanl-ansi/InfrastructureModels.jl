@@ -230,6 +230,50 @@ end
     end
 
 
+   @testset "load state from time series" begin
+        data_tmp = copy(generic_network_data)
+        data_tmp["time_series"] = generic_network_time_series_data
+        @test data_tmp["comp"]["1"]["a"] == 1
+        @test data_tmp["comp"]["2"]["c"] == "same"
+
+        InfrastructureModels.load_timepoint!(data_tmp, 1)
+        @test data_tmp["comp"]["1"]["a"] == 3
+        @test data_tmp["comp"]["2"]["c"] == "three"
+
+        InfrastructureModels.load_timepoint!(data_tmp, 2)
+        @test data_tmp["comp"]["1"]["a"] == 5
+        @test data_tmp["comp"]["2"]["c"] == "five"
+
+        InfrastructureModels.load_timepoint!(data_tmp, 3)
+        @test data_tmp["comp"]["1"]["a"] == 7
+        @test data_tmp["comp"]["2"]["c"] == "seven"
+    end
+
+
+    @testset "make_multinetwork from time series" begin
+        generic_network_data_tmp = copy(generic_network_data)
+        generic_network_data_tmp["time_series"] = generic_network_time_series_data
+
+        mn_data = InfrastructureModels.make_multinetwork(generic_network_data_tmp, Set(["per_unit","undefined_key"]))
+
+        @test length(mn_data) == 4
+        @test mn_data["multinetwork"]
+        @test haskey(mn_data, "per_unit")
+        @test haskey(mn_data, "name")
+
+        @test length(mn_data["nw"]) == 3
+
+        @test mn_data["nw"]["1"]["comp"]["1"]["a"] == 3
+        @test mn_data["nw"]["1"]["comp"]["2"]["c"] == "three"
+
+        @test mn_data["nw"]["2"]["comp"]["1"]["a"] == 5
+        @test mn_data["nw"]["2"]["comp"]["2"]["c"] == "five"
+
+        @test mn_data["nw"]["3"]["comp"]["1"]["a"] == 7
+        @test mn_data["nw"]["3"]["comp"]["2"]["c"] == "seven"
+    end
+
+
     @testset "update_data! feature" begin
         data = JSON.parse("{
             \"per_unit\":false,
