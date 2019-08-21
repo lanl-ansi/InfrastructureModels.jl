@@ -2,6 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+- Added @def macro
 - Added automatic export (breaking)
 
 ### v0.2.2

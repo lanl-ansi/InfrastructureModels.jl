@@ -26,6 +26,8 @@ include("common.jl")
 
 @testset "InfrastructureModels Tests" begin
 
+include("base.jl")
+
 include("data.jl")
 
 include("relaxation_scheme.jl")

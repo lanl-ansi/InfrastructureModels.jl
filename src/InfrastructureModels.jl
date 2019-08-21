@@ -10,6 +10,7 @@ const _LOGGER = Memento.getlogger(@__MODULE__)
 # NOTE: If this line is not included then the precompiled `Infrastructure.LOGGER` won't be registered at runtime.
 __init__() = Memento.register(_LOGGER)
 
+include("core/base.jl")
 include("core/data.jl")
 include("core/relaxation_scheme.jl")
 
