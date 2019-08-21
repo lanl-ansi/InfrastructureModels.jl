@@ -142,7 +142,7 @@ requires that all variables (x,y,z) go to zero with ind
 function relaxation_product_on_off(m::JuMP.Model, x::JuMP.VariableRef, y::JuMP.VariableRef, z::JuMP.VariableRef, ind::JuMP.VariableRef)
     x_lb, x_ub = variable_domain(x)
     y_lb, y_ub = variable_domain(y)
-    z_lb, z_ub = variable_domain(y)
+    z_lb, z_ub = variable_domain(z)
 
     @assert x_lb <= 0 && x_ub >= 0
     @assert y_lb <= 0 && y_ub >= 0
@@ -165,9 +165,6 @@ function relaxation_product_on_off(m::JuMP.Model, x::JuMP.VariableRef, y::JuMP.V
 
     if isapprox(ind, 1.0)
         relaxation_product(m, x, y, z)
-    else
-        @assert isapprox(ind, 0.0)
-        JuMP.@constraint(m, z == 0.0)
     end
 end
 
