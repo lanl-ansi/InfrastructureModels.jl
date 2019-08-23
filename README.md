@@ -9,7 +9,14 @@ Dev:
 [![codecov](https://codecov.io/gh/lanl-ansi/InfrastructureModels.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/lanl-ansi/InfrastructureModels.jl)
 [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://lanl-ansi.github.io/InfrastructureModels.jl/latest)
 
-A package for functionalities that are shared across multiple infrastructure network optimization packages
+InfrastructureModels.jl encompases the share functionalities, best practices and style guides for an ecosystem julia tools for multi-infrastructure modeling and optimization.  The core packages in the InfrastructureModels ecosystem are,
+
+* [GasModels.jl](https://github.com/lanl-ansi/GasModels.jl) - Natural gas transmision systems 
+* [PowerModels.jl](https://github.com/lanl-ansi/PowerModels.jl) - Electrical power transmision systems 
+* [PowerModelsDistribution.jl](https://github.com/lanl-ansi/PowerModelsDistribution.jl) - Electrical power distribution systems 
+* [WaterModels.jl](https://github.com/lanl-ansi/PowerModels.jl) - Potable water distribution systems 
+
+
 
 ## License
 
