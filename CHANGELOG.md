@@ -4,6 +4,9 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.3.1
+- Added ref_initialize for building a basic ref datastucture
+
 ### v0.3.0
 - Added @def macro
 - Added automatic export, #44 (breaking)

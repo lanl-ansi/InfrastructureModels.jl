@@ -330,11 +330,6 @@ function summary(io::IO, data::Dict{String,<:Any};
 
 end
 
-"Attempts to determine if the given data is a component dictionary"
-function _iscomponentdict(data::Dict)
-    return all( typeof(comp) <: Dict for (i, comp) in data )
-end
-
 "Makes a string bold in the terminal"
 function _bold(s::String)
     return "\033[1m$(s)\033[0m"
