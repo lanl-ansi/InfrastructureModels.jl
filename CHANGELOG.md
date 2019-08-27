@@ -2,7 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Add support for JuMP v0.20 and start testing on julia v1.2
 
 ### v0.3.1
 - Added ref_initialize for building a basic ref datastucture
