@@ -66,6 +66,13 @@ mpc.branch_limit = [
 	12	30;
 ];
 
+% named column table with index
+%column_names%	index	zone_a	zone_b
+mpc.zones_named = [
+	2	1.23	0.0;
+	7	4.56	0.1;
+];
+
 
 % adding extra cell values
 
