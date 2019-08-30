@@ -2,7 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Made "index" an allowed column name in the generic matlab parser
 
 ### v0.3.2
 - Add support for JuMP v0.20 and start testing on julia v1.2

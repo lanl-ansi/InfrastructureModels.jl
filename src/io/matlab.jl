@@ -201,8 +201,13 @@ function _parse_matlab_data(lines, index, start_char, end_char)
         if length(matrix[1]) != length(column_names)
             Memento.error(_LOGGER, "column name parsing error, data rows $(length(matrix[1])), column names $(length(column_names)) \n$(column_names)")
         end
-        if any([column_name == "index" for column_name in column_names])
-            Memento.error(_LOGGER, "column name parsing error, \"index\" is a reserved column name \n$(column_names)")
+        for (c, column_name) in enumerate(column_names)
+            if column_name == "index"
+                Memento.info(_LOGGER, "the column named \"index\" in matrix will be interpreted as a unique component identifier")
+                if !(typeof(typed_columns[c][1]) <: Int)
+                    Memento.error(_LOGGER, "the type of a column named \"index\" must be Int, but given $(typeof(typed_columns[c][1]))")
+                end
+            end
         end
         matrix_dict["column_names"] = column_names
     end
