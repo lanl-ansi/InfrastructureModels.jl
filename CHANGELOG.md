@@ -2,6 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+- Generalized relaxation_equality_on_off to support bounds on both variables
 - Made "index" an allowed column name in the generic matlab parser, #48
 
 ### v0.3.2

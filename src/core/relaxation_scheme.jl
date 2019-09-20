@@ -80,11 +80,13 @@ end
 
 "an on/off variant of x == y, controlled by the indicator variable z"
 function relaxation_equality_on_off(m::JuMP.Model, x::JuMP.VariableRef, y::JuMP.VariableRef, z::JuMP.VariableRef)
-    # assumes 0 is in the domain of y when z is 0
     x_lb, x_ub = variable_domain(x)
+    y_lb, y_ub = variable_domain(y)
 
-    JuMP.@constraint(m, y >= x - x_ub*(1-z))
-    JuMP.@constraint(m, y <= x - x_lb*(1-z))
+    delta_max = max(abs(x_ub - y_lb), abs(y_ub - x_lb))
+
+    JuMP.@constraint(m, y >= x - (delta_max)*(1-z))
+    JuMP.@constraint(m, y <= x + (delta_max)*(1-z))
 end
 
 "an on/off variant of x == y, controlled by the indicator variable z, a variant for fixed z"
