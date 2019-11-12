@@ -34,6 +34,16 @@ function relaxation_complex_product(m::JuMP.Model, a::JuMP.VariableRef, b::JuMP.
     JuMP.@constraint(m, c^2 + d^2 <= a*b)
 end
 
+"constraint: `c^2  <= a*b`"
+function relaxation_complex_product(m::JuMP.Model, a::JuMP.VariableRef, b::JuMP.VariableRef, c::JuMP.VariableRef)
+    a_lb, a_ub = InfrastructureModels.variable_domain(a)
+    b_lb, b_ub = InfrastructureModels.variable_domain(b)
+
+    @assert (a_lb >= 0 && b_lb >= 0) || (a_ub <= 0 && b_ub <= 0)
+
+    JuMP.@constraint(m, c^2 <= a*b)
+end
+
 "a conic encoding of constraint: `c^2 + d^2 <= a*b`"
 function relaxation_complex_product_conic(m::JuMP.Model, a::JuMP.VariableRef, b::JuMP.VariableRef, c::JuMP.VariableRef, d::JuMP.VariableRef)
     a_lb, a_ub = variable_domain(a)
@@ -42,6 +52,16 @@ function relaxation_complex_product_conic(m::JuMP.Model, a::JuMP.VariableRef, b:
     @assert (a_lb >= 0 && b_lb >= 0) || (a_ub <= 0 && b_ub <= 0)
 
     JuMP.@constraint(m, [a/sqrt(2), b/sqrt(2), c, d] in JuMP.RotatedSecondOrderCone())
+end
+
+"a conic encoding of constraint: `c^2  <= a*b`"
+function relaxation_complex_product_conic(m::JuMP.Model, a::JuMP.VariableRef, b::JuMP.VariableRef, c::JuMP.VariableRef)
+    a_lb, a_ub = variable_domain(a)
+    b_lb, b_ub = variable_domain(b)
+
+    @assert (a_lb >= 0 && b_lb >= 0) || (a_ub <= 0 && b_ub <= 0)
+
+    JuMP.@constraint(m, [a/sqrt(2), b/sqrt(2), c] in JuMP.RotatedSecondOrderCone())
 end
 
 
@@ -63,6 +83,19 @@ function relaxation_complex_product_on_off(m::JuMP.Model, a::JuMP.VariableRef, b
     JuMP.@constraint(m, c^2 + d^2 <= a*b_ub*z)
 end
 
+"on/off variant of relaxation_complex_product controlled by indicator variable z"
+function relaxation_complex_product_on_off(m::JuMP.Model, a::JuMP.VariableRef, b::JuMP.VariableRef, c::JuMP.VariableRef, z::JuMP.VariableRef)
+    a_lb, a_ub = InfrastructureModels.variable_domain(a)
+    b_lb, b_ub = InfrastructureModels.variable_domain(b)
+    c_lb, c_ub = InfrastructureModels.variable_domain(c)
+
+    @assert c_lb <= 0 && c_ub >= 0
+
+    JuMP.@constraint(m, c^2 <= a*b*z_ub)
+    JuMP.@constraint(m, c^2 <= a_ub*b*z)
+    JuMP.@constraint(m, c^2 <= a*b_ub*z)
+end
+
 "on/off variant of relaxation_complex_product controlled by indicator variable z, variant with a fixed value of z"
 function relaxation_complex_product_on_off(m::JuMP.Model, a::JuMP.VariableRef, b::JuMP.VariableRef, c::JuMP.VariableRef, d::JuMP.VariableRef, z::Real)
     @assert isapprox(z, 1.0) || isapprox(z, 0.0)
@@ -76,6 +109,36 @@ function relaxation_complex_product_on_off(m::JuMP.Model, a::JuMP.VariableRef, b
     end
 end
 
+"on/off variant of relaxation_complex_product controlled by indicator variable z in  the conic form"
+function relaxation_complex_product_conic_on_off(m::JuMP.Model, a::JuMP.VariableRef, b::JuMP.VariableRef, c::JuMP.VariableRef, d::JuMP.VariableRef, z::JuMP.VariableRef)
+    a_lb, a_ub = InfrastructureModels.variable_domain(a)
+    b_lb, b_ub = InfrastructureModels.variable_domain(b)
+    c_lb, c_ub = InfrastructureModels.variable_domain(c)
+    d_lb, d_ub = InfrastructureModels.variable_domain(d)
+    z_lb, z_ub = InfrastructureModels.variable_domain(z)
+
+    @assert c_lb <= 0 && c_ub >= 0
+    @assert d_lb <= 0 && d_ub >= 0
+
+    JuMP.@constraint(m, [a/sqrt(2)*z_ub, b/sqrt(2), c, d] in JuMP.RotatedSecondOrderCone())
+    JuMP.@constraint(m, [a_ub/sqrt(2)*z, b/sqrt(2), c, d] in JuMP.RotatedSecondOrderCone())
+    JuMP.@constraint(m, [a/sqrt(2), b_ub/sqrt(2)*z, c, d] in JuMP.RotatedSecondOrderCone())
+end
+
+"on/off variant of relaxation_complex_product controlled by indicator variable z in  the conic form"
+function relaxation_complex_product_conic_on_off(m::JuMP.Model, a::JuMP.VariableRef, b::JuMP.VariableRef, c::JuMP.VariableRef, z::JuMP.VariableRef)
+    a_lb, a_ub = InfrastructureModels.variable_domain(a)
+    b_lb, b_ub = InfrastructureModels.variable_domain(b)
+    c_lb, c_ub = InfrastructureModels.variable_domain(c)
+    z_lb, z_ub = InfrastructureModels.variable_domain(z)
+
+    @assert c_lb <= 0 && c_ub >= 0
+    @assert d_lb <= 0 && d_ub >= 0
+
+    JuMP.@constraint(m, [a/sqrt(2)*z_ub, b/sqrt(2), c] in JuMP.RotatedSecondOrderCone())
+    JuMP.@constraint(m, [a_ub/sqrt(2)*z, b/sqrt(2), c] in JuMP.RotatedSecondOrderCone())
+    JuMP.@constraint(m, [a/sqrt(2), b_ub/sqrt(2)*z, c] in JuMP.RotatedSecondOrderCone())
+end
 
 
 "an on/off variant of x == y, controlled by the indicator variable z"
