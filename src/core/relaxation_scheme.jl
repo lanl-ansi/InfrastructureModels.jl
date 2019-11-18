@@ -36,8 +36,8 @@ end
 
 "constraint: `c^2  <= a*b`"
 function relaxation_complex_product(m::JuMP.Model, a::JuMP.VariableRef, b::JuMP.VariableRef, c::JuMP.VariableRef)
-    a_lb, a_ub = InfrastructureModels.variable_domain(a)
-    b_lb, b_ub = InfrastructureModels.variable_domain(b)
+    a_lb, a_ub = variable_domain(a)
+    b_lb, b_ub = variable_domain(b)
 
     @assert (a_lb >= 0 && b_lb >= 0) || (a_ub <= 0 && b_ub <= 0)
 
@@ -88,6 +88,7 @@ function relaxation_complex_product_on_off(m::JuMP.Model, a::JuMP.VariableRef, b
     a_lb, a_ub = InfrastructureModels.variable_domain(a)
     b_lb, b_ub = InfrastructureModels.variable_domain(b)
     c_lb, c_ub = InfrastructureModels.variable_domain(c)
+    z_lb, z_ub = InfrastructureModels.variable_domain(z)
 
     @assert c_lb <= 0 && c_ub >= 0
 
@@ -133,7 +134,6 @@ function relaxation_complex_product_conic_on_off(m::JuMP.Model, a::JuMP.Variable
     z_lb, z_ub = InfrastructureModels.variable_domain(z)
 
     @assert c_lb <= 0 && c_ub >= 0
-    @assert d_lb <= 0 && d_ub >= 0
 
     JuMP.@constraint(m, [a/sqrt(2)*z_ub, b/sqrt(2), c] in JuMP.RotatedSecondOrderCone())
     JuMP.@constraint(m, [a_ub/sqrt(2)*z, b/sqrt(2), c] in JuMP.RotatedSecondOrderCone())
