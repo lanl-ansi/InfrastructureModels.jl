@@ -152,6 +152,35 @@ seed!(0)
 
             @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance)
             @test(rstatus == status)
+
+            # Relaxation c^2 = a*b
+            m = JuMP.Model(ipopt_solver)
+            JuMP.@variable(m, a_lb <= a <= a_ub)
+            JuMP.@variable(m, b_lb <= b <= b_ub)
+            JuMP.@variable(m, c_lb <= c <= c_ub)
+            JuMP.@objective(m, Min, a + b)
+            JuMP.@NLconstraint(m, c^2 == a*b)
+            status = JuMP.optimize!(m)
+
+            rm = JuMP.Model(ipopt_solver)
+            JuMP.@variable(rm, a_lb <= a <= a_ub)
+            JuMP.@variable(rm, b_lb <= b <= b_ub)
+            JuMP.@variable(rm, c_lb <= c <= c_ub)
+            InfrastructureModels.relaxation_complex_product(rm, a, b, c)
+            JuMP.@objective(rm, Min, a + b)
+            rstatus = JuMP.optimize!(rm)
+
+            @test(JuMP.objective_value(rm) <= JuMP.objective_value(m) + tolerance)
+            @test(rstatus == status)
+
+            JuMP.set_objective_sense(m, MOI.MAX_SENSE)
+            JuMP.set_objective_sense(rm, MOI.MAX_SENSE)
+
+            status = JuMP.optimize!(m)
+            rstatus = JuMP.optimize!(rm)
+
+            @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance)
+            @test(rstatus == status)
         end
     end
 
@@ -178,6 +207,37 @@ seed!(0)
             JuMP.@variable(rm, d_lb <= d <= d_ub)
             JuMP.@objective(rm, Min, a + b)
             InfrastructureModels.relaxation_complex_product_conic(rm, a, b, c, d)
+            rstatus = JuMP.optimize!(rm)
+
+            @test(JuMP.objective_value(rm) <= JuMP.objective_value(m) + tolerance)
+            @test(rstatus == status)
+
+            JuMP.set_objective_sense(m, MOI.MAX_SENSE)
+            JuMP.set_objective_sense(rm, MOI.MAX_SENSE)
+
+            status = JuMP.optimize!(m)
+            rstatus = JuMP.optimize!(rm)
+
+            @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance)
+            @test(rstatus == status)
+
+
+            # Relaxation c^2 = a*b
+            m = JuMP.Model(ipopt_solver)
+            JuMP.@variable(m, a_lb <= a <= a_ub)
+            JuMP.@variable(m, b_lb <= b <= b_ub)
+            JuMP.@variable(m, c_lb <= c <= c_ub)
+            JuMP.@objective(m, Min, a + b)
+            JuMP.@NLconstraint(m, c^2 == a*b)
+            status = JuMP.optimize!(m)
+
+            rm = JuMP.Model(ecos_solver)
+            JuMP.@variable(rm, a_lb <= a <= a_ub)
+            JuMP.@variable(rm, b_lb <= b <= b_ub)
+            JuMP.@variable(rm, c_lb <= c <= c_ub)
+            JuMP.@variable(rm, d_lb <= d <= d_ub)
+            JuMP.@objective(rm, Min, a + b)
+            InfrastructureModels.relaxation_complex_product_conic(rm, a, b, c)
             rstatus = JuMP.optimize!(rm)
 
             @test(JuMP.objective_value(rm) <= JuMP.objective_value(m) + tolerance)
@@ -500,10 +560,84 @@ seed!(0)
 
                 @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance)
                 @test(rstatus == status)
+
+                # conic relaxation of c^2 + d^2 == a*b*z
+                # rm = JuMP.Model(mosek_solver)
+                # JuMP.@variable(rm, a_lb <= a <= a_ub)
+                # JuMP.@variable(rm, b_lb <= b <= b_ub)
+                # JuMP.@variable(rm, c_lb <= c <= c_ub)
+                # JuMP.@variable(rm, d_lb <= d <= d_ub)
+                # JuMP.@variable(rm, rz, binary=true)
+                # JuMP.@objective(rm, Min, 10000*rz + a + b)
+                # InfrastructureModels.relaxation_complex_product_conic_on_off(rm, a, b, c, d, rz)
+                # rstatus = JuMP.optimize!(rm)
+                #
+                # @test(JuMP.objective_value(rm) <= JuMP.objective_value(m) + tolerance)
+                # @test(rstatus == status)
+                #
+                # JuMP.set_objective_sense(m, MOI.MAX_SENSE)
+                # JuMP.set_objective_sense(rm, MOI.MAX_SENSE)
+                #
+                # status = JuMP.optimize!(m)
+                # rstatus = JuMP.optimize!(rm)
+                #
+                # @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance)
+                # @test(rstatus == status)
+                #
+                # relaxation of c^2  == a*b*z
+                m = JuMP.Model(juniper_solver)
+                JuMP.@variable(m, a_lb <= a <= a_ub)
+                JuMP.@variable(m, b_lb <= b <= b_ub)
+                JuMP.@variable(m, c_lb <= c <= c_ub)
+                JuMP.@variable(m, z, binary=true)
+                JuMP.@objective(m, Min, 10000*z + a + b)
+                JuMP.@NLconstraint(m, c^2 == a*b*z)
+                status = JuMP.optimize!(m)
+
+                rm = JuMP.Model(juniper_solver)
+                JuMP.@variable(rm, a_lb <= a <= a_ub)
+                JuMP.@variable(rm, b_lb <= b <= b_ub)
+                JuMP.@variable(rm, c_lb <= c <= c_ub)
+                JuMP.@variable(rm, rz, binary=true)
+                JuMP.@NLobjective(rm, Min, 10000*rz + a + b)
+                InfrastructureModels.relaxation_complex_product_on_off(rm, a, b, c, rz)
+                rstatus = JuMP.optimize!(rm)
+
+                @test(JuMP.objective_value(rm) <= JuMP.objective_value(m) + tolerance)
+                @test(rstatus == status)
+
+                JuMP.set_objective_sense(m, MOI.MAX_SENSE)
+                JuMP.set_objective_sense(rm, MOI.MAX_SENSE)
+
+                status = JuMP.optimize!(m)
+                rstatus = JuMP.optimize!(rm)
+
+                @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance)
+                @test(rstatus == status)
+
+                # conic relaxation of c^2  == a*b*z
+                # rm = JuMP.Model(mosek_solver)
+                # JuMP.@variable(rm, a_lb <= a <= a_ub)
+                # JuMP.@variable(rm, b_lb <= b <= b_ub)
+                # JuMP.@variable(rm, c_lb <= c <= c_ub)
+                # JuMP.@variable(rm, rz, binary=true)
+                # JuMP.@objective(rm, Min, 10000*rz + a + b)
+                # InfrastructureModels.relaxation_complex_product_conic_on_off(rm, a, b, c, rz)
+                # rstatus = JuMP.optimize!(rm)
+                #
+                # @test(JuMP.objective_value(rm) <= JuMP.objective_value(m) + tolerance)
+                # @test(rstatus == status)
+                #
+                # JuMP.set_objective_sense(m, MOI.MAX_SENSE)
+                # JuMP.set_objective_sense(rm, MOI.MAX_SENSE)
+                #
+                # status = JuMP.optimize!(m)
+                # rstatus = JuMP.optimize!(rm)
+                #
+                # @test(JuMP.objective_value(rm) >= JuMP.objective_value(m) - tolerance)
+                # @test(rstatus == status)
             end
         end
     end
 
 end
-
-
