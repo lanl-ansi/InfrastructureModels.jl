@@ -2,7 +2,7 @@ using Documenter, InfrastructureModels
 
 makedocs(
     modules = [InfrastructureModels],
-    format = :html,
+    format = Documenter.HTML(),
     sitename = "InfrastructureModels",
     authors = "Carleton Coffrin, Russell Bent, and contributors",
     pages = [
