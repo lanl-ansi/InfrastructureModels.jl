@@ -2,6 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+- Export value2string and float2string for package specific overloading
 - Added support for three variable RSOC constraints, #53
 - Made "index" an allowed column name in the generic matlab parser, #48
 
