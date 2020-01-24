@@ -206,7 +206,7 @@ function summary(io::IO, data::Dict{String,<:Any};
             continue
         end
 
-        println(io, "  $(k): $(_value2string(v, float_precision))")
+        println(io, "  $(k): $(value2string(v, float_precision))")
     end
 
 
@@ -242,7 +242,7 @@ function summary(io::IO, data::Dict{String,<:Any};
                     end
                 end
 
-                disp_comp[k] = _value2string(v, float_precision)
+                disp_comp[k] = value2string(v, float_precision)
             end
             if !status_found
                 push!(active_components, i)
@@ -343,19 +343,24 @@ function _grey(s::String)
     return "\033[38;5;239m$(s)\033[0m"
 end
 
-"converts any value to a string, summarizes arrays and dicts"
-function _value2string(v, float_precision::Int)
-    if typeof(v) <: AbstractFloat
-        return _float2string(v, float_precision)
-    end
-    if typeof(v) <: Array
-        return "[($(length(v)))]"
-    end
-    if typeof(v) <: Dict
-        return "{($(length(v)))}"
-    end
-
+"converts any value to a string"
+function value2string(v::Any, float_precision::Int)
     return "$(v)"
+end
+
+"converts a float to a string, using float_precision cutoff"
+function value2string(v::AbstractFloat, float_precision::Int)
+    return float2string(v, float_precision)
+end
+
+"converts any value to a string, summarizes arrays"
+function value2string(v::Array, float_precision::Int)
+    return "[($(length(v)))]"
+end
+
+"converts any value to a string, summarizes dicts"
+function value2string(v::Dict, float_precision::Int)
+    return "{($(length(v)))}"
 end
 
 
@@ -365,7 +370,7 @@ converts a float value into a string of fixed precision
 sprintf would do the job but this work around is needed because
 sprintf cannot take format strings during runtime
 """
-function _float2string(v::AbstractFloat, float_precision::Int)
+function float2string(v::AbstractFloat, float_precision::Int)
     #str = "$(round(v; digits=float_precision))"
     str = "$(round(v; digits=float_precision))"
     lhs = length(split(str, '.')[1])
