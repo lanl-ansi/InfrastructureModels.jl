@@ -4,8 +4,11 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.4.1
+- Add support for JuMP v0.21
+
 ### v0.4.0
-- Export value2string and float2string for package specific overloading
+- Export value2string and float2string for package-specific overloading
 
 ### v0.3.3
 - Added support for three variable RSOC constraints, #53

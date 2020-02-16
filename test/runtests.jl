@@ -13,7 +13,7 @@ const MOI = MathOptInterface
 
 ipopt_solver = JuMP.with_optimizer(Ipopt.Optimizer, print_level=0)
 ecos_solver = JuMP.with_optimizer(ECOS.Optimizer, verbose=0)
-juniper_solver = JuMP.with_optimizer(Juniper.Optimizer, nl_solver=ipopt_solver, log_levels=[])  # MOI compatibility
+juniper_solver = JuMP.with_optimizer(Juniper.Optimizer, nl_solver=ipopt_solver, log_levels=[])
 
 import Random: seed!
 
