@@ -10,6 +10,18 @@ const _LOGGER = Memento.getlogger(@__MODULE__)
 # NOTE: If this line is not included then the precompiled `Infrastructure.LOGGER` won't be registered at runtime.
 __init__() = Memento.register(_LOGGER)
 
+"Suppresses information and warning messages output by InfrastructureModels, for fine grained control use the Memento package"
+function silence()
+    Memento.info(_LOGGER, "Suppressing information and warning messages for the rest of this session.  Use the Memento package for more fine-grained control of logging.")
+    Memento.setlevel!(_LOGGER, "error")
+end
+
+"alows the user to set the logging level without the need to add Memento"
+function logger_config!(level; kwargs...)
+    Memento.config!(_LOGGER, level, kwargs...)
+end
+
+
 include("core/base.jl")
 include("core/data.jl")
 include("core/relaxation_scheme.jl")

@@ -19,8 +19,8 @@ import Random: seed!
 
 using Test
 
-# Suppress warnings during testing.
-Memento.setlevel!(Memento.getlogger(InfrastructureModels), "error")
+# Suppress warnings during testing
+InfrastructureModels.logger_config!("error")
 
 include("common.jl")
 

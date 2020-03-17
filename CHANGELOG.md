@@ -5,6 +5,7 @@ InfrastructureModels.jl Change Log
 - nothing
 
 ### v0.4.2
+- Add `silence` and `logger_config!` (#51)
 - Add support for Memento v0.13, v1.0
 
 ### v0.4.1
