@@ -8,8 +8,7 @@ import Ipopt
 import ECOS
 import Juniper
 
-import MathOptInterface
-const MOI = MathOptInterface
+const MOI = JuMP.MathOptInterface
 
 ipopt_solver = JuMP.with_optimizer(Ipopt.Optimizer, print_level=0)
 ecos_solver = JuMP.with_optimizer(ECOS.Optimizer, verbose=0)

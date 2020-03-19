@@ -251,9 +251,8 @@ function summary(io::IO, data::Dict{String,<:Any};
             display_components[i] = disp_comp
         end
 
-
+        # compute the number of spaces required per column
         comp_key_sizes = Dict{String, Int}()
-        default_values = Dict{String, Any}()
         for (i, component) in display_components
             # a special case for "index", for example when reading solution data
             if haskey(comp_key_sizes, "index")
@@ -268,13 +267,25 @@ function summary(io::IO, data::Dict{String,<:Any};
                 else
                     comp_key_sizes[k] = length(v)
                 end
+            end
+        end
 
-                if haskey(default_values, k)
-                    if default_values[k] != v
-                        default_values[k] = nothing
+        # compute the default values per column, nothing imples no default exists
+        default_values = Dict{String, Any}()
+        for k in keys(comp_key_sizes)
+            for (i, component) in display_components
+                if haskey(component, k)
+                    if haskey(default_values, k)
+                        if default_values[k] != component[k]
+                            default_values[k] = nothing
+                            break
+                        end
+                    else
+                        default_values[k] = component[k]
                     end
                 else
-                    default_values[k] = v
+                    default_values[k] = nothing
+                    break
                 end
             end
         end

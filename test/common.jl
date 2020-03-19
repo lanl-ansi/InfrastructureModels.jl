@@ -21,7 +21,8 @@ generic_network_data = JSON.parse("""{
         "3":{
             "a":5,
             "b":6,
-            "c":"same"
+            "c":"same",
+            "d":false
         }
     }
 }""")

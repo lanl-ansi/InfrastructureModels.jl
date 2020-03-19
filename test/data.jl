@@ -106,11 +106,12 @@ end
 
         line_count = count(c -> c == '\n', output)
         @test line_count >= 18 && line_count <= 22
-        @test occursin("dict: {(4)}",output)
-        @test occursin("list: [(4)]",output)
-        @test occursin("default values:",output)
-        @test occursin("Table Counts",output)
-        @test occursin("Table: comp",output)
+        @test occursin("dict: {(4)}", output)
+        @test occursin("list: [(4)]", output)
+        @test occursin("default values:", output)
+        @test occursin("Table Counts", output)
+        @test occursin("Table: comp", output)
+        @test occursin("d,", output) # correct presentation of sparse non-default value
     end
 
 end
@@ -233,7 +234,7 @@ end
 
 
    @testset "load state from time series" begin
-        data_tmp = copy(generic_network_data)
+        data_tmp = deepcopy(generic_network_data)
         data_tmp["time_series"] = generic_network_time_series_data
         @test data_tmp["comp"]["1"]["a"] == 1
         @test data_tmp["comp"]["2"]["c"] == "same"
@@ -253,7 +254,7 @@ end
 
 
     @testset "make_multinetwork from time series" begin
-        generic_network_data_tmp = copy(generic_network_data)
+        generic_network_data_tmp = deepcopy(generic_network_data)
         generic_network_data_tmp["time_series"] = generic_network_time_series_data
 
         mn_data = InfrastructureModels.make_multinetwork(generic_network_data_tmp, Set(["per_unit","undefined_key"]))

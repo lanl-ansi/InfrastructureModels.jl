@@ -2,7 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Fixed default value detection in data `summary` function
 
 ### v0.4.2
 - Add `silence` and `logger_config!` (#51)
