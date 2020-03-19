@@ -30,6 +30,8 @@ generic_network_data = JSON.parse("""{
 
 generic_network_time_series_data = Dict(
     "num_steps" => 3,
+    "global_constant" => 2.71,
+    "time" => [0.0, 1.0, 2.0],
     "comp" => Dict(
         "1" => Dict("a" => [3, 5, 7]),
         "2" => Dict("c" => ["three", "five", "seven"])

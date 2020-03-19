@@ -86,10 +86,20 @@ function make_multinetwork(data::Dict{String, <:Any}, global_keys::Set{String})
     for i in 1:steps
         nw_data = mn_data["nw"]["$(i)"]
         for (k,v) in time_series
+            (k == "num_steps") && (continue)
             if isa(v, Dict) && haskey(nw_data, k)
                 #println(k); println(v)
                 _update_data_timepoint!(nw_data[k], v, i)
-            end
+            elseif isa(v, Array) 
+                if length(v) != steps 
+                    Memento.error(_LOGGER, "the size of the array $k in the time series block must be equal to $steps, currently it is $(length(v))")
+                else 
+                    #println(k); println(v[i])
+                    nw_data[k] = v[i]
+                end 
+            else
+                mn_data[k] = v
+            end 
         end
     end
 
