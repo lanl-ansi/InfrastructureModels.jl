@@ -2,6 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+- Added support for global and network level parameters in `time_series` blocks
 - Fixed default value detection in data `summary` function
 
 ### v0.4.2
