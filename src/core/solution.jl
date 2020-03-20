@@ -9,9 +9,9 @@ function build_result(aim::AbstractInfrastructureModel, solve_time; solution_pro
         Memento.warn(_LOGGER, "the given optimizer does not provide the ResultCount() attribute, assuming the solver returned a solution which may be incorrect.");
     end
 
-    sol = Dict{String,Any}()
+    solution = Dict{String,Any}()
     if result_count > 0
-        sol = build_solution(aim, post_processors=solution_processors)
+        solution = build_solution(aim, post_processors=solution_processors)
     else
         Memento.warn(_LOGGER, "model has no results, solution cannot be built")
     end
@@ -27,7 +27,7 @@ function build_result(aim::AbstractInfrastructureModel, solve_time; solution_pro
         end
     end
 
-    solution = Dict{String,Any}(
+    result = Dict{String,Any}(
         "optimizer" => JuMP.solver_name(aim.model),
         "termination_status" => JuMP.termination_status(aim.model),
         "primal_status" => JuMP.primal_status(aim.model),
@@ -35,7 +35,7 @@ function build_result(aim::AbstractInfrastructureModel, solve_time; solution_pro
         "objective" => _guard_objective_value(aim.model),
         "objective_lb" => _guard_objective_bound(aim.model),
         "solve_time" => solve_time,
-        "solution" => sol,
+        "solution" => solution,
         "data" => data,
         "machine" => Dict(
             "cpu" => Sys.cpu_info()[1].model,
@@ -43,7 +43,7 @@ function build_result(aim::AbstractInfrastructureModel, solve_time; solution_pro
         )
     )
 
-    return solution
+    return result
 end
 
 

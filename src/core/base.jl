@@ -39,6 +39,43 @@ InfrastructureModels.@def im_fields begin
     ext::Dict{Symbol,<:Any}
 end
 
+# default generic constructor
+function InitializeInfrastructureModel(InfrastructureModel::Type, data::Dict{String,<:Any}, global_keys::Set{String}; ext = Dict{Symbol,Any}(), setting = Dict{String,Any}(), jump_model::JuMP.AbstractModel=JuMP.Model())
+    @assert InfrastructureModel <: AbstractInfrastructureModel
+
+    ref = ref_initialize(data, global_keys) # reference data
+
+    var = Dict{Symbol,Any}(:nw => Dict{Int,Any}())
+    con = Dict{Symbol,Any}(:nw => Dict{Int,Any}())
+    sol = Dict{Symbol,Any}(:nw => Dict{Int,Any}())
+    sol_proc = Dict{Symbol,Any}(:nw => Dict{Int,Any}())
+
+    for (nw_id, nw) in ref[:nw]
+        nw_var = var[:nw][nw_id] = Dict{Symbol,Any}()
+        nw_con = con[:nw][nw_id] = Dict{Symbol,Any}()
+        nw_sol = sol[:nw][nw_id] = Dict{Symbol,Any}()
+        nw_sol_proc = sol_proc[:nw][nw_id] = Dict{Symbol,Any}()
+    end
+
+    cnw = minimum([k for k in keys(var[:nw])])
+
+    imo = InfrastructureModel(
+        jump_model,
+        data,
+        setting,
+        Dict{String,Any}(), # empty solution data
+        ref,
+        var,
+        con,
+        sol,
+        sol_proc,
+        cnw,
+        ext
+    )
+
+    return imo
+end
+
 
 """
 Given a data dictionary following the Infrastructure Models conventions, builds
@@ -86,17 +123,22 @@ function ref_initialize(data::Dict{String,<:Any}, global_keys::Set{String}=Set{S
     return refs
 end
 
+"used for building ref without the need to initialize an AbstractInfrastructureModel"
+function build_ref(data::Dict{String,<:Any}, ref_add_core!, global_keys::Set{String}; ref_extensions=[])
+    ref = ref_initialize(data, global_keys)
+    ref_add_core!(ref[:nw])
+    for ref_ext in ref_extensions
+        ref_ext(ref, data)
+    end
+    return ref
+end
+
 
 report_duals(aim::AbstractInfrastructureModel) = haskey(aim.setting, "output") && haskey(aim.setting["output"], "duals") && aim.setting["output"]["duals"] == true
 
-### Helper functions for working with multinetworks
-
+### Helper functions for working with AbstractInfrastructureModels
 ismultinetwork(aim::AbstractInfrastructureModel) = (length(aim.ref[:nw]) > 1)
-
-
 nw_ids(aim::AbstractInfrastructureModel) = keys(aim.ref[:nw])
-
-
 nws(aim::AbstractInfrastructureModel) = aim.ref[:nw]
 
 
@@ -145,6 +187,29 @@ function _sol(sol::Dict, args...)
         end
     end
     return sol
+end
+
+
+""
+function instantiate_model(data::Dict{String,<:Any}, model_type::Type, build_method, global_keys::Set{String}; ref_extensions=[], kwargs...)
+    # NOTE, this model constructor will build the ref dict using the latest info from the data
+
+    start_time = time()
+    imo = InitializeInfrastructureModel(model_type, data, global_keys; kwargs...)
+    Memento.debug(_LOGGER, "initialize model time: $(time() - start_time)")
+
+    start_time = time()
+    ref_add_core!(imo)
+    for ref_ext! in ref_extensions
+        ref_ext!(imo.ref, imo.data)
+    end
+    Memento.debug(_LOGGER, "build ref time: $(time() - start_time)")
+
+    start_time = time()
+    build_method(imo)
+    Memento.debug(_LOGGER, "build method time: $(time() - start_time)")
+
+    return imo
 end
 
 
