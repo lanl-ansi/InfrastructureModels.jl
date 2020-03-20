@@ -126,7 +126,7 @@ end
 "used for building ref without the need to initialize an AbstractInfrastructureModel"
 function build_ref(data::Dict{String,<:Any}, ref_add_core!, global_keys::Set{String}; ref_extensions=[])
     ref = ref_initialize(data, global_keys)
-    ref_add_core!(ref[:nw])
+    ref_add_core!(ref)
     for ref_ext in ref_extensions
         ref_ext(ref, data)
     end
@@ -191,7 +191,7 @@ end
 
 
 ""
-function instantiate_model(data::Dict{String,<:Any}, model_type::Type, build_method, global_keys::Set{String}; ref_extensions=[], kwargs...)
+function instantiate_model(data::Dict{String,<:Any}, model_type::Type, build_method, ref_add_core!, global_keys::Set{String}; ref_extensions=[], kwargs...)
     # NOTE, this model constructor will build the ref dict using the latest info from the data
 
     start_time = time()
@@ -199,7 +199,7 @@ function instantiate_model(data::Dict{String,<:Any}, model_type::Type, build_met
     Memento.debug(_LOGGER, "initialize model time: $(time() - start_time)")
 
     start_time = time()
-    ref_add_core!(imo)
+    ref_add_core!(imo.ref)
     for ref_ext! in ref_extensions
         ref_ext!(imo.ref, imo.data)
     end
