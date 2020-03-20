@@ -11,6 +11,12 @@ function update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
 end
 
 
+"Attempts to determine if the given data is a component dictionary"
+function _iscomponentdict(data::Dict)
+    return all( typeof(comp) <: Dict for (i, comp) in data )
+end
+
+
 "recursive call of _update_data"
 function _update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
     for (key, new_v) in new_data
