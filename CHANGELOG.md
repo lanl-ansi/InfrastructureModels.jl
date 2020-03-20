@@ -2,6 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+- Added `AbstractInfrastructureModel` type and associated model and solution building generalizations (PR #65)
 - Added support for global and network level parameters in `time_series` blocks
 - Fixed default value detection in data `summary` function
 
