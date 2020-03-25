@@ -3,6 +3,9 @@ module InfrastructureModels
 import JuMP
 import Memento
 
+import MathOptInterface
+const _MOI = MathOptInterface
+
 # Create our module level logger (this will get precompiled)
 const _LOGGER = Memento.getlogger(@__MODULE__)
 
@@ -21,10 +24,10 @@ function logger_config!(level; kwargs...)
     Memento.config!(_LOGGER, level, kwargs...)
 end
 
-
 include("core/base.jl")
 include("core/data.jl")
 include("core/relaxation_scheme.jl")
+include("core/solution.jl")
 
 include("io/common.jl")
 include("io/matlab.jl")
