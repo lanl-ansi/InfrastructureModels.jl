@@ -3,7 +3,6 @@ gn_global_keys = Set(["per_unit","undefined_key"])
 
 generic_network_data = JSON.parse("""{
     "per_unit":false,
-    "name":"generic network data",
     "a":1,
     "b":"bloop",
     "list": [1, "two", 3.0, false],

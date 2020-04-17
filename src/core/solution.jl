@@ -16,17 +16,6 @@ function build_result(aim::AbstractInfrastructureModel, solve_time; solution_pro
         Memento.warn(_LOGGER, "model has no results, solution cannot be built")
     end
 
-    data = Dict{String,Any}("name" => aim.data["name"])
-    if InfrastructureModels.ismultinetwork(aim.data)
-        data_nws = data["nw"] = Dict{String,Any}()
-
-        for (n,nw_data) in aim.data["nw"]
-            data_nws[n] = Dict(
-                "name" => get(nw_data, "name", "anonymous"),
-            )
-        end
-    end
-
     result = Dict{String,Any}(
         "optimizer" => JuMP.solver_name(aim.model),
         "termination_status" => JuMP.termination_status(aim.model),
@@ -36,11 +25,6 @@ function build_result(aim::AbstractInfrastructureModel, solve_time; solution_pro
         "objective_lb" => _guard_objective_bound(aim.model),
         "solve_time" => solve_time,
         "solution" => solution,
-        "data" => data,
-        "machine" => Dict(
-            "cpu" => Sys.cpu_info()[1].model,
-            "memory" => string(Sys.total_memory()/2^30, " Gb")
-        )
     )
 
     return result

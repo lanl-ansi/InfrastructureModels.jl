@@ -56,22 +56,22 @@ mutable struct MyInfrastructureModel <: MyAbstractInfrastructureModel @im_fields
 
     @test isa(mim.model, JuMP.AbstractModel)
 
-    @test length(mim.data) == 7
+    @test length(mim.data) == 6
     @test length(mim.setting) == 0
     @test length(mim.solution) == 0
     @test length(mim.ext) == 0
 
     @test mim.cnw == 0
 
-    @test haskey(mim.ref, :nw); @test length(mim.ref[:nw][mim.cnw]) == 7
+    @test haskey(mim.ref, :nw); @test length(mim.ref[:nw][mim.cnw]) == 6
     @test haskey(mim.var, :nw); @test length(mim.var[:nw][mim.cnw]) == 0
     @test haskey(mim.con, :nw); @test length(mim.con[:nw][mim.cnw]) == 0
     @test haskey(mim.sol, :nw); @test length(mim.sol[:nw][mim.cnw]) == 0
 
     @test haskey(mim.sol_proc, :nw); @test length(mim.sol_proc[:nw][mim.cnw]) == 0
 
-    @test !haskey(mim.data, "nw"); @test length(mim.data) == 7
-    @test haskey(mim.sol, :nw); @test length(mim.ref[:nw][mim.cnw]) == 7
+    @test !haskey(mim.data, "nw"); @test length(mim.data) == 6
+    @test haskey(mim.sol, :nw); @test length(mim.ref[:nw][mim.cnw]) == 6
 end
 
 
@@ -255,8 +255,6 @@ end
     @test haskey(result, "objective")
     @test haskey(result, "objective_lb")
     @test haskey(result, "solve_time")
-    @test haskey(result, "machine")
-    @test haskey(result, "data")
     @test haskey(result, "solution")
     @test !isnan(result["solve_time"])
 
