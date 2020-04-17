@@ -2,10 +2,8 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
-
-### v0.5.0
 - Drop `"data"` and `"machine"` from the generic result builder (#66)
+- Add support for Memento v1.1
 
 ### v0.4.3
 - Added `AbstractInfrastructureModel` type and associated model and solution building generalizations (PR #65)
