@@ -16,11 +16,17 @@ function build_result(aim::AbstractInfrastructureModel, solve_time; solution_pro
         Memento.warn(_LOGGER, "model has no results, solution cannot be built")
     end
 
+    dual_status = "none"
+    try
+        JuMP.dual_status(aim.model)
+    catch e
+    end
+
     result = Dict{String,Any}(
         "optimizer" => JuMP.solver_name(aim.model),
         "termination_status" => JuMP.termination_status(aim.model),
         "primal_status" => JuMP.primal_status(aim.model),
-        "dual_status" => JuMP.dual_status(aim.model),
+        "dual_status" => dual_status,
         "objective" => _guard_objective_value(aim.model),
         "objective_lb" => _guard_objective_bound(aim.model),
         "solve_time" => solve_time,
