@@ -18,7 +18,7 @@ function build_result(aim::AbstractInfrastructureModel, solve_time; solution_pro
 
     dual_status = "none"
     try
-        JuMP.dual_status(aim.model)
+        dual_status = JuMP.dual_status(aim.model)
     catch e
     end
 
