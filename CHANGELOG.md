@@ -4,6 +4,9 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.5.1
+- Fix `ismultinetwork` inconsistency between data Dict and AbstractInfrastructureModel
+
 ### v0.5.0
 - Drop `"data"` and `"machine"` from the generic result builder (#66)
 - Add support for Memento v1.1

@@ -176,6 +176,7 @@ end
 @testset "helper functions - instantiate_model, ref_extensions, var, con, sol" begin
     mim = instantiate_model(generic_network_data, MyInfrastructureModel, build_my_model, ref_add_core!, gn_global_keys, ref_extensions=[ref_ext_comp_stat!])
     @test !ismultinetwork(mim)
+    @test ismultinetwork(mim) == ismultinetwork(mim.data)
 
     @test length(var(mim, :c)) == 2
     @test isa(var(mim, :c, 1), JuMP.VariableRef)
@@ -186,10 +187,25 @@ end
     @test length(ref(mim, :comp_with_status)) == 2
 
 
+    mn_data = replicate(generic_network_data, 1, gn_global_keys)
+
+    mim = instantiate_model(mn_data, MyInfrastructureModel, build_my_model, ref_add_core!, gn_global_keys, ref_extensions=[ref_ext_comp_stat!])
+    @test ismultinetwork(mim)
+    @test ismultinetwork(mim) == ismultinetwork(mim.data)
+
+    @test length(var(mim, 1, :c)) == 2; @test length(var(mim, :c, nw=1)) == 2
+    @test isa(var(mim, 1, :c, 1), JuMP.VariableRef); @test isa(var(mim, :c, 1, nw=1), JuMP.VariableRef)
+
+    @test length(con(mim, 1, :comp)) == 2; @test length(con(mim, :comp, nw=1)) == 2
+    @test isa(con(mim, 1, :comp, 1), JuMP.ConstraintRef); @test isa(con(mim, :comp, 1, nw=1), JuMP.ConstraintRef)
+    @test length(ref(mim, 1, :comp_with_status)) == 2; length(ref(mim, :comp_with_status, nw=1)) == 2
+
+
     mn_data = replicate(generic_network_data, 3, gn_global_keys)
 
     mim = instantiate_model(mn_data, MyInfrastructureModel, build_my_model, ref_add_core!, gn_global_keys, ref_extensions=[ref_ext_comp_stat!])
     @test ismultinetwork(mim)
+    @test ismultinetwork(mim) == ismultinetwork(mim.data)
 
     @test length(var(mim, 2, :c)) == 2; @test length(var(mim, :c, nw=3)) == 2
     @test isa(var(mim, 2, :c, 1), JuMP.VariableRef); @test isa(var(mim, :c, 1, nw=3), JuMP.VariableRef)

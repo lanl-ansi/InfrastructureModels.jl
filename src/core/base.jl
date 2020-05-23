@@ -137,7 +137,7 @@ end
 report_duals(aim::AbstractInfrastructureModel) = haskey(aim.setting, "output") && haskey(aim.setting["output"], "duals") && aim.setting["output"]["duals"] == true
 
 ### Helper functions for working with AbstractInfrastructureModels
-ismultinetwork(aim::AbstractInfrastructureModel) = (length(aim.ref[:nw]) > 1)
+ismultinetwork(aim::AbstractInfrastructureModel) = ismultinetwork(aim.data)
 nw_ids(aim::AbstractInfrastructureModel) = keys(aim.ref[:nw])
 nws(aim::AbstractInfrastructureModel) = aim.ref[:nw]
 
