@@ -36,6 +36,9 @@ end
 "checks if a given network data is a multinetwork"
 ismultinetwork(data::Dict{String,<:Any}) = (haskey(data, "multinetwork") && data["multinetwork"] == true)
 
+"checks if a given dataset has a time series component"
+istimeseries(data::Dict{String,<:Any}) = haskey(data, "time_series")
+
 "Transforms a single network into a multinetwork with several deepcopies of the original network"
 function replicate(sn_data::Dict{String,<:Any}, count::Int, global_keys::Set{String})
     @assert count > 0
