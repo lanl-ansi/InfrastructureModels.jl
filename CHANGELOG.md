@@ -4,6 +4,9 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.5.2
+- Add `has_time_series` and `get_num_networks` functions for working with time series data.
+
 ### v0.5.1
 - Fix `ismultinetwork` inconsistency between data Dict and AbstractInfrastructureModel
 
