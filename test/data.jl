@@ -208,7 +208,7 @@ end
     @testset "network replicate data" begin
         mn_data = InfrastructureModels.replicate(generic_network_data, 3, Set(["a", "b", "per_unit", "list"]))
 
-        @test InfrastructureModels.get_num_networks(mn_data) == 7
+        @test InfrastructureModels.get_num_networks(mn_data) == 3
         @test length(mn_data) == 7
         @test mn_data["multinetwork"]
         @test haskey(mn_data, "per_unit")
@@ -259,7 +259,7 @@ end
     @testset "make_multinetwork from time series" begin
         generic_network_data_tmp = deepcopy(generic_network_data)
         generic_network_data_tmp["time_series"] = generic_network_time_series_data
-        @test InfrastructureModels.get_num_networks(generic_network_data_tmp) == 7
+        @test InfrastructureModels.get_num_networks(generic_network_data_tmp) == 3
         @test InfrastructureModels.has_time_series(generic_network_data_tmp) == true
 
         mn_data = InfrastructureModels.make_multinetwork(generic_network_data_tmp, Set(["per_unit","undefined_key"]))
