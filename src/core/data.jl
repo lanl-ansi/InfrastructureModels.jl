@@ -37,7 +37,18 @@ end
 ismultinetwork(data::Dict{String,<:Any}) = (haskey(data, "multinetwork") && data["multinetwork"] == true)
 
 "checks if a given dataset has a time series component"
-istimeseries(data::Dict{String,<:Any}) = haskey(data, "time_series")
+has_time_series(data::Dict{String,<:Any}) = haskey(data, "time_series")
+
+"gets the number of networks that could exist provided the base data"
+function get_num_networks(data::Dict{String,<:Any})
+    if ismultinetwork(data)
+        return length(data["nw"])
+    elseif has_time_series(data)
+        return data["time_series"]["num_steps"]
+    else
+        return 1
+    end
+end
 
 "Transforms a single network into a multinetwork with several deepcopies of the original network"
 function replicate(sn_data::Dict{String,<:Any}, count::Int, global_keys::Set{String})
