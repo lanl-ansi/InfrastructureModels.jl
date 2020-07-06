@@ -29,6 +29,8 @@ include("data.jl")
 
 include("base.jl")
 
+include("constraint.jl")
+
 include("relaxation_scheme.jl")
 
 end

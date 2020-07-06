@@ -4,7 +4,8 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
-### v0.5.2
+### v0.5.3
+- Add generic `constraint_bounds_on_off` function.
 - Fix bug in parsing `NaN` and `Inf` in Matlab data files.
 
 ### v0.5.2

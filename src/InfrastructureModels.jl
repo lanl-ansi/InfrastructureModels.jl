@@ -26,6 +26,7 @@ end
 
 include("core/base.jl")
 include("core/data.jl")
+include("core/constraint.jl")
 include("core/relaxation_scheme.jl")
 include("core/solution.jl")
 
