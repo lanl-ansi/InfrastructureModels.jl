@@ -5,6 +5,9 @@ InfrastructureModels.jl Change Log
 - nothing
 
 ### v0.5.2
+- Fix bug in parsing `NaN` and `Inf` in Matlab data files.
+
+### v0.5.2
 - Add `has_time_series` and `get_num_networks` functions for working with time series data.
 
 ### v0.5.1
