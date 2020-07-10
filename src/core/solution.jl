@@ -116,6 +116,22 @@ function build_solution_values(var::JuMP.VariableRef)
     return JuMP.value(var)
 end
 
+
+function build_solution_values(var::JuMP.Containers.DenseAxisArray{<:JuMP.VariableRef,1})
+    return JuMP.value.(var.data)
+end
+
+
+function build_solution_values(var::JuMP.Containers.DenseAxisArray{<:JuMP.NonlinearExpression,1})
+    return JuMP.value.(var.data)
+end
+
+
+function build_solution_values(var::JuMP.Containers.DenseAxisArray{<:Number,1})
+    return var.data
+end
+
+
 ""
 function build_solution_values(var::JuMP.GenericAffExpr)
     return JuMP.value(var)
