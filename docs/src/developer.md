@@ -120,16 +120,16 @@ If the data includes the parameter `multi_infrastructure`, then network data obj
 
 ```json
 {
-"multi_infrastructure": true,
-"infrastructure": {
-    "power_distribution": {...},
-    "power_transmission": {...},
-    "natural_gas_transmission": {...},
-    "water_distribution": {...},
+    "multi_infrastructure": true,
+    "infrastructure": {
+        "power_distribution": {...},
+        "power_transmission": {...},
+        "natural_gas_transmission": {...},
+        "water_distribution": {...},
+        ...
+    }
+    "component_links": [...]
     ...
-}
-"component_links": [...]
-...
 }
 ```
 
