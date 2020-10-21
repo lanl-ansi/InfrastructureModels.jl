@@ -31,6 +31,7 @@ InfrastructureModels.@def im_fields begin
     sol_proc::Dict{Symbol,<:Any}
 
     cnw::Int
+    current_infrastructure::Symbol
 
     # Extension dictionary
     # Extensions should define a type to hold information particular to
@@ -44,20 +45,31 @@ function InitializeInfrastructureModel(InfrastructureModel::Type, data::Dict{Str
     @assert InfrastructureModel <: AbstractInfrastructureModel
 
     ref = ref_initialize(data, global_keys) # reference data
+    var = Dict{Symbol, Any}(:infrastructure => Dict{Symbol, Any}())
+    con = Dict{Symbol, Any}(:infrastructure => Dict{Symbol, Any}())
+    sol = Dict{Symbol, Any}(:infrastructure => Dict{Symbol, Any}())
+    sol_proc = Dict{Symbol, Any}(:infrastructure => Dict{Symbol, Any}())
 
-    var = Dict{Symbol,Any}(:nw => Dict{Int,Any}())
-    con = Dict{Symbol,Any}(:nw => Dict{Int,Any}())
-    sol = Dict{Symbol,Any}(:nw => Dict{Int,Any}())
-    sol_proc = Dict{Symbol,Any}(:nw => Dict{Int,Any}())
+    for infrastructure_type in keys(data)
+        # Get the symbol corresponding to the infrastructure type.
+        infra = Symbol(infrastructure_type)
 
-    for (nw_id, nw) in ref[:nw]
-        nw_var = var[:nw][nw_id] = Dict{Symbol,Any}()
-        nw_con = con[:nw][nw_id] = Dict{Symbol,Any}()
-        nw_sol = sol[:nw][nw_id] = Dict{Symbol,Any}()
-        nw_sol_proc = sol_proc[:nw][nw_id] = Dict{Symbol,Any}()
+        var[infra] = Dict{Symbol, Any}(:nw => Dict{Int, Any}())
+        con[infra] = Dict{Symbol, Any}(:nw => Dict{Int, Any}())
+        sol[infra] = Dict{Symbol, Any}(:nw => Dict{Int, Any}())
+        sol_proc[infra] = Dict{Symbol, Any}(:nw => Dict{Int, Any}())
+
+        for (nw_id, nw) in ref[:nw]
+            var[infra][:nw][nw_id] = Dict{Symbol, Any}()
+            con[infra][:nw][nw_id] = Dict{Symbol, Any}()
+            sol[infra][:nw][nw_id] = Dict{Symbol, Any}()
+            sol_proc[infra][:nw][nw_id] = Dict{Symbol, Any}()
+        end
+
     end
 
-    cnw = minimum([k for k in keys(var[:nw])])
+    current_infrastructure = sort(keys(var))
+    cnw = minimum([k for k in keys(var[current_infrastructure][:nw])])
 
     imo = InfrastructureModel(
         jump_model,
@@ -70,6 +82,7 @@ function InitializeInfrastructureModel(InfrastructureModel::Type, data::Dict{Str
         sol,
         sol_proc,
         cnw,
+        current_infrastructure,
         ext
     )
 
@@ -84,37 +97,44 @@ keys to integers.  The global keys argument specifies which keys should remain
 in the root of dictionary when building a multi-network
 """
 function ref_initialize(data::Dict{String,<:Any}, global_keys::Set{String}=Set{String}())
-    refs = Dict{Symbol,Any}()
+    refs = Dict{Symbol, Any}(:infrastructure => Dict{Symbol, Any}())
 
-    if ismultinetwork(data)
-        nws_data = data["nw"]
-        for (key, item) in data
-            if key != "nw"
-                refs[Symbol(key)] = item
+    for infrastructure_type in keys(data)
+        infra = Symbol(infrastructure_type)
+        refs[:infrastructure][infra] = Dict{Symbol, Any}()
+
+        if ismultinetwork(data)
+            nws_data = data["nw"]
+
+            for (key, item) in data
+                if key != "nw"
+                    refs[infra][Symbol(key)] = item
+                end
+            end
+        else
+            nws_data = Dict("0" => data)
+
+            for global_key in global_keys
+                if haskey(data, global_key)
+                    refs[infra][Symbol(global_key)] = data[global_key]
+                end
             end
         end
-    else
-        nws_data = Dict("0" => data)
-        for global_key in global_keys
-            if haskey(data, global_key)
-                refs[Symbol(global_key)] = data[global_key]
-            end
-        end
-    end
 
-    nws = refs[:nw] = Dict{Int,Any}()
+        nws = refs[:infrastructure][infra][:nw] = Dict{Int,Any}()
 
-    for (n, nw_data) in nws_data
-        nw_id = parse(Int, n)
-        ref = nws[nw_id] = Dict{Symbol,Any}()
+        for (n, nw_data) in nws_data
+            nw_id = parse(Int, n)
+            ref = nws[nw_id] = Dict{Symbol, Any}()
 
-        for (key, item) in nw_data
-            if !(key in global_keys)
-                if isa(item, Dict{String,Any}) && _iscomponentdict(item)
-                    item_lookup = Dict{Int,Any}([(parse(Int, k), v) for (k,v) in item])
-                    ref[Symbol(key)] = item_lookup
-                else
-                    ref[Symbol(key)] = item
+            for (key, item) in nw_data
+                if !(key in global_keys)
+                    if isa(item, Dict{String, Any}) && _iscomponentdict(item)
+                        item_lookup = Dict{Int, Any}([(parse(Int, k), v) for (k,v) in item])
+                        ref[Symbol(key)] = item_lookup
+                    else
+                        ref[Symbol(key)] = item
+                    end
                 end
             end
         end
@@ -127,9 +147,11 @@ end
 function build_ref(data::Dict{String,<:Any}, ref_add_core!, global_keys::Set{String}; ref_extensions=[])
     ref = ref_initialize(data, global_keys)
     ref_add_core!(ref)
+
     for ref_ext in ref_extensions
         ref_ext(ref, data)
     end
+
     return ref
 end
 
@@ -200,9 +222,11 @@ function instantiate_model(data::Dict{String,<:Any}, model_type::Type, build_met
 
     start_time = time()
     ref_add_core!(imo.ref)
+
     for ref_ext! in ref_extensions
         ref_ext!(imo.ref, imo.data)
     end
+
     Memento.debug(_LOGGER, "build ref time: $(time() - start_time)")
 
     start_time = time()
@@ -226,7 +250,7 @@ function optimize_model!(aim::AbstractInfrastructureModel; optimizer=nothing, so
     end
 
     if aim.model.moi_backend.state == _MOI.Utilities.NO_OPTIMIZER
-        Memento.error(_LOGGER, "no optimizer specified in `optimize_model!` or the given JuMP model.")
+        Memento.error(_LOGGER, "No optimizer specified in `optimize_model!` or the given JuMP model.")
     end
 
     _, solve_time, solve_bytes_alloc, sec_in_gc = @timed JuMP.optimize!(aim.model)
@@ -234,7 +258,7 @@ function optimize_model!(aim::AbstractInfrastructureModel; optimizer=nothing, so
     try
         solve_time = _MOI.get(aim.model, _MOI.SolveTime())
     catch
-        Memento.warn(_LOGGER, "the given optimizer does not provide the SolveTime() attribute, falling back on @timed.  This is not a rigorous timing value.");
+        Memento.warn(_LOGGER, "The given optimizer does not provide the SolveTime() attribute, falling back on @timed.  This is not a rigorous timing value.");
     end
     Memento.debug(_LOGGER, "JuMP model optimize time: $(time() - start_time)")
 

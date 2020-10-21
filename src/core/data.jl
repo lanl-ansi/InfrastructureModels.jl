@@ -7,6 +7,7 @@ function update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
     else
         Memento.warn(_LOGGER, "running update_data with data that does not include per_unit field, units may be incorrect")
     end
+
     _update_data!(data, new_data)
 end
 
