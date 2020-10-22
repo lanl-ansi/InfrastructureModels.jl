@@ -10,6 +10,7 @@ function build_result(aim::AbstractInfrastructureModel, solve_time; solution_pro
     end
 
     solution = Dict{String,Any}()
+
     if result_count > 0
         solution = build_solution(aim, post_processors=solution_processors)
     else
@@ -66,33 +67,38 @@ end
 
 ""
 function build_solution(aim::AbstractInfrastructureModel; post_processors=[])
-    sol = build_solution_values(aim.sol)
+    _sol = Dict{String, Any}("it" => Dict{String, Any}())
 
-    solution_preprocessor(aim, sol)
+    for it in it_ids(aim)
+        it_str = string(it)
+        _sol["it"][it_str] = build_solution_values(sol(aim; it=it))
+        solution_preprocessor(aim, _sol["it"][it_str])
 
-    if ismultinetwork(aim.data)
-        sol["multinetwork"] = true
-    else
-        for (k,v) in sol["nw"]["$(aim.cnw)"]
-            sol[k] = v
+        if ismultinetwork(aim.data["it"][it_str])
+            _sol["it"][it_str]["multinetwork"] = true
+        else
+            for (k, v) in _sol["it"][it_str]
+                _sol["it"][it_str][k] = v
+            end
         end
-        delete!(sol, "nw")
     end
 
     for post_processor in post_processors
-        post_processor(aim, sol)
+        post_processor(aim, _sol)
     end
 
-    return sol
+    return _sol
 end
 
 
 ""
 function build_solution_values(var::Dict)
-    sol = Dict{String,Any}()
+    sol = Dict{String, Any}()
+
     for (key, val) in var
         sol[string(key)] = build_solution_values(val)
     end
+
     return sol
 end
 
@@ -167,6 +173,7 @@ function sol_component_value_edge(aim::AbstractInfrastructureModel, n::Int, comp
         @assert !haskey(sol(aim, n, comp_name, l), field_name_fr)
         sol(aim, n, comp_name, l)[field_name_fr] = variables[(l,i,j)]
     end
+
     for (l,i,j) in comp_ids_to
         @assert !haskey(sol(aim, n, comp_name, l), field_name_to)
         sol(aim, n, comp_name, l)[field_name_to] = variables[(l,i,j)]
