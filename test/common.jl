@@ -1,7 +1,7 @@
 
 gn_global_keys = Set(["per_unit","undefined_key"])
 
-generic_network_data = JSON.parse("""{
+generic_network_data = JSON.parse("""{"it": {"foo": {
     "per_unit":false,
     "a":1,
     "b":"bloop",
@@ -26,7 +26,7 @@ generic_network_data = JSON.parse("""{
             "c":"same",
             "d":false
         }
-    }
+        }}}
 }""")
 
 generic_network_time_series_data = Dict(

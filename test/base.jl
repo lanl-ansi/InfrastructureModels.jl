@@ -23,27 +23,27 @@ end
 @testset "ref initialize" begin
     ref = ref_initialize(generic_network_data)
 
-    @test !haskey(ref, :dict)
-    @test !haskey(ref, :per_unit)
+    @test !haskey(ref[:it][:foo], :dict)
+    @test !haskey(ref[:it][:foo], :per_unit)
 
-    @test ref[:nw][0][:a] == 1
-    @test ref[:nw][0][:b] == "bloop"
-    @test ref[:nw][0][:per_unit] == false
-    @test ref[:nw][0][:dict]["b"] == 2.0
-    @test ref[:nw][0][:comp][2]["a"] == 3
+    @test ref[:it][:foo][:nw][0][:a] == 1
+    @test ref[:it][:foo][:nw][0][:b] == "bloop"
+    @test ref[:it][:foo][:nw][0][:per_unit] == false
+    @test ref[:it][:foo][:nw][0][:dict]["b"] == 2.0
+    @test ref[:it][:foo][:nw][0][:comp][2]["a"] == 3
 end
 
 @testset "ref initialize with global keys" begin
     ref = ref_initialize(generic_network_data, Set(["per_unit", "dict"]))
 
-    @test ref[:per_unit] == false
-    @test ref[:dict]["b"] == 2.0
+    @test ref[:it][:foo][:per_unit] == false
+    @test ref[:it][:foo][:dict]["b"] == 2.0
 
-    @test !haskey(ref[:nw][0], :dict)
-    @test !haskey(ref[:nw][0], :per_unit)
-    @test ref[:nw][0][:a] == 1
-    @test ref[:nw][0][:b] == "bloop"
-    @test ref[:nw][0][:comp][2]["a"] == 3
+    @test !haskey(ref[:it][:foo][:nw][0], :dict)
+    @test !haskey(ref[:it][:foo][:nw][0], :per_unit)
+    @test ref[:it][:foo][:nw][0][:a] == 1
+    @test ref[:it][:foo][:nw][0][:b] == "bloop"
+    @test ref[:it][:foo][:nw][0][:comp][2]["a"] == 3
 end
 
 
@@ -56,22 +56,22 @@ mutable struct MyInfrastructureModel <: MyAbstractInfrastructureModel @im_fields
 
     @test isa(mim.model, JuMP.AbstractModel)
 
-    @test length(mim.data) == 6
+    @test length(mim.data["it"]["foo"]) == 6
     @test length(mim.setting) == 0
     @test length(mim.solution) == 0
     @test length(mim.ext) == 0
 
     @test mim.cnw == 0
 
-    @test haskey(mim.ref, :nw); @test length(mim.ref[:nw][mim.cnw]) == 6
-    @test haskey(mim.var, :nw); @test length(mim.var[:nw][mim.cnw]) == 0
-    @test haskey(mim.con, :nw); @test length(mim.con[:nw][mim.cnw]) == 0
-    @test haskey(mim.sol, :nw); @test length(mim.sol[:nw][mim.cnw]) == 0
+    @test haskey(mim.ref[:it][:foo], :nw); @test length(mim.ref[:it][:foo][:nw][mim.cnw]) == 6
+    @test haskey(mim.var[:it][:foo], :nw); @test length(mim.var[:it][:foo][:nw][mim.cnw]) == 0
+    @test haskey(mim.con[:it][:foo], :nw); @test length(mim.con[:it][:foo][:nw][mim.cnw]) == 0
+    @test haskey(mim.sol[:it][:foo], :nw); @test length(mim.sol[:it][:foo][:nw][mim.cnw]) == 0
 
-    @test haskey(mim.sol_proc, :nw); @test length(mim.sol_proc[:nw][mim.cnw]) == 0
+    @test haskey(mim.sol_proc[:it][:foo], :nw); @test length(mim.sol_proc[:it][:foo][:nw][mim.cnw]) == 0
 
-    @test !haskey(mim.data, "nw"); @test length(mim.data) == 6
-    @test haskey(mim.sol, :nw); @test length(mim.ref[:nw][mim.cnw]) == 6
+    @test !haskey(mim.data["it"]["foo"], "nw"); @test length(mim.data["it"]["foo"]) == 6
+    @test haskey(mim.sol[:it][:foo], :nw); @test length(mim.ref[:it][:foo][:nw][mim.cnw]) == 6
 end
 
 
@@ -86,8 +86,8 @@ end
     @test length(ref(mim, :comp, 1)) == 4
     @test ref(mim, :comp, 2, "c") == "same"
 
-
-    mn_data = replicate(generic_network_data, 3, gn_global_keys)
+    mn_data = replicate(generic_network_data["it"]["foo"], 3, gn_global_keys)
+    mn_data = Dict{String, Any}("it" => Dict{String, Any}("foo" => mn_data))
 
     mim = InitializeInfrastructureModel(MyInfrastructureModel, mn_data, gn_global_keys)
     @test ismultinetwork(mim)
@@ -129,35 +129,35 @@ function build_my_model(aim::MyAbstractInfrastructureModel)
         for nw in nw_ids(aim))
     )
 
-    aim.sol[:glb] = 4.56
+    aim.sol[:it][:foo][:glb] = 4.56
 end
 
 function ref_add_core!(ref::Dict)
-    for (nw, nw_ref) in ref[:nw]
+    for (nw, nw_ref) in ref[:it][:foo][:nw]
         nw_ref[:comp] = Dict(x for x in nw_ref[:comp] if (!haskey(x.second, "status") || x.second["status"] != 0))
     end
 end
 
 function ref_ext_comp_stat!(ref::Dict, data::Dict)
-    if ismultinetwork(data)
-        nws_data = data["nw"]
+    if ismultinetwork(data["it"]["foo"])
+        nws_data = data["it"]["foo"]["nw"]
     else
-        nws_data = Dict("0" => data)
+        nws_data = Dict("0" => data["it"]["foo"])
     end
 
     for (n, nw_data) in nws_data
         nw_id = parse(Int, n)
-        nw_ref = ref[:nw][nw_id]
-
-        nw_ref[:comp_with_status] = Set([parse(Int, i) for (i,comp) in nw_data["comp"] if haskey(comp, "status")])
+        nw_ref = ref[:it][:foo][:nw][nw_id]
+        nw_ref[:comp_with_status] = Set([parse(Int, i) for (i, comp) in nw_data["comp"] if haskey(comp, "status")])
     end
 end
 
 ""
 function InfrastructureModels.solution_preprocessor(aim::MyAbstractInfrastructureModel, solution::Dict)
-    solution["per_unit"] = aim.data["per_unit"]
+    solution["it"]["foo"]["per_unit"] = aim.data["it"]["foo"]["per_unit"]
+
     for (nw_id, nw_ref) in nws(aim)
-        solution["nw"]["$(nw_id)"]["b"] = nw_ref[:b]
+        solution["it"]["foo"]["nw"]["$(nw_id)"]["b"] = nw_ref[:b]
     end
 end
 
@@ -165,18 +165,18 @@ end
 @testset "external build_ref" begin
     ref = build_ref(generic_network_data, ref_add_core!, gn_global_keys; ref_extensions=[ref_ext_comp_stat!])
 
-    @test length(ref[:nw][0][:comp]) == 2
-    @test length(ref[:nw][0][:comp][1]) == 4
-    @test ref[:nw][0][:comp][1]["c"] == "same"
+    @test length(ref[:it][:foo][:nw][0][:comp]) == 2
+    @test length(ref[:it][:foo][:nw][0][:comp][1]) == 4
+    @test ref[:it][:foo][:nw][0][:comp][1]["c"] == "same"
 
-    @test length(ref[:nw][0][:comp_with_status]) == 2
+    @test length(ref[:it][:foo][:nw][0][:comp_with_status]) == 2
 end
 
 
 @testset "helper functions - instantiate_model, ref_extensions, var, con, sol" begin
     mim = instantiate_model(generic_network_data, MyInfrastructureModel, build_my_model, ref_add_core!, gn_global_keys, ref_extensions=[ref_ext_comp_stat!])
     @test !ismultinetwork(mim)
-    @test ismultinetwork(mim) == ismultinetwork(mim.data)
+    @test ismultinetwork(mim) == ismultinetwork(mim.data["it"]["foo"])
 
     @test length(var(mim, :c)) == 2
     @test isa(var(mim, :c, 1), JuMP.VariableRef)
@@ -187,11 +187,12 @@ end
     @test length(ref(mim, :comp_with_status)) == 2
 
 
-    mn_data = replicate(generic_network_data, 1, gn_global_keys)
+    mn_data = replicate(generic_network_data["it"]["foo"], 1, gn_global_keys)
+    mn_data = Dict{String, Any}("it" => Dict{String, Any}("foo" => mn_data))
 
     mim = instantiate_model(mn_data, MyInfrastructureModel, build_my_model, ref_add_core!, gn_global_keys, ref_extensions=[ref_ext_comp_stat!])
     @test ismultinetwork(mim)
-    @test ismultinetwork(mim) == ismultinetwork(mim.data)
+    @test ismultinetwork(mim) == ismultinetwork(mim.data["it"]["foo"])
 
     @test length(var(mim, 1, :c)) == 2; @test length(var(mim, :c, nw=1)) == 2
     @test isa(var(mim, 1, :c, 1), JuMP.VariableRef); @test isa(var(mim, :c, 1, nw=1), JuMP.VariableRef)
@@ -200,12 +201,12 @@ end
     @test isa(con(mim, 1, :comp, 1), JuMP.ConstraintRef); @test isa(con(mim, :comp, 1, nw=1), JuMP.ConstraintRef)
     @test length(ref(mim, 1, :comp_with_status)) == 2; length(ref(mim, :comp_with_status, nw=1)) == 2
 
-
-    mn_data = replicate(generic_network_data, 3, gn_global_keys)
+    mn_data = replicate(generic_network_data["it"]["foo"], 3, gn_global_keys)
+    mn_data = Dict{String, Any}("it" => Dict{String, Any}("foo" => mn_data))
 
     mim = instantiate_model(mn_data, MyInfrastructureModel, build_my_model, ref_add_core!, gn_global_keys, ref_extensions=[ref_ext_comp_stat!])
     @test ismultinetwork(mim)
-    @test ismultinetwork(mim) == ismultinetwork(mim.data)
+    @test ismultinetwork(mim) == ismultinetwork(mim.data["it"]["foo"])
 
     @test length(var(mim, 2, :c)) == 2; @test length(var(mim, :c, nw=3)) == 2
     @test isa(var(mim, 2, :c, 1), JuMP.VariableRef); @test isa(var(mim, :c, 1, nw=3), JuMP.VariableRef)
@@ -219,7 +220,7 @@ end
 @testset "helper functions - instantiate_model, optimize_model!, sol" begin
     mim = instantiate_model(generic_network_data, MyInfrastructureModel, build_my_model, ref_add_core!, gn_global_keys, ref_extensions=[ref_ext_comp_stat!])
     result = optimize_model!(mim, optimizer=ipopt_solver)
-    solution = result["solution"]
+    solution = result["solution"]["it"]["foo"]
 
     @test solution["glb"] == 4.56
     @test haskey(solution, "per_unit")
@@ -236,10 +237,12 @@ end
     @test solution["comp"]["3"]["d"] == 1.23
 
 
-    mn_data = replicate(generic_network_data, 3, gn_global_keys)
+    mn_data = replicate(generic_network_data["it"]["foo"], 3, gn_global_keys)
+    mn_data = Dict{String, Any}("it" => Dict{String, Any}("foo" => mn_data))
+
     mim = instantiate_model(mn_data, MyInfrastructureModel, build_my_model, ref_add_core!, gn_global_keys, ref_extensions=[ref_ext_comp_stat!])
     result = optimize_model!(mim, optimizer=ipopt_solver)
-    solution = result["solution"]
+    solution = result["solution"]["it"]["foo"]
 
     @test solution["glb"] == 4.56
     @test haskey(solution, "per_unit")
@@ -274,8 +277,8 @@ end
     @test haskey(result, "solution")
     @test !isnan(result["solve_time"])
 
-    @test length(result["solution"]) == 4
-    @test length(result["solution"]["comp"]) == 2
+    @test length(result["solution"]["it"]["foo"]) == 4
+    @test length(result["solution"]["it"]["foo"]["comp"]) == 2
 
     @test result["termination_status"] == MOI.LOCALLY_SOLVED
     @test result["primal_status"] == MOI.FEASIBLE_POINT

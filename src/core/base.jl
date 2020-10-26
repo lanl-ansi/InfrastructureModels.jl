@@ -147,13 +147,8 @@ function build_ref(data::Dict{String,<:Any}, ref_add_core!, global_keys::Set{Str
     ref = ref_initialize(data, global_keys)
     ref_add_core!(ref)
 
-    # TODO: How should we do this with multi-infrastructure?
-    for it in keys(data["it"])
-        it_sym = Symbol(it)
-
-        for ref_ext in ref_extensions
-            ref_ext(ref[:it][it_sym], data["it"][it])
-        end
+    for ref_ext in ref_extensions
+        ref_ext(ref, data)
     end
 
     return ref

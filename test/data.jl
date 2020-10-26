@@ -104,7 +104,7 @@ end
     end
 
     @testset "summary feature component data" begin
-        output = sprint(InfrastructureModels.summary, generic_network_data)
+        output = sprint(InfrastructureModels.summary, generic_network_data["it"]["foo"])
 
         line_count = count(c -> c == '\n', output)
         @test line_count >= 18 && line_count <= 22
@@ -206,7 +206,7 @@ end
 @testset "data transformation" begin
 
     @testset "network replicate data" begin
-        mn_data = InfrastructureModels.replicate(generic_network_data, 3, Set(["a", "b", "per_unit", "list"]))
+        mn_data = InfrastructureModels.replicate(generic_network_data["it"]["foo"], 3, Set(["a", "b", "per_unit", "list"]))
 
         @test InfrastructureModels.get_num_networks(mn_data) == 3
         @test length(mn_data) == 7
@@ -225,7 +225,7 @@ end
 
 
     @testset "network replicate data, single network" begin
-        mn_data = InfrastructureModels.replicate(generic_network_data, 1, Set(["per_unit","undefined_key"]))
+        mn_data = InfrastructureModels.replicate(generic_network_data["it"]["foo"], 1, Set(["per_unit","undefined_key"]))
 
         @test length(mn_data) == 4
         @test mn_data["multinetwork"]
@@ -238,31 +238,31 @@ end
 
    @testset "load state from time series" begin
         data_tmp = deepcopy(generic_network_data)
-        data_tmp["time_series"] = generic_network_time_series_data
-        @test data_tmp["comp"]["1"]["a"] == 1
-        @test data_tmp["comp"]["2"]["c"] == "same"
+        data_tmp["it"]["foo"]["time_series"] = generic_network_time_series_data
+        @test data_tmp["it"]["foo"]["comp"]["1"]["a"] == 1
+        @test data_tmp["it"]["foo"]["comp"]["2"]["c"] == "same"
 
-        InfrastructureModels.load_timepoint!(data_tmp, 1)
-        @test data_tmp["comp"]["1"]["a"] == 3
-        @test data_tmp["comp"]["2"]["c"] == "three"
+        InfrastructureModels.load_timepoint!(data_tmp["it"]["foo"], 1)
+        @test data_tmp["it"]["foo"]["comp"]["1"]["a"] == 3
+        @test data_tmp["it"]["foo"]["comp"]["2"]["c"] == "three"
 
-        InfrastructureModels.load_timepoint!(data_tmp, 2)
-        @test data_tmp["comp"]["1"]["a"] == 5
-        @test data_tmp["comp"]["2"]["c"] == "five"
+        InfrastructureModels.load_timepoint!(data_tmp["it"]["foo"], 2)
+        @test data_tmp["it"]["foo"]["comp"]["1"]["a"] == 5
+        @test data_tmp["it"]["foo"]["comp"]["2"]["c"] == "five"
 
-        InfrastructureModels.load_timepoint!(data_tmp, 3)
-        @test data_tmp["comp"]["1"]["a"] == 7
-        @test data_tmp["comp"]["2"]["c"] == "seven"
+        InfrastructureModels.load_timepoint!(data_tmp["it"]["foo"], 3)
+        @test data_tmp["it"]["foo"]["comp"]["1"]["a"] == 7
+        @test data_tmp["it"]["foo"]["comp"]["2"]["c"] == "seven"
     end
 
 
     @testset "make_multinetwork from time series" begin
         generic_network_data_tmp = deepcopy(generic_network_data)
-        generic_network_data_tmp["time_series"] = generic_network_time_series_data
-        @test InfrastructureModels.get_num_networks(generic_network_data_tmp) == 3
-        @test InfrastructureModels.has_time_series(generic_network_data_tmp) == true
+        generic_network_data_tmp["it"]["foo"]["time_series"] = generic_network_time_series_data
+        @test InfrastructureModels.get_num_networks(generic_network_data_tmp["it"]["foo"]) == 3
+        @test InfrastructureModels.has_time_series(generic_network_data_tmp["it"]["foo"]) == true
 
-        mn_data = InfrastructureModels.make_multinetwork(generic_network_data_tmp, Set(["per_unit","undefined_key"]))
+        mn_data = InfrastructureModels.make_multinetwork(generic_network_data_tmp["it"]["foo"], Set(["per_unit","undefined_key"]))
 
         @test length(mn_data) == 5
         @test mn_data["multinetwork"]
@@ -440,7 +440,7 @@ end
 @testset "data comparison" begin
 
     @testset "dict comparison" begin
-        mn_data = InfrastructureModels.replicate(generic_network_data, 3, Set{String}())
+        mn_data = InfrastructureModels.replicate(generic_network_data["it"]["foo"], 3, Set{String}())
 
         nw_1 = mn_data["nw"]["1"]
         nw_2 = mn_data["nw"]["2"]
