@@ -71,15 +71,17 @@ function build_solution(aim::AbstractInfrastructureModel; post_processors=[])
 
     for it in it_ids(aim)
         it_str = string(it)
-        _sol["it"][it_str] = build_solution_values(sol(aim; it=it))
+        _sol["it"][it_str] = build_solution_values(aim.sol[:it][it])
         solution_preprocessor(aim, _sol["it"][it_str])
 
         if ismultinetwork(aim.data["it"][it_str])
             _sol["it"][it_str]["multinetwork"] = true
         else
-            for (k, v) in _sol["it"][it_str]
+            for (k, v) in _sol["it"][it_str]["nw"]["$(aim.cnw)"]
                 _sol["it"][it_str][k] = v
             end
+
+            delete!(_sol["it"][it_str], "nw")
         end
     end
 

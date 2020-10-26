@@ -102,12 +102,12 @@ function ref_initialize(data::Dict{String,<:Any}, global_keys::Set{String}=Set{S
         it_sym = Symbol(it)
         refs[:it][it_sym] = Dict{Symbol, Any}()
 
-        if ismultinetwork(data)
+        if ismultinetwork(data["it"][it])
             nws_data = data["it"][it]["nw"]
 
-            for (key, item) in data
+            for (key, item) in data["it"][it]
                 if key != "nw"
-                    refs[it_sym][Symbol(key)] = item
+                    refs[:it][it_sym][Symbol(key)] = item
                 end
             end
         else
@@ -164,7 +164,7 @@ report_duals(aim::AbstractInfrastructureModel) = haskey(aim.setting, "output") &
 
 ### Helper functions for working with AbstractInfrastructureModels
 it_ids(aim::AbstractInfrastructureModel) = keys(aim.ref[:it])
-ismultinetwork(aim::AbstractInfrastructureModel) = ismultinetwork(aim.data)
+ismultinetwork(aim::AbstractInfrastructureModel; it::Symbol=aim.cit) = ismultinetwork(aim.data["it"][string(it)])
 nw_ids(aim::AbstractInfrastructureModel; it::Symbol=aim.cit) = keys(aim.ref[:it][it][:nw])
 nws(aim::AbstractInfrastructureModel; it::Symbol=aim.cit) = aim.ref[:it][it][:nw]
 
@@ -213,6 +213,7 @@ function _sol(sol::Dict, args...)
             sol = sol[arg] = Dict()
         end
     end
+
     return sol
 end
 
