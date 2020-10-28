@@ -33,6 +33,9 @@ function _update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
     end
 end
 
+"checks if a given network data is a multiinfrastructure"
+ismultiinfrastructure(data::Dict{String,<:Any}) = (haskey(data, "multiinfrastructure") && data["multiinfrastructure"] == true)
+
 "checks if a given network data is a multinetwork"
 ismultinetwork(data::Dict{String,<:Any}) = (haskey(data, "multinetwork") && data["multinetwork"] == true)
 

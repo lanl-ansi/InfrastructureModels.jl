@@ -30,6 +30,7 @@ InfrastructureModels.@def im_fields begin
     sol::Dict{Symbol,<:Any}
     sol_proc::Dict{Symbol,<:Any}
 
+    cit::Symbol
     cnw::Int
 
     # Extension dictionary
@@ -39,25 +40,29 @@ InfrastructureModels.@def im_fields begin
     ext::Dict{Symbol,<:Any}
 end
 
+infrastructure_type(InfrastructureModel::Type) = :none
+
+
 # default generic constructor
 function InitializeInfrastructureModel(InfrastructureModel::Type, data::Dict{String,<:Any}, global_keys::Set{String}; ext = Dict{Symbol,Any}(), setting = Dict{String,Any}(), jump_model::JuMP.AbstractModel=JuMP.Model())
     @assert InfrastructureModel <: AbstractInfrastructureModel
 
-    ref = ref_initialize(data, global_keys) # reference data
+    it_default = infrastructure_type(InfrastructureModel)
+    ref = ref_initialize(data, it_default, global_keys) # reference data
 
-    var = Dict{Symbol,Any}(:nw => Dict{Int,Any}())
-    con = Dict{Symbol,Any}(:nw => Dict{Int,Any}())
-    sol = Dict{Symbol,Any}(:nw => Dict{Int,Any}())
-    sol_proc = Dict{Symbol,Any}(:nw => Dict{Int,Any}())
+    var = Dict{Symbol,Any}(:it => Dict(it_default => Dict(:nw => Dict{Int,Any}())))
+    con = Dict{Symbol,Any}(:it => Dict(it_default => Dict(:nw => Dict{Int,Any}())))
+    sol = Dict{Symbol,Any}(:it => Dict(it_default => Dict(:nw => Dict{Int,Any}())))
+    sol_proc = Dict{Symbol,Any}(:it => Dict(it_default => Dict(:nw => Dict{Int,Any}())))
 
-    for (nw_id, nw) in ref[:nw]
-        nw_var = var[:nw][nw_id] = Dict{Symbol,Any}()
-        nw_con = con[:nw][nw_id] = Dict{Symbol,Any}()
-        nw_sol = sol[:nw][nw_id] = Dict{Symbol,Any}()
-        nw_sol_proc = sol_proc[:nw][nw_id] = Dict{Symbol,Any}()
+    for (nw_id, nw) in ref[:it][it_default][:nw]
+        nw_var = var[:it][it_default][:nw][nw_id] = Dict{Symbol,Any}()
+        nw_con = con[:it][it_default][:nw][nw_id] = Dict{Symbol,Any}()
+        nw_sol = sol[:it][it_default][:nw][nw_id] = Dict{Symbol,Any}()
+        nw_sol_proc = sol_proc[:it][it_default][:nw][nw_id] = Dict{Symbol,Any}()
     end
 
-    cnw = minimum([k for k in keys(var[:nw])])
+    cnw = minimum([k for k in keys(ref[:it][it_default][:nw])])
 
     imo = InfrastructureModel(
         jump_model,
@@ -69,6 +74,7 @@ function InitializeInfrastructureModel(InfrastructureModel::Type, data::Dict{Str
         con,
         sol,
         sol_proc,
+        it_default,
         cnw,
         ext
     )
@@ -83,14 +89,14 @@ an initial "ref" dictionary converting strings to symbols and component
 keys to integers.  The global keys argument specifies which keys should remain
 in the root of dictionary when building a multi-network
 """
-function ref_initialize(data::Dict{String,<:Any}, global_keys::Set{String}=Set{String}())
+function ref_initialize(data::Dict{String,<:Any}, it_default::Symbol, global_keys::Set{String}=Set{String}())
     refs = Dict{Symbol,Any}()
 
     if ismultinetwork(data)
-        nws_data = data["nw"]
-        for (key, item) in data
+        nws_data = inf_data["nw"]
+        for (key, item) in inf_data
             if key != "nw"
-                refs[Symbol(key)] = item
+                refs[Symbol(iid)][Symbol(key)] = item
             end
         end
     else
@@ -102,23 +108,25 @@ function ref_initialize(data::Dict{String,<:Any}, global_keys::Set{String}=Set{S
         end
     end
 
-    nws = refs[:nw] = Dict{Int,Any}()
+    nws = Dict{Int,Any}()
 
     for (n, nw_data) in nws_data
         nw_id = parse(Int, n)
-        ref = nws[nw_id] = Dict{Symbol,Any}()
+        nw = nws[nw_id] = Dict{Symbol,Any}()
 
         for (key, item) in nw_data
             if !(key in global_keys)
                 if isa(item, Dict{String,Any}) && _iscomponentdict(item)
                     item_lookup = Dict{Int,Any}([(parse(Int, k), v) for (k,v) in item])
-                    ref[Symbol(key)] = item_lookup
+                    nw[Symbol(key)] = item_lookup
                 else
-                    ref[Symbol(key)] = item
+                    nw[Symbol(key)] = item
                 end
             end
         end
     end
+
+    refs[:it] = Dict(it_default => Dict(:nw => nws))
 
     return refs
 end
@@ -138,32 +146,32 @@ report_duals(aim::AbstractInfrastructureModel) = haskey(aim.setting, "output") &
 
 ### Helper functions for working with AbstractInfrastructureModels
 ismultinetwork(aim::AbstractInfrastructureModel) = ismultinetwork(aim.data)
-nw_ids(aim::AbstractInfrastructureModel) = keys(aim.ref[:nw])
-nws(aim::AbstractInfrastructureModel) = aim.ref[:nw]
+nw_ids(aim::AbstractInfrastructureModel; it::Symbol=aim.cit) = keys(aim.ref[:it][it][:nw])
+nws(aim::AbstractInfrastructureModel; it::Symbol=aim.cit) = aim.ref[:it][it][:nw]
 
 
-ids(aim::AbstractInfrastructureModel, nw::Int, key::Symbol) = keys(aim.ref[:nw][nw][key])
-ids(aim::AbstractInfrastructureModel, key::Symbol; nw::Int=aim.cnw) = keys(aim.ref[:nw][nw][key])
+ids(aim::AbstractInfrastructureModel, nw::Int, key::Symbol; it::Symbol=aim.cit) = keys(aim.ref[:it][it][:nw][nw][key])
+ids(aim::AbstractInfrastructureModel, key::Symbol; it::Symbol=aim.cit, nw::Int=aim.cnw) = keys(aim.ref[:it][it][:nw][nw][key])
 
 
-ref(aim::AbstractInfrastructureModel, nw::Int) = aim.ref[:nw][nw]
-ref(aim::AbstractInfrastructureModel, nw::Int, key::Symbol) = aim.ref[:nw][nw][key]
-ref(aim::AbstractInfrastructureModel, nw::Int, key::Symbol, idx) = aim.ref[:nw][nw][key][idx]
-ref(aim::AbstractInfrastructureModel, nw::Int, key::Symbol, idx, param::String) = aim.ref[:nw][nw][key][idx][param]
+ref(aim::AbstractInfrastructureModel, nw::Int; it::Symbol=aim.cit) = aim.ref[:it][it][:nw][nw]
+ref(aim::AbstractInfrastructureModel, nw::Int, key::Symbol; it::Symbol=aim.cit) = aim.ref[:it][it][:nw][nw][key]
+ref(aim::AbstractInfrastructureModel, nw::Int, key::Symbol, idx; it::Symbol=aim.cit) = aim.ref[:it][it][:nw][nw][key][idx]
+ref(aim::AbstractInfrastructureModel, nw::Int, key::Symbol, idx, param::String; it::Symbol=aim.cit) = aim.ref[:it][it][:nw][nw][key][idx][param]
 
-ref(aim::AbstractInfrastructureModel; nw::Int=aim.cnw) = aim.ref[:nw][nw]
-ref(aim::AbstractInfrastructureModel, key::Symbol; nw::Int=aim.cnw) = aim.ref[:nw][nw][key]
-ref(aim::AbstractInfrastructureModel, key::Symbol, idx; nw::Int=aim.cnw) = aim.ref[:nw][nw][key][idx]
-ref(aim::AbstractInfrastructureModel, key::Symbol, idx, param::String; nw::Int=aim.cnw) = aim.ref[:nw][nw][key][idx][param]
+ref(aim::AbstractInfrastructureModel; it::Symbol=aim.cit, nw::Int=aim.cnw) = aim.ref[:it][it][:nw][nw]
+ref(aim::AbstractInfrastructureModel, key::Symbol; it::Symbol=aim.cit, nw::Int=aim.cnw) = aim.ref[:it][it][:nw][nw][key]
+ref(aim::AbstractInfrastructureModel, key::Symbol, idx; it::Symbol=aim.cit, nw::Int=aim.cnw) = aim.ref[:it][it][:nw][nw][key][idx]
+ref(aim::AbstractInfrastructureModel, key::Symbol, idx, param::String; it::Symbol=aim.cit, nw::Int=aim.cnw) = aim.ref[:it][it][:nw][nw][key][idx][param]
 
 
-var(aim::AbstractInfrastructureModel, nw::Int) = aim.var[:nw][nw]
-var(aim::AbstractInfrastructureModel, nw::Int, key::Symbol) = aim.var[:nw][nw][key]
-var(aim::AbstractInfrastructureModel, nw::Int, key::Symbol, idx) = aim.var[:nw][nw][key][idx]
+var(aim::AbstractInfrastructureModel, nw::Int; it::Symbol=aim.cit) = aim.var[:it][it][:nw][nw]
+var(aim::AbstractInfrastructureModel, nw::Int, key::Symbol; it::Symbol=aim.cit) = aim.var[:it][it][:nw][nw][key]
+var(aim::AbstractInfrastructureModel, nw::Int, key::Symbol, idx; it::Symbol=aim.cit) = aim.var[:it][it][:nw][nw][key][idx]
 
-var(aim::AbstractInfrastructureModel; nw::Int=aim.cnw) = aim.var[:nw][nw]
-var(aim::AbstractInfrastructureModel, key::Symbol; nw::Int=aim.cnw) = aim.var[:nw][nw][key]
-var(aim::AbstractInfrastructureModel, key::Symbol, idx; nw::Int=aim.cnw) = aim.var[:nw][nw][key][idx]
+var(aim::AbstractInfrastructureModel; it::Symbol=aim.cit, nw::Int=aim.cnw) = aim.var[:it][it][:nw][nw]
+var(aim::AbstractInfrastructureModel, key::Symbol; it::Symbol=aim.cit, nw::Int=aim.cnw) = aim.var[:it][it][:nw][nw][key]
+var(aim::AbstractInfrastructureModel, key::Symbol, idx; it::Symbol=aim.cit, nw::Int=aim.cnw) = aim.var[:it][it][:nw][nw][key][idx]
 
 
 con(aim::AbstractInfrastructureModel, nw::Int) = aim.con[:nw][nw]
@@ -175,8 +183,8 @@ con(aim::AbstractInfrastructureModel, key::Symbol; nw::Int=aim.cnw) = aim.con[:n
 con(aim::AbstractInfrastructureModel, key::Symbol, idx; nw::Int=aim.cnw) = aim.con[:nw][nw][key][idx]
 
 
-sol(aim::AbstractInfrastructureModel, nw::Int, args...) = _sol(aim.sol[:nw][nw], args...)
-sol(aim::AbstractInfrastructureModel, args...; nw::Int=aim.cnw) = _sol(aim.sol[:nw][nw], args...)
+sol(aim::AbstractInfrastructureModel, nw::Int, args...; it::Symbol=aim.cit) = _sol(aim.sol[:it][it][:nw][nw], args...)
+sol(aim::AbstractInfrastructureModel, args...; it::Symbol=aim.cit, nw::Int=aim.cnw) = _sol(aim.sol[:it][it][:nw][nw], args...)
 
 function _sol(sol::Dict, args...)
     for arg in args
