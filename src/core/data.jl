@@ -35,7 +35,14 @@ function _update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
 end
 
 "checks if a given network data is a multinetwork"
-ismultinetwork(data::Dict{String,<:Any}) = (haskey(data, "multinetwork") && data["multinetwork"] == true)
+function ismultinetwork(data::Dict{String,<:Any})
+    return haskey(data, "multinetwork") && data["multinetwork"] == true
+end
+
+"checks if a given network data is a multinetwork"
+function ismultiinfrastructure(data::Dict{String,<:Any})
+    return haskey(data, "multiinfrastructure") && data["multiinfrastructure"] == true
+end
 
 "checks if a given dataset has a time series component"
 has_time_series(data::Dict{String,<:Any}) = haskey(data, "time_series")

@@ -67,34 +67,35 @@ end
 
 ""
 function build_solution(aim::AbstractInfrastructureModel; post_processors=[])
-    _sol = Dict{String, Any}("it" => Dict{String, Any}())
+    sol = Dict{String, Any}("it" => Dict{String, Any}())
 
     for it in it_ids(aim)
         it_str = string(it)
-        _sol["it"][it_str] = build_solution_values(aim.sol[:it][it])
+        sol["it"][it_str] = build_solution_values(aim.sol[:it][it])
     end
 
-    solution_preprocessor(aim, _sol)
+    solution_preprocessor(aim, sol)
 
     for it in it_ids(aim)
         it_str = string(it)
+        data_it = ismultiinfrastructure(aim) ? aim.data["it"][it_str] : aim.data
 
-        if ismultinetwork(aim.data["it"][it_str])
-            _sol["it"][it_str]["multinetwork"] = true
+        if ismultinetwork(data_it)
+            sol["it"][it_str]["multinetwork"] = true
         else
-            for (k, v) in _sol["it"][it_str]["nw"]["$(aim.cnw)"]
-                _sol["it"][it_str][k] = v
+            for (k, v) in sol["it"][it_str]["nw"]["$(aim.cnw)"]
+                sol["it"][it_str][k] = v
             end
 
-            delete!(_sol["it"][it_str], "nw")
+            delete!(sol["it"][it_str], "nw")
         end
     end
 
     for post_processor in post_processors
-        post_processor(aim, _sol)
+        post_processor(aim, sol)
     end
 
-    return _sol
+    return sol
 end
 
 
@@ -116,7 +117,7 @@ end
 
 ""
 function build_solution_values(var::Array{<:Any,2})
-    return [build_solution_values(var[i,j]) for i in 1:size(var,1), j in 1:size(var,2)]
+    return [build_solution_values(var[i, j]) for i in 1:size(var, 1), j in 1:size(var, 2)]
 end
 
 ""
@@ -159,30 +160,30 @@ end
 #### Helpers for populating the solution dict
 
 "given a constant value, builds the standard component-wise solution structure"
-function sol_component_fixed(aim::AbstractInfrastructureModel, n::Int, comp_name::Symbol, field_name::Symbol, comp_ids, constant)
+function sol_component_fixed(aim::AbstractInfrastructureModel, it::Symbol, n::Int, comp_name::Symbol, field_name::Symbol, comp_ids, constant)
     for i in comp_ids
-        @assert !haskey(sol(aim, n, comp_name, i), field_name)
-        sol(aim, n, comp_name, i)[field_name] = constant
+        @assert !haskey(sol(aim, it, n, comp_name, i), field_name)
+        sol(aim, it, n, comp_name, i)[field_name] = constant
     end
 end
 
 "given a variable that is indexed by component ids, builds the standard solution structure"
-function sol_component_value(aim::AbstractInfrastructureModel, n::Int, comp_name::Symbol, field_name::Symbol, comp_ids, variables)
+function sol_component_value(aim::AbstractInfrastructureModel, it::Symbol, n::Int, comp_name::Symbol, field_name::Symbol, comp_ids, variables)
     for i in comp_ids
-        @assert !haskey(sol(aim, n, comp_name, i), field_name)
-        sol(aim, n, comp_name, i)[field_name] = variables[i]
+        @assert !haskey(sol(aim, it, n, comp_name, i), field_name)
+        sol(aim, it, n, comp_name, i)[field_name] = variables[i]
     end
 end
 
 "maps asymmetric edge variables into components"
-function sol_component_value_edge(aim::AbstractInfrastructureModel, n::Int, comp_name::Symbol, field_name_fr::Symbol, field_name_to::Symbol, comp_ids_fr, comp_ids_to, variables)
-    for (l,i,j) in comp_ids_fr
-        @assert !haskey(sol(aim, n, comp_name, l), field_name_fr)
-        sol(aim, n, comp_name, l)[field_name_fr] = variables[(l,i,j)]
+function sol_component_value_edge(aim::AbstractInfrastructureModel, it::Symbol, n::Int, comp_name::Symbol, field_name_fr::Symbol, field_name_to::Symbol, comp_ids_fr, comp_ids_to, variables)
+    for (l, i, j) in comp_ids_fr
+        @assert !haskey(sol(aim, it, n, comp_name, l), field_name_fr)
+        sol(aim, it, n, comp_name, l)[field_name_fr] = variables[(l, i, j)]
     end
 
-    for (l,i,j) in comp_ids_to
-        @assert !haskey(sol(aim, n, comp_name, l), field_name_to)
-        sol(aim, n, comp_name, l)[field_name_to] = variables[(l,i,j)]
+    for (l, i, j) in comp_ids_to
+        @assert !haskey(sol(aim, it, n, comp_name, l), field_name_to)
+        sol(aim, it, n, comp_name, l)[field_name_to] = variables[(l, i, j)]
     end
 end
