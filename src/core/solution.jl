@@ -95,6 +95,24 @@ function build_solution(aim::AbstractInfrastructureModel; post_processors=[])
         post_processor(aim, sol)
     end
 
+    for it in it_ids(aim)
+        it_str = string(it)
+
+        if ismultiinfrastructure(aim)
+            sol["multiinfrastructure"] = true
+        else
+            for (k, v) in sol["it"][it_str]
+                sol[k] = v
+            end
+        end
+
+        delete!(sol["it"], it_str)
+    end
+
+    if !ismultiinfrastructure(aim)
+        delete!(sol, "it")
+    end
+
     return sol
 end
 

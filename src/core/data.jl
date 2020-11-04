@@ -12,6 +12,43 @@ function update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
 end
 
 
+function modify_data_with_function!(data::Dict{String,<:Any}, it::String, modification_function::Function; apply_to_nws::Bool = true)
+    data_it = ismultiinfrastructure(data) ? data["it"][it] : data
+
+    if ismultinetwork(data_it) && apply_to_nws
+        for (nw, nw_data) in data_it["nw"]
+            modification_function(nw_data)
+        end
+    else
+        modification_function(data_it)
+    end
+
+    return data
+end
+
+
+function modify_data_with_function!(data_1::Array{Dict{String,Any}, 1}, data_2::Dict{String,<:Any}, it::String, modification_function::Function; apply_to_nws::Bool = true)
+    data_2_it = ismultiinfrastructure(data_2) ? data_2["it"][it] : data_2
+
+    if ismultinetwork(data_2_it) && apply_to_nws
+        # Ensure the two data dictionaries have the same length.
+        @assert length(data_2_it) == length(data_2_it["nw"])
+        modification_function(data_1, data_2_it)
+    else
+        modification_function(data_1, data_2_it)
+    end
+
+    return data_1, data_2
+end
+
+
+function get_data_with_function(data::Dict{String, <:Any}, it::String, getter_function::Function)
+    data_it = ismultiinfrastructure(data) ? data["it"][it] : data
+    return getter_function(data_it)
+end
+
+
+
 "Attempts to determine if the given data is a component dictionary"
 function _iscomponentdict(data::Dict)
     return all( typeof(comp) <: Dict for (i, comp) in data )
@@ -94,25 +131,29 @@ end
 
 
 "turns a single network and a time_series data block into a multi-network"
-function make_multinetwork(data::Dict{String, <:Any}, global_keys::Set{String})
-    if InfrastructureModels.ismultinetwork(data)
+function make_multinetwork(data::Dict{String, <:Any}, it::String, global_keys::Set{String})
+    data_it = ismultiinfrastructure(data) ? data["it"][it] : data
+
+    if InfrastructureModels.ismultinetwork(data_it)
         Memento.error(_LOGGER, "make_multinetwork does not support multinetwork data")
     end
 
-    if !haskey(data, "time_series")
+    if !haskey(data_it, "time_series")
         Memento.error(_LOGGER, "make_multinetwork requires time_series data")
     end
 
-    steps = data["time_series"]["num_steps"]
+    steps = data_it["time_series"]["num_steps"]
+
     if !isa(steps, Int)
         Memento.error(_LOGGER, "the value of num_steps should be an integer, given $(steps)")
     end
 
-    mn_data = replicate(data, steps, union(global_keys, Set(["time_series"])))
+    mn_data = replicate(data_it, steps, union(global_keys, Set(["time_series"])))
     time_series = pop!(mn_data, "time_series")
 
     for i in 1:steps
         nw_data = mn_data["nw"]["$(i)"]
+
         for (k,v) in time_series
             (k == "num_steps") && (continue)
             if isa(v, Dict) && haskey(nw_data, k)
@@ -131,7 +172,7 @@ function make_multinetwork(data::Dict{String, <:Any}, global_keys::Set{String})
         end
     end
 
-    return mn_data
+    return ismultiinfrastructure(data) ? Dict("it" => Dict(it => mn_data)) : mn_data
 end
 
 

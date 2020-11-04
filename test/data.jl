@@ -66,7 +66,6 @@
             @test length(data[k][1]) == length(v)
         end
     end
-
 end
 
 
@@ -75,12 +74,13 @@ end
     @testset "summary feature non-standard dict structure" begin
         data = Dict(
             "a" => 1,
-            "b" => [1,2,3],
+            "b" => [1, 2, 3],
             "c" => Dict(
                 "e" => 1.2,
                 "d" => 2.3
             )
         )
+
         output = sprint(InfrastructureModels.summary, data)
 
         line_count = count(c -> c == '\n', output)

@@ -169,7 +169,8 @@ function ismultiinfrastructure(aim::AbstractInfrastructureModel)
 end
 
 function ismultinetwork(aim::AbstractInfrastructureModel, it::Symbol)
-    return ismultinetwork(aim.data["it"][string(it)])
+    data_it = ismultiinfrastructure(aim) ? aim.data["it"][string(it)] : aim.data
+    return ismultinetwork(data_it)
 end
 
 nw_ids(aim::AbstractInfrastructureModel, it::Symbol) = keys(aim.ref[:it][it][:nw])
@@ -226,9 +227,10 @@ end
 
 
 ""
-function instantiate_model(data::Dict{String,<:Any}, model_type::Type, build_method, ref_add_core!, global_keys::Set{String}; ref_extensions=[], kwargs...)
+function instantiate_model(
+    data::Dict{String,<:Any}, model_type::Type, build_method, ref_add_core!,
+    global_keys::Set{String}; ref_extensions=[], kwargs...)
     # NOTE, this model constructor will build the ref dict using the latest info from the data
-
     start_time = time()
     imo = InitializeInfrastructureModel(model_type, data, global_keys; kwargs...)
     Memento.debug(_LOGGER, "initialize model time: $(time() - start_time)")
