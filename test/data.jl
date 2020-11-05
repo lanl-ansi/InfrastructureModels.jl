@@ -261,29 +261,29 @@ end
         generic_network_data_tmp["it"]["foo"]["time_series"] = generic_network_time_series_data
         @test InfrastructureModels.get_num_networks(generic_network_data_tmp["it"]["foo"]) == 3
         @test InfrastructureModels.has_time_series(generic_network_data_tmp["it"]["foo"]) == true
+        mn_data = InfrastructureModels.make_multinetwork(generic_network_data_tmp, "foo", Set(["per_unit","undefined_key"]))
+        mn_data_it = mn_data["it"]["foo"]
 
-        mn_data = InfrastructureModels.make_multinetwork(generic_network_data_tmp["it"]["foo"], Set(["per_unit","undefined_key"]))
+        @test length(mn_data_it) == 5
+        @test mn_data_it["multinetwork"]
+        @test haskey(mn_data_it, "per_unit")
+        @test haskey(mn_data_it, "name")
+        @test haskey(mn_data_it, "global_constant")
+        @test isapprox(mn_data_it["global_constant"], 2.71, atol=1e-1)
 
-        @test length(mn_data) == 5
-        @test mn_data["multinetwork"]
-        @test haskey(mn_data, "per_unit")
-        @test haskey(mn_data, "name")
-        @test haskey(mn_data, "global_constant")
-        @test isapprox(mn_data["global_constant"], 2.71, atol=1e-1)
+        @test length(mn_data_it["nw"]) == 3
 
-        @test length(mn_data["nw"]) == 3
+        @test mn_data_it["nw"]["1"]["comp"]["1"]["a"] == 3
+        @test mn_data_it["nw"]["1"]["comp"]["2"]["c"] == "three"
+        @test mn_data_it["nw"]["1"]["time"] == 0.0
 
-        @test mn_data["nw"]["1"]["comp"]["1"]["a"] == 3
-        @test mn_data["nw"]["1"]["comp"]["2"]["c"] == "three"
-        @test mn_data["nw"]["1"]["time"] == 0.0
+        @test mn_data_it["nw"]["2"]["comp"]["1"]["a"] == 5
+        @test mn_data_it["nw"]["2"]["comp"]["2"]["c"] == "five"
+        @test mn_data_it["nw"]["2"]["time"] == 1.0
 
-        @test mn_data["nw"]["2"]["comp"]["1"]["a"] == 5
-        @test mn_data["nw"]["2"]["comp"]["2"]["c"] == "five"
-        @test mn_data["nw"]["2"]["time"] == 1.0
-
-        @test mn_data["nw"]["3"]["comp"]["1"]["a"] == 7
-        @test mn_data["nw"]["3"]["comp"]["2"]["c"] == "seven"
-        @test mn_data["nw"]["3"]["time"] == 2.0
+        @test mn_data_it["nw"]["3"]["comp"]["1"]["a"] == 7
+        @test mn_data_it["nw"]["3"]["comp"]["2"]["c"] == "seven"
+        @test mn_data_it["nw"]["3"]["time"] == 2.0
     end
 
 

@@ -172,6 +172,8 @@ function make_multinetwork(data::Dict{String, <:Any}, it::String, global_keys::S
         end
     end
 
+    mn_data["multinetwork"] = true
+
     return ismultiinfrastructure(data) ? Dict("it" => Dict(it => mn_data)) : mn_data
 end
 

@@ -106,7 +106,9 @@ function build_solution(aim::AbstractInfrastructureModel; post_processors=[])
             end
         end
 
-        delete!(sol["it"], it_str)
+        if !ismultiinfrastructure(aim)
+            delete!(sol["it"], it_str)
+        end
     end
 
     if !ismultiinfrastructure(aim)
