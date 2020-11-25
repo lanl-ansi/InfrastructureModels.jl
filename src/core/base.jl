@@ -73,6 +73,7 @@ function InitializeInfrastructureModel(
     if ismultiinfrastructure(data)
         its = [Symbol(key) for key in keys(data["it"])]
         initialize_it.(its, Ref(global_keys))
+        ref[:link_component] = ref_initialize(data, global_keys)
     else
         initialize_it(default_it, global_keys)
     end
@@ -92,6 +93,26 @@ function InitializeInfrastructureModel(
     )
 
     return imo
+end
+
+
+function ref_initialize(data::Dict{String,<:Any}, global_keys::Set{String} = Set{String}())
+    refs = Dict{Symbol, Any}()
+
+    if ismultiinfrastructure(data)
+        for (key, item) in data["link_component"]
+            refs[Symbol(key)] = item
+
+            if isa(item, Dict{String, Any}) && _iscomponentdict(item)
+                item_lookup = Dict{Int, Any}([(parse(Int, k), v) for (k, v) in item])
+                refs[Symbol(key)] = item_lookup
+            else
+                refs[Symbol(key)] = item
+            end
+        end
+    end
+
+    return refs
 end
 
 

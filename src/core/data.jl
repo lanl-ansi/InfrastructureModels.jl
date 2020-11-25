@@ -22,23 +22,6 @@ function modify_data_with_function!(data::Dict{String,<:Any}, it::String, modifi
     else
         modification_function(data_it)
     end
-
-    return data
-end
-
-
-function modify_data_with_function!(data_1::Array{Dict{String,Any}, 1}, data_2::Dict{String,<:Any}, it::String, modification_function::Function; apply_to_nws::Bool = true)
-    data_2_it = ismultiinfrastructure(data_2) ? data_2["it"][it] : data_2
-
-    if ismultinetwork(data_2_it) && apply_to_nws
-        # Ensure the two data dictionaries have the same length.
-        @assert length(data_2_it) == length(data_2_it["nw"])
-        modification_function(data_1, data_2_it)
-    else
-        modification_function(data_1, data_2_it)
-    end
-
-    return data_1, data_2
 end
 
 
