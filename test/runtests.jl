@@ -11,7 +11,7 @@ import Logging
 
 const MOI = JuMP.MathOptInterface
 
-ipopt_solver = JuMP.optimizer_with_attributes(Ipopt.Optimizer, "print_level" => 0)
+ipopt_solver = JuMP.optimizer_with_attributes(Ipopt.Optimizer, "print_level" => 0, "sb" => "yes")
 ecos_solver = JuMP.optimizer_with_attributes(ECOS.Optimizer, "verbose" => 0)
 juniper_solver = JuMP.optimizer_with_attributes(Juniper.Optimizer, "nl_solver" => ipopt_solver, "log_levels" => [])
 

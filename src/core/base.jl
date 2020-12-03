@@ -99,7 +99,7 @@ end
 function ref_initialize(data::Dict{String,<:Any}, global_keys::Set{String} = Set{String}())
     refs = Dict{Symbol, Any}()
 
-    if ismultiinfrastructure(data)
+    if ismultiinfrastructure(data) && haskey(data, "link_component")
         for (key, item) in data["link_component"]
             refs[Symbol(key)] = item
 

@@ -26,7 +26,12 @@ generic_network_data = JSON.parse("""{"it": {"foo": {
             "c":"same",
             "d":false
         }
-        }}}, "multiinfrastructure": true}""")
+        }}},
+        "multiinfrastructure": true,
+        "link_component": {
+            "property_1": 1.0,
+            "property_2": "bar"
+        }}""")
 
 generic_network_time_series_data = Dict(
     "num_steps" => 3,
