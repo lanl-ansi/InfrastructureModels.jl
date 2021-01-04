@@ -280,9 +280,27 @@ function _populate_ref_it!(refs::Dict{Symbol, <:Any}, data_it::Dict{String, <:An
 end
 
 
-"used for building ref without the need to initialize an AbstractInfrastructureModel"
-function build_ref(data::Dict{String,<:Any}, it::String, ref_add_core!, global_keys::Set{String}; ref_extensions=[])
+"Builds a ref object without the need to initialize an
+AbstractInfrastructureModel, where `it` specifies the infrastructure type."
+function build_ref(data::Dict{String,<:Any}, ref_add_core!, global_keys::Set{String}, it::String; ref_extensions=[])
     ref = ref_initialize(data, it, global_keys)
+    ref_add_core!(ref)
+
+    for ref_ext in ref_extensions
+        ref_ext(ref, data)
+    end
+
+    return ref
+end
+
+
+"Builds a ref object without the need to initialize an
+AbstractInfrastructureModel, where the data is assumed to be in a
+multi-infrastructure format."
+function build_ref(data::Dict{String,<:Any}, ref_add_core!, global_keys::Set{String}; ref_extensions=[])
+    @assert ismultiinfrastructure(data)
+
+    ref = ref_initialize(data, global_keys)
     ref_add_core!(ref)
 
     for ref_ext in ref_extensions

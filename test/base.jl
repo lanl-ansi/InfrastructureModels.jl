@@ -168,7 +168,17 @@ end
 
 
 @testset "external build_ref" begin
-    ref = build_ref(generic_si_network_data, "foo", ref_add_core!, gn_global_keys; ref_extensions=[ref_ext_comp_stat!])
+    # Case where data is not in a multi-infrastructure format.
+    ref = build_ref(generic_si_network_data, ref_add_core!, gn_global_keys, "foo"; ref_extensions=[ref_ext_comp_stat!])
+
+    @test length(ref[:it][:foo][:nw][0][:comp]) == 2
+    @test length(ref[:it][:foo][:nw][0][:comp][1]) == 4
+    @test ref[:it][:foo][:nw][0][:comp][1]["c"] == "same"
+
+    @test length(ref[:it][:foo][:nw][0][:comp_with_status]) == 2
+
+    # Case where data is in a multi-infrastructure format.
+    ref = build_ref(generic_mi_network_data, ref_add_core!, gn_global_keys; ref_extensions=[ref_ext_comp_stat!])
 
     @test length(ref[:it][:foo][:nw][0][:comp]) == 2
     @test length(ref[:it][:foo][:nw][0][:comp][1]) == 4
