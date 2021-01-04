@@ -116,6 +116,7 @@ If the `multinetwork` parameter is `true` then several single network data objec
 ### Multi-infrastructure Data
 Network data objects are wrapped in an infrastructure type (`it`) lookup table that uses special names for each type of infrastructure.
 Each infrastructure data object can include a single network or a multinetwork of that infrastructure type.
+Data that describe the linkages between interdependent infrastructures are defined in the `dep` block.
 
 ```json
 {
@@ -123,9 +124,9 @@ Each infrastructure data object can include a single network or a multinetwork o
     "ep": {...},
     "ng": {...},
     "wtd": {...},
-    "mi": {...},
     ...
 },
+"dep": {...},
 ...
 }
 ```
@@ -136,7 +137,6 @@ Power Transmission - ep
 Power Distribtion - epd
 Natrual Gas Transmission - ng
 Water Distribtion - wtd
-Multi-infrastructure Linking - mi
 ```
 
 ## Variable Naming Conventions

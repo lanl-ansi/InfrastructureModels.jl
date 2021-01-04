@@ -12,8 +12,10 @@ macro def(name, definition)
     end
 end
 
+
 "root of the infrastructure model formulation type hierarchy"
 abstract type AbstractInfrastructureModel end
+
 
 "a macro for adding the standard InfrastructureModels fields to a type definition"
 InfrastructureModels.@def im_fields begin
@@ -39,44 +41,26 @@ InfrastructureModels.@def im_fields begin
     ext::Dict{Symbol,<:Any}
 end
 
-# default generic constructor
+
+"Constructor for an InfrastructureModels modeling object, where `data` is
+assumed to in a multi-infrastructure network data format."
 function InitializeInfrastructureModel(
     InfrastructureModel::Type, data::Dict{String, <:Any}, global_keys::Set{String};
     ext = Dict{Symbol, Any}(), setting = Dict{String, Any}(),
-    jump_model::JuMP.AbstractModel = JuMP.Model(), default_it::Symbol = :it)
+    jump_model::JuMP.AbstractModel = JuMP.Model())
     @assert InfrastructureModel <: AbstractInfrastructureModel
+    @assert ismultiinfrastructure(data) == true
 
-    cnw = Inf # Current network index (used as default multinetwork index).
-    ref = Dict{Symbol, Any}(:it => Dict{Symbol, Any}())
-    var = Dict{Symbol, Any}(:it => Dict{Symbol, Any}())
-    con = Dict{Symbol, Any}(:it => Dict{Symbol, Any}())
-    sol = Dict{Symbol, Any}(:it => Dict{Symbol, Any}())
-    sol_proc = Dict{Symbol, Any}(:it => Dict{Symbol, Any}())
+    ref = ref_initialize(data, global_keys)
+    var = _initialize_dict_from_ref(ref)
+    con = _initialize_dict_from_ref(ref)
+    sol = _initialize_dict_from_ref(ref)
+    sol_proc = _initialize_dict_from_ref(ref)
 
-    function initialize_it(it::Symbol, global_keys::Set{String} = Set{String}())
-        ref[:it][it] = ref_initialize(data, string(it), global_keys)
-        var[:it][it] = Dict{Symbol, Any}(:nw => Dict{Int, Any}())
-        con[:it][it] = Dict{Symbol, Any}(:nw => Dict{Int, Any}())
-        sol[:it][it] = Dict{Symbol, Any}(:nw => Dict{Int, Any}())
-        sol_proc[:it][it] = Dict{Symbol, Any}(:nw => Dict{Int, Any}())
-
-        for (nw_id, nw) in ref[:it][it][:nw]
-            var[:it][it][:nw][nw_id] = Dict{Symbol, Any}()
-            con[:it][it][:nw][nw_id] = Dict{Symbol, Any}()
-            sol[:it][it][:nw][nw_id] = Dict{Symbol, Any}()
-            sol_proc[:it][it][:nw][nw_id] = Dict{Symbol, Any}()
-        end
-
-        cnw = min(cnw, minimum([k for k in keys(var[:it][it][:nw])]))
-    end
-
-    if ismultiinfrastructure(data)
-        its = [Symbol(key) for key in keys(data["it"])]
-        initialize_it.(its, Ref(global_keys))
-        ref[:link_component] = ref_initialize(data, global_keys)
-    else
-        initialize_it(default_it, global_keys)
-    end
+    # Compute the minimum multinetwork index and store it as `cnw`.
+    cnw_it = minimum(minimum(keys(ref[:it][it][:nw]) for it in keys(ref[:it])))
+    cnw_dep = minimum(keys(ref[:dep][:nw])) # Minimum interdependency multinetwork.
+    cnw = min(cnw_it, cnw_dep) # Overall minimum network index discovered in the data.
 
     imo = InfrastructureModel(
         jump_model,
@@ -96,22 +80,69 @@ function InitializeInfrastructureModel(
 end
 
 
-function ref_initialize(data::Dict{String,<:Any}, global_keys::Set{String} = Set{String}())
-    refs = Dict{Symbol, Any}()
+"Constructor for an InfrastructureModels modeling object, where the
+infrastructure type `it` must be specified a priori."
+function InitializeInfrastructureModel(
+    InfrastructureModel::Type, data::Dict{String, <:Any}, global_keys::Set{String},
+    it::Symbol; ext = Dict{Symbol, Any}(), setting = Dict{String, Any}(),
+    jump_model::JuMP.AbstractModel = JuMP.Model())
+    @assert InfrastructureModel <: AbstractInfrastructureModel
 
-    if ismultiinfrastructure(data) && haskey(data, "link_component")
-        for (key, item) in data["link_component"]
-            refs[Symbol(key)] = item
+    ref = ref_initialize(data, string(it), global_keys)
+    var = _initialize_dict_from_ref(ref)
+    con = _initialize_dict_from_ref(ref)
+    sol = _initialize_dict_from_ref(ref)
+    sol_proc = _initialize_dict_from_ref(ref)
 
-            if isa(item, Dict{String, Any}) && _iscomponentdict(item)
-                item_lookup = Dict{Int, Any}([(parse(Int, k), v) for (k, v) in item])
-                refs[Symbol(key)] = item_lookup
-            else
-                refs[Symbol(key)] = item
-            end
-        end
+    # Compute the minimum multinetwork index and store it as `cnw`.
+    cnw_it = minimum(minimum(keys(ref[:it][it][:nw]) for it in keys(ref[:it])))
+    cnw_dep = minimum(keys(ref[:dep][:nw])) # Minimum interdependency multinetwork.
+    cnw = min(cnw_it, cnw_dep) # Overall minimum network index discovered in the data.
+
+    imo = InfrastructureModel(
+        jump_model,
+        data,
+        setting,
+        Dict{String,Any}(), # empty solution data
+        ref,
+        var,
+        con,
+        sol,
+        sol_proc,
+        cnw,
+        ext
+    )
+
+    return imo
+end
+
+
+"""
+Given a data dictionary following the InfrastructureModels
+multi-infrastructure conventions, build and return an initial "ref"
+dictionary, converting strings to symbols and component keys to integers. The
+global keys argument specifies which keys should remain in the root of the
+dictionary when building the multi-infrastructure dataset.
+"""
+function ref_initialize(data::Dict{String, <:Any}, global_keys::Set{String} = Set{String}())
+    # This variant of the function only operates on multiinfrastructure data.
+    @assert ismultiinfrastructure(data) == true
+
+    # Initialize the refs dictionary.
+    refs = Dict{Symbol, Any}(:it => Dict{Symbol, Any}())
+
+    # Populate the global keys section of the refs dictionary.
+    _populate_ref_global_keys!(refs, data, global_keys)
+
+    for (it, data_it) in data["it"] # Iterate over all infrastructure types.
+        # Populate the infrastructure section of the refs dictionary.
+        _populate_ref_it!(refs, data_it, it, global_keys)
     end
 
+    # Populate the interdependency section of the refs dictionary.
+    _populate_ref_dep!(refs, data)
+
+    # Return the final refs object.
     return refs
 end
 
@@ -122,34 +153,81 @@ an initial "ref" dictionary converting strings to symbols and component
 keys to integers. The global keys argument specifies which keys should remain
 in the root of dictionary when building a multi-network
 """
-function ref_initialize(data::Dict{String,<:Any}, it::String, global_keys::Set{String} = Set{String}())
-    refs = Dict{Symbol, Any}()
-	data_it = ismultiinfrastructure(data) ? data["it"][it] : data
+function ref_initialize(data::Dict{String, <:Any}, it::String, global_keys::Set{String} = Set{String}())
+    # Initialize the refs dictionary.
+    refs = Dict{Symbol, Any}(:it => Dict{Symbol, Any}())
 
-    if ismultinetwork(data_it)
-        nws_data = data_it["nw"]
+    # Populate the global keys section of the refs dictionary.
+    _populate_ref_global_keys!(refs, data, global_keys)
 
-        for (key, item) in data_it
-            if key != "nw"
-                refs[Symbol(key)] = item
-            end
-        end
-    else
-        nws_data = Dict("0" => data_it)
+    # Populate the infrastructure section of the refs dictionary.
+    data_it = ismultiinfrastructure(data) ? data["it"][it] : data
+    _populate_ref_it!(refs, data_it, it, global_keys)
 
-        for global_key in global_keys
-            if haskey(data_it, global_key)
-                refs[Symbol(global_key)] = data_it[global_key]
-            end
+    # Populate the interdependency section of the refs dictionary.
+    _populate_ref_dep!(refs, data)
+
+    # Return the final refs object.
+    return refs
+end
+
+"Initialize an empty dictionary with a structure similar to `ref`."
+function _initialize_dict_from_ref(ref::Dict{Symbol, <:Any})
+    dict = Dict{Symbol, Any}(:it => Dict{Symbol, Any}(), :dep => Dict{Symbol, Any}())
+    dict[:it] = Dict{Symbol, Any}(it => Dict{Symbol, Any}() for it in keys(ref[:it]))
+    dict[:dep] = Dict{Symbol, Any}(:nw => Dict{Int, Any}() for nw in keys(ref[:dep][:nw]))
+
+    for it in keys(ref[:it])
+        dict[:it][it] = Dict{Symbol, Any}(:nw => Dict{Int, Any}())
+
+        for nw in keys(ref[:it][it][:nw])
+            dict[:it][it][:nw][nw] = Dict{Symbol, Any}()
         end
     end
 
-    nws = refs[:nw] = Dict{Int, Any}()
+    return dict
+end
 
+
+"Populate the portion of `refs` corresponding to global keys."
+function _populate_ref_global_keys!(refs::Dict{Symbol, <:Any}, data::Dict{String, <:Any}, global_keys::Set{String} = Set{String}())
+    # Populate the global keys section of the refs dictionary.
+    for global_key in global_keys
+        if haskey(data, global_key)
+            refs[Symbol(global_key)] = data[global_key]
+        end
+    end
+end
+
+
+"Populate the portion of `refs` corresponding to interdependencies."
+function _populate_ref_dep!(refs::Dict{Symbol, <:Any}, data::Dict{String, <:Any}, global_keys::Set{String} = Set{String}())
+    # Get the interdependency portion of the data dictionary.
+    data_in = haskey(data, "dep") ? data["dep"] : Dict{String, Any}()
+
+    # Initialize the ref corresponding to interdependencies.
+    refs[:dep] = Dict{Symbol, Any}()
+
+    # Build a multinetwork representation of the data.
+    if ismultinetwork(data_in)
+        nws_data = data_in["nw"]
+    
+        for (key, item) in data_in
+            if key != "nw"
+                refs[:dep][Symbol(key)] = item
+            end
+        end
+    else
+        nws_data = Dict("0" => data_in)
+    end
+
+    nws = refs[:dep][:nw] = Dict{Int, Any}()
+
+    # Populate the specific infrastructure type's ref dictionary.
     for (n, nw_data) in nws_data
         nw_id = parse(Int, n)
         ref = nws[nw_id] = Dict{Symbol, Any}()
-
+    
         for (key, item) in nw_data
             if !(key in global_keys)
                 if isa(item, Dict{String, Any}) && _iscomponentdict(item)
@@ -161,15 +239,50 @@ function ref_initialize(data::Dict{String,<:Any}, it::String, global_keys::Set{S
             end
         end
     end
+end
 
-    return refs
+"Populate the portion of `refs` for a specific infrastructure type."
+function _populate_ref_it!(refs::Dict{Symbol, <:Any}, data_it::Dict{String, <:Any}, it::String, global_keys::Set{String} = Set{String}())
+    # Initialize the ref corresponding to the infrastructure type.
+    refs[:it][Symbol(it)] = Dict{Symbol, Any}()
+
+    # Build a multinetwork representation of the data.
+    if ismultinetwork(data_it)
+        nws_data = data_it["nw"]
+    
+        for (key, item) in data_it
+            if key != "nw"
+                refs[:it][Symbol(it)][Symbol(key)] = item
+            end
+        end
+    else
+        nws_data = Dict("0" => data_it)
+    end
+
+    nws = refs[:it][Symbol(it)][:nw] = Dict{Int, Any}()
+
+    # Populate the specific infrastructure type's ref dictionary.
+    for (n, nw_data) in nws_data
+        nw_id = parse(Int, n)
+        ref = nws[nw_id] = Dict{Symbol, Any}()
+    
+        for (key, item) in nw_data
+            if !(key in global_keys)
+                if isa(item, Dict{String, Any}) && _iscomponentdict(item)
+                    item_lookup = Dict{Int, Any}([(parse(Int, k), v) for (k, v) in item])
+                    ref[Symbol(key)] = item_lookup
+                else
+                    ref[Symbol(key)] = item
+                end
+            end
+        end
+    end
 end
 
 
 "used for building ref without the need to initialize an AbstractInfrastructureModel"
 function build_ref(data::Dict{String,<:Any}, it::String, ref_add_core!, global_keys::Set{String}; ref_extensions=[])
     ref = ref_initialize(data, it, global_keys)
-    ref[:it] = Dict{Symbol, Any}(Symbol(it) => ref)
     ref_add_core!(ref)
 
     for ref_ext in ref_extensions
@@ -250,10 +363,16 @@ end
 ""
 function instantiate_model(
     data::Dict{String,<:Any}, model_type::Type, build_method, ref_add_core!,
-    global_keys::Set{String}; ref_extensions=[], kwargs...)
+    global_keys::Set{String}; it::Symbol=nothing, ref_extensions=[], kwargs...)
     # NOTE, this model constructor will build the ref dict using the latest info from the data
     start_time = time()
-    imo = InitializeInfrastructureModel(model_type, data, global_keys; kwargs...)
+
+    if it === nothing
+        imo = InitializeInfrastructureModel(model_type, data, global_keys; kwargs...)
+    else
+        imo = InitializeInfrastructureModel(model_type, data, global_keys, it; kwargs...)
+    end
+
     Memento.debug(_LOGGER, "initialize model time: $(time() - start_time)")
 
     start_time = time()

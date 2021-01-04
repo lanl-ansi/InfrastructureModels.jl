@@ -104,7 +104,7 @@ end
     end
 
     @testset "summary feature component data" begin
-        output = sprint(InfrastructureModels.summary, generic_network_data["it"]["foo"])
+        output = sprint(InfrastructureModels.summary, generic_si_network_data)
 
         line_count = count(c -> c == '\n', output)
         @test line_count >= 18 && line_count <= 22
@@ -206,7 +206,7 @@ end
 @testset "data transformation" begin
 
     @testset "network replicate data" begin
-        mn_data = InfrastructureModels.replicate(generic_network_data["it"]["foo"], 3, Set(["a", "b", "per_unit", "list"]))
+        mn_data = InfrastructureModels.replicate(generic_si_network_data, 3, Set(["a", "b", "per_unit", "list"]))
 
         @test InfrastructureModels.get_num_networks(mn_data) == 3
         @test length(mn_data) == 7
@@ -225,7 +225,7 @@ end
 
 
     @testset "network replicate data, single network" begin
-        mn_data = InfrastructureModels.replicate(generic_network_data["it"]["foo"], 1, Set(["per_unit","undefined_key"]))
+        mn_data = InfrastructureModels.replicate(generic_si_network_data, 1, Set(["per_unit", "undefined_key"]))
 
         @test length(mn_data) == 4
         @test mn_data["multinetwork"]
@@ -237,7 +237,7 @@ end
 
 
    @testset "load state from time series" begin
-        data_tmp = deepcopy(generic_network_data)
+        data_tmp = deepcopy(generic_mi_network_data)
         data_tmp["it"]["foo"]["time_series"] = generic_network_time_series_data
         @test data_tmp["it"]["foo"]["comp"]["1"]["a"] == 1
         @test data_tmp["it"]["foo"]["comp"]["2"]["c"] == "same"
@@ -257,7 +257,7 @@ end
 
 
     @testset "make_multinetwork from time series" begin
-        generic_network_data_tmp = deepcopy(generic_network_data)
+        generic_network_data_tmp = deepcopy(generic_mi_network_data)
         generic_network_data_tmp["it"]["foo"]["time_series"] = generic_network_time_series_data
         @test InfrastructureModels.get_num_networks(generic_network_data_tmp["it"]["foo"]) == 3
         @test InfrastructureModels.has_time_series(generic_network_data_tmp["it"]["foo"]) == true
@@ -440,7 +440,7 @@ end
 @testset "data comparison" begin
 
     @testset "dict comparison" begin
-        mn_data = InfrastructureModels.replicate(generic_network_data["it"]["foo"], 3, Set{String}())
+        mn_data = InfrastructureModels.replicate(generic_si_network_data, 3, Set{String}())
 
         nw_1 = mn_data["nw"]["1"]
         nw_2 = mn_data["nw"]["2"]

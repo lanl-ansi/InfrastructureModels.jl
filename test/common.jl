@@ -1,7 +1,36 @@
 
 gn_global_keys = Set(["per_unit","undefined_key"])
 
-generic_network_data = JSON.parse("""{"it": {"foo": {
+generic_si_network_data = JSON.parse("""{
+    "per_unit":false,
+    "a":1,
+    "b":"bloop",
+    "list": [1, "two", 3.0, false],
+    "dict": {"a":1, "b":2.0, "c":true, "d":"bloop"},
+    "comp":{
+        "1":{
+            "a":1,
+            "b":2,
+            "c":"same",
+            "status":1
+        },
+        "2":{
+            "a":3,
+            "b":4,
+            "c":"same",
+            "status":0
+        },
+        "3":{
+            "a":5,
+            "b":6,
+            "c":"same",
+            "d":false
+        }
+    }
+}""")
+
+
+generic_mi_network_data = JSON.parse("""{"it": {"foo": {
     "per_unit":false,
     "a":1,
     "b":"bloop",
@@ -28,7 +57,7 @@ generic_network_data = JSON.parse("""{"it": {"foo": {
         }
         }}},
         "multiinfrastructure": true,
-        "link_component": {
+        "dep": {
             "property_1": 1.0,
             "property_2": "bar"
         }}""")
