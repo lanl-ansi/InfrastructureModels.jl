@@ -35,7 +35,7 @@ function parse_matlab_string(data_string::String; extended=false)
             struct_name = strip(replace(func, "function" => ""))
             function_name = value
         elseif occursin("=",line)
-            if struct_name != nothing && !occursin("$(struct_name).", line)
+            if struct_name !== nothing && !occursin("$(struct_name).", line)
                 Memento.warn(_LOGGER, "assignments are expected to be made to \"$(struct_name)\" but given: $(line)")
             end
 

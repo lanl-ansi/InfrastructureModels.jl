@@ -136,7 +136,7 @@ function ref_initialize(data::Dict{String, <:Any}, global_keys::Set{String} = Se
 
     for (it, data_it) in data["it"] # Iterate over all infrastructure types.
         # Populate the infrastructure section of the refs dictionary.
-        _populate_ref_it!(refs, data_it, it, global_keys)
+        _populate_ref_it!(refs, data_it, global_keys, it)
     end
 
     # Populate the interdependency section of the refs dictionary.
@@ -162,7 +162,7 @@ function ref_initialize(data::Dict{String, <:Any}, it::String, global_keys::Set{
 
     # Populate the infrastructure section of the refs dictionary.
     data_it = ismultiinfrastructure(data) ? data["it"][it] : data
-    _populate_ref_it!(refs, data_it, it, global_keys)
+    _populate_ref_it!(refs, data_it, global_keys, it)
 
     # Populate the interdependency section of the refs dictionary.
     _populate_ref_dep!(refs, data)
@@ -242,7 +242,7 @@ function _populate_ref_dep!(refs::Dict{Symbol, <:Any}, data::Dict{String, <:Any}
 end
 
 "Populate the portion of `refs` for a specific infrastructure type."
-function _populate_ref_it!(refs::Dict{Symbol, <:Any}, data_it::Dict{String, <:Any}, it::String, global_keys::Set{String} = Set{String}())
+function _populate_ref_it!(refs::Dict{Symbol, <:Any}, data_it::Dict{String, <:Any}, global_keys::Set{String}, it::String)
     # Initialize the ref corresponding to the infrastructure type.
     refs[:it][Symbol(it)] = Dict{Symbol, Any}()
 
@@ -414,7 +414,7 @@ end
 function optimize_model!(aim::AbstractInfrastructureModel; optimizer=nothing, solution_processors=[])
     start_time = time()
 
-    if optimizer != nothing
+    if optimizer !== nothing
         if aim.model.moi_backend.state == _MOI.Utilities.NO_OPTIMIZER
             JuMP.set_optimizer(aim.model, optimizer)
         else
