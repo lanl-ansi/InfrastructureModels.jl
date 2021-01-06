@@ -157,12 +157,12 @@ function ref_initialize(data::Dict{String, <:Any}, it::String, global_keys::Set{
     # Initialize the refs dictionary.
     refs = Dict{Symbol, Any}(:it => Dict{Symbol, Any}())
 
-    # Populate the global keys section of the refs dictionary.
-    _populate_ref_global_keys!(refs, data, global_keys)
-
     # Populate the infrastructure section of the refs dictionary.
     data_it = ismultiinfrastructure(data) ? data["it"][it] : data
     _populate_ref_it!(refs, data_it, global_keys, it)
+
+    # Populate the global keys section of the refs dictionary.
+    _populate_ref_global_keys!(refs[:it][Symbol(it)], data, global_keys)
 
     # Populate the interdependency section of the refs dictionary.
     _populate_ref_dep!(refs, data)
