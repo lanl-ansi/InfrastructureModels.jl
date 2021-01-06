@@ -68,13 +68,18 @@ end
 ""
 function build_solution(aim::AbstractInfrastructureModel; post_processors=[])
     sol = Dict{String, Any}("it" => Dict{String, Any}())
+    sol["multiinfrastructure"] = true
 
     for it in it_ids(aim)
-        it_str = string(it)
-        sol["it"][it_str] = build_solution_values(aim.sol[:it][it])
+        sol["it"][string(it)] = build_solution_values(aim.sol[:it][it])
+        sol["it"][string(it)]["multinetwork"] = true
     end
 
     solution_preprocessor(aim, sol)
+
+    for post_processor in post_processors
+        post_processor(aim, sol)
+    end
 
     for it in it_ids(aim)
         it_str = string(it)
@@ -87,31 +92,21 @@ function build_solution(aim::AbstractInfrastructureModel; post_processors=[])
                 sol["it"][it_str][k] = v
             end
 
+            sol["it"][it_str]["multinetwork"] = false
             delete!(sol["it"][it_str], "nw")
-        end
-    end
-
-    for post_processor in post_processors
-        post_processor(aim, sol)
-    end
-
-    for it in it_ids(aim)
-        it_str = string(it)
-
-        if ismultiinfrastructure(aim)
-            sol["multiinfrastructure"] = true
-        else
-            for (k, v) in sol["it"][it_str]
-                sol[k] = v
-            end
         end
 
         if !ismultiinfrastructure(aim)
+            for (k, v) in sol["it"][it_str]
+                sol[k] = v
+            end
+
             delete!(sol["it"], it_str)
         end
     end
 
     if !ismultiinfrastructure(aim)
+        sol["multiinfrastructure"] = false
         delete!(sol, "it")
     end
 

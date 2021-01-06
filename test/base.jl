@@ -274,8 +274,9 @@ end
     @test isapprox(solution["comp"]["3"]["c_lb"], 0.0, atol=1e-5)
     @test solution["comp"]["3"]["d"] == 1.23
 
-    mn_data = replicate(generic_mi_network_data["it"]["foo"], 3, gn_global_keys)
-    mn_data = Dict{String, Any}("it" => Dict{String, Any}("foo" => mn_data))
+    mn_it = replicate(generic_mi_network_data["it"]["foo"], 3, gn_global_keys)
+    mn_data = Dict{String, Any}("it" => Dict{String, Any}("foo" => mn_it))
+    mn_data["dep"] = replicate(generic_mi_network_data["dep"], 3, gn_global_keys)
     mn_data["multiinfrastructure"] = true
 
     mim = instantiate_model(
@@ -321,7 +322,7 @@ end
     @test haskey(result, "solution")
     @test !isnan(result["solve_time"])
 
-    @test length(result["solution"]) == 4
+    @test length(result["solution"]) == 5
     @test length(result["solution"]["comp"]) == 2
 
     @test result["termination_status"] == MOI.LOCALLY_SOLVED
