@@ -322,7 +322,8 @@ end
     @test haskey(result, "solution")
     @test !isnan(result["solve_time"])
 
-    @test length(result["solution"]) == 5
+
+    @test length(result["solution"]) == 6
     @test length(result["solution"]["comp"]) == 2
 
     @test result["termination_status"] == MOI.LOCALLY_SOLVED
