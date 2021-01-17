@@ -214,8 +214,16 @@ end
 
 
 ""
-function optimize_model!(aim::AbstractInfrastructureModel; optimizer=nothing, solution_processors=[])
+function optimize_model!(aim::AbstractInfrastructureModel; relax_integrality=false, optimizer=nothing, solution_processors=[])
     start_time = time()
+
+    if relax_integrality
+        try
+            JuMP.relax_integrality(aim.model)
+        catch
+            Memento.warn(_LOGGER, "the relax_integrality feature requires JuMP v0.21.4, update to gain access to this feature")
+        end
+    end
 
     if optimizer != nothing
         if aim.model.moi_backend.state == _MOI.Utilities.NO_OPTIMIZER
@@ -234,7 +242,7 @@ function optimize_model!(aim::AbstractInfrastructureModel; optimizer=nothing, so
     try
         solve_time = _MOI.get(aim.model, _MOI.SolveTime())
     catch
-        Memento.warn(_LOGGER, "the given optimizer does not provide the SolveTime() attribute, falling back on @timed.  This is not a rigorous timing value.");
+        Memento.warn(_LOGGER, "the given optimizer does not provide the SolveTime() attribute, falling back on @timed.  This is not a rigorous timing value.")
     end
     Memento.debug(_LOGGER, "JuMP model optimize time: $(time() - start_time)")
 
