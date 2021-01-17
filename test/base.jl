@@ -242,7 +242,7 @@ end
 
 @testset "helper functions - instantiate_model, optimize_model!, sol" begin
     mim = instantiate_model(generic_network_data, MyInfrastructureModel, build_my_model, ref_add_core!, gn_global_keys, ref_extensions=[ref_ext_comp_stat!])
-    result = optimize_model!(mim, relax_integrality=true, optimizer=ipopt_solver)
+    result = optimize_model!(mim, optimizer=ipopt_solver)
     solution = result["solution"]
 
     @test solution["glb"] == 4.56
