@@ -121,9 +121,9 @@ Data that describe the linkages between interdependent infrastructures are defin
 ```json
 {
 "it": {
-    "ep": {...},
-    "ng": {...},
-    "wtd": {...},
+    "pm": {...},
+    "gm": {...},
+    "wm": {...},
     ...
 },
 "dep": {...},
@@ -133,10 +133,10 @@ Data that describe the linkages between interdependent infrastructures are defin
 
 Infrastructure short names,
 ```
-Power Transmission - ep
-Power Distribtion - epd
-Natrual Gas Transmission - ng
-Water Distribtion - wtd
+Power Transmission - pm
+Power Distribution - pmd
+Natural Gas Transmission - gm
+Water Distribution - wm
 ```
 
 ## Variable Naming Conventions
