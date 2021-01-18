@@ -287,6 +287,40 @@ end
     end
 
 
+    @testset "apply! feature" begin
+        # Modifier function.
+        func! = x -> x["b"] = "bloop_apply!"
+
+        # Test apply_to_subnetworks = false variant.
+        generic_network_data_tmp = deepcopy(generic_mi_network_data)
+        apply!(func!, generic_network_data_tmp, "foo"; apply_to_subnetworks = false)
+        @test generic_network_data_tmp["it"]["foo"]["b"] == "bloop_apply!"
+
+        # Test apply_to_subnetworks = true variant.
+        si_data = deepcopy(generic_si_network_data)
+        mn_data = InfrastructureModels.replicate(si_data, 2, Set(["per_unit"]))
+        apply!(func!, mn_data, "foo"; apply_to_subnetworks = true)
+        @test mn_data["nw"]["1"]["b"] == "bloop_apply!"
+        @test mn_data["nw"]["2"]["b"] == "bloop_apply!"
+    end
+
+
+    @testset "get_data feature" begin
+        # Getter function.
+        getter = x -> return x["b"]
+
+        # Test apply_to_subnetworks = false variant.
+        @test "bloop" == get_data(getter, generic_mi_network_data, "foo"; apply_to_subnetworks = false)
+
+        # Test apply_to_subnetworks = true variant.
+        si_data = deepcopy(generic_si_network_data)
+        mn_data = InfrastructureModels.replicate(si_data, 2, Set(["per_unit"]))
+        vals = get_data(getter, mn_data, "foo"; apply_to_subnetworks = true)
+        @test vals["1"] == "bloop"
+        @test vals["2"] == "bloop"
+    end
+
+
     @testset "update_data! feature" begin
         data = JSON.parse("{
             \"per_unit\":false,
