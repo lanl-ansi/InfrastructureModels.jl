@@ -1,11 +1,11 @@
 "Apply the function `func!`, which modifies `ref` using `data` for a specific
-infrastructure, `it`. Here, `is_multinetwork_function` specifies whether or
+infrastructure, `it`. Here, `apply_to_subnetworks` specifies whether or
 not `func!` should be applied to all subnetworks in a multinetwork dataset."
-function ref_apply!(func!::Function, ref::Dict{Symbol, <:Any}, data::Dict{String, <:Any}, it::Symbol; is_multinetwork_function::Bool = true)
+function apply!(func!::Function, ref::Dict{Symbol, <:Any}, data::Dict{String, <:Any}, it::Symbol; apply_to_subnetworks::Bool = true)
     # Get the portion of the data dictionary that corresponds to the specific infrastructure.
     data_it = ismultiinfrastructure(data) ? data["it"][string(it)] : data
 
-    if ismultinetwork(data_it) && is_multinetwork_function
+    if ismultinetwork(data_it) && apply_to_subnetworks
         for (nw, nw_data) in data_it["nw"]
             nw_ref = ref[:it][it][:nw][parse(Int, nw)]
             func!(nw_ref, nw_data)
@@ -17,9 +17,9 @@ end
 
 
 "Apply the function `func!`, which modifies `ref` for a specific
-infrastructure, `it`. Here, `is_multinetwork_function` specifies whether or
+infrastructure, `it`. Here, `apply_to_subnetworks` specifies whether or
 not `func!` should be applied to all subnetworks in a multinetwork dataset."
-function ref_apply!(func!::Function, ref::Dict{Symbol, <:Any}, it::Symbol; is_multinetwork_function::Bool = true)
+function apply!(func!::Function, ref::Dict{Symbol, <:Any}, it::Symbol; apply_to_subnetworks::Bool = true)
     for (nw, nw_ref) in ref[:it][it][:nw]
         func!(nw_ref)
     end

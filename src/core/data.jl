@@ -13,12 +13,12 @@ end
 
 
 "Apply the function `func!`, which modifies `data` for a specific
-infrastructure, `it`. Here, `is_multinetwork_function` specifies whether or
+infrastructure, `it`. Here, `apply_to_subnetworks` specifies whether or
 not `func!` should be applied to all subnetworks in a multinetwork dataset."
-function apply!(func!::Function, data::Dict{String, <:Any}, it::String; is_multinetwork_function::Bool = true)
+function apply!(func!::Function, data::Dict{String, <:Any}, it::String; apply_to_subnetworks::Bool = true)
     data_it = ismultiinfrastructure(data) ? data["it"][it] : data
 
-    if ismultinetwork(data_it) && is_multinetwork_function
+    if ismultinetwork(data_it) && apply_to_subnetworks
         for (nw, nw_data) in data_it["nw"]
             func!(nw_data)
         end
@@ -29,14 +29,14 @@ end
 
 
 "Apply the getter function `func`, which operates on `data` for a specific
-infrastructure, `it`. Here, `is_multinetwork_function` specifies whether or
+infrastructure, `it`. Here, `apply_to_subnetworks` specifies whether or
 not `func` should be applied to all subnetworks in a multinetwork dataset. If
 so, a dictionary of retrieved data using `func` is returned, indexed by the
 indices of the multinetwork. Otherwise, a single value is returned."
-function get_data(func::Function, data::Dict{String, <:Any}, it::String; is_multinetwork_function::Bool = true)
+function get_data(func::Function, data::Dict{String, <:Any}, it::String; apply_to_subnetworks::Bool = true)
     data_it = ismultiinfrastructure(data) ? data["it"][it] : data
 
-    if ismultinetwork(data_it) && is_multinetwork_function
+    if ismultinetwork(data_it) && apply_to_subnetworks
         data_retrieved = Dict{String, Any}()
 
         for (nw, nw_data) in data_it["nw"]

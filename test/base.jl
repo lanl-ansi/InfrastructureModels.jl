@@ -1,4 +1,3 @@
-
 @def some_fields begin
     i::Int64
     f::Float64
@@ -36,8 +35,8 @@ end
 @testset "ref initialize with global keys" begin
     ref = ref_initialize(generic_si_network_data, "foo", Set(["per_unit", "dict"]))
 
-    @test ref[:per_unit] == false
-    @test ref[:dict]["b"] == 2.0
+    @test ref[:it][:foo][:per_unit] == false
+    @test ref[:it][:foo][:dict]["b"] == 2.0
 
     @test !haskey(ref[:it][:foo][:nw][0], :dict)
     @test !haskey(ref[:it][:foo][:nw][0], :per_unit)
@@ -139,7 +138,7 @@ end
 
 
 function ref_add_core!(ref::Dict)
-    ref_apply!(_ref_add_core!, ref, :foo)
+    apply!(_ref_add_core!, ref, :foo)
 end
 
 
@@ -149,7 +148,7 @@ end
 
 
 function ref_ext_comp_stat!(ref::Dict, data::Dict)
-    ref_apply!(_ref_ext_comp_stat!, ref, data, :foo)
+    apply!(_ref_ext_comp_stat!, ref, data, :foo)
 end
 
 function _ref_ext_comp_stat!(ref::Dict, data::Dict)
