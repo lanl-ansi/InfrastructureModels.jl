@@ -9,6 +9,16 @@ abstract type AbstractModel end
 mutable struct FooModel <: AbstractModel @some_fields end
 mutable struct BarModel <: AbstractModel @some_fields end
 
+
+@testset "silence" begin
+    # This should silence everything except error messages.
+    InfrastructureModels.silence()
+    im_logger = Memento.getlogger(InfrastructureModels)
+    @test Memento.getlevel(im_logger) == "error"
+    Memento.warn(im_logger, "Silenced message should not be displayed.")
+end
+
+
 @testset "def macro" begin
     foo = FooModel(1, 2.3, "4")
     bar = BarModel(1, 2.3, "4")
@@ -222,6 +232,7 @@ end
     @test length(nw_ids_dep(mim)) == 1
     @test length(nws_dep(mim)) == 1
 
+    @test length(var(mim, :foo)[:c]) == 2
     @test length(var(mim, :foo, :c)) == 2
     @test isa(var(mim, :foo, :c, 1), JuMP.VariableRef)
 
@@ -232,7 +243,8 @@ end
     @test length(var_dep(mim, 0)[:d]) == 2
     @test length(var_dep(mim, 0, :d)) == 2
     @test isa(var_dep(mim, 0, :d, 5), JuMP.VariableRef)
-    
+
+    @test length(con(mim, :foo)[:comp]) == 2
     @test length(con(mim, :foo, :comp)) == 2
     @test isa(con(mim, :foo, :comp, 1), JuMP.ConstraintRef)
 
@@ -244,6 +256,8 @@ end
     @test length(con_dep(mim, 0, :dep_con)) == 2
     @test isa(con_dep(mim, 0, :dep_con, 5), JuMP.ConstraintRef)
 
+    @test length(ref(mim, :foo)[:comp_with_status]) == 2
+    @test length(ref(mim, :foo, 0)[:comp_with_status]) == 2
     @test length(ref(mim, :foo, :comp_with_status)) == 2
 
     @test length(ids_dep(mim, 0, :placeholder_dep_comp)) == 2
