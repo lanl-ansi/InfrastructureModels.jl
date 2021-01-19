@@ -381,15 +381,39 @@ end
 ""
 function instantiate_model(
     data::Dict{String,<:Any}, model_type::Type, build_method, ref_add_core!,
-    global_keys::Set{String}; it::Symbol=nothing, ref_extensions=[], kwargs...)
-    # NOTE, this model constructor will build the ref dict using the latest info from the data
+    global_keys::Set{String}; ref_extensions=[], kwargs...)
+    # NOTE, this model constructor will build the ref dict using the latest info from the data    
     start_time = time()
 
-    if it === nothing
-        imo = InitializeInfrastructureModel(model_type, data, global_keys; kwargs...)
-    else
-        imo = InitializeInfrastructureModel(model_type, data, global_keys, it; kwargs...)
+    imo = InitializeInfrastructureModel(model_type, data, global_keys; kwargs...)
+
+    Memento.debug(_LOGGER, "initialize model time: $(time() - start_time)")
+
+    start_time = time()
+    ref_add_core!(imo.ref)
+
+    for ref_ext! in ref_extensions
+        ref_ext!(imo.ref, imo.data)
     end
+
+    Memento.debug(_LOGGER, "build ref time: $(time() - start_time)")
+
+    start_time = time()
+    build_method(imo)
+    Memento.debug(_LOGGER, "build method time: $(time() - start_time)")
+
+    return imo
+end
+
+
+""
+function instantiate_model(
+    data::Dict{String,<:Any}, model_type::Type, build_method, ref_add_core!,
+    global_keys::Set{String}, it::Symbol; ref_extensions=[], kwargs...)
+    # NOTE, this model constructor will build the ref dict using the latest info from the data    
+    start_time = time()
+
+    imo = InitializeInfrastructureModel(model_type, data, global_keys, it; kwargs...)
 
     Memento.debug(_LOGGER, "initialize model time: $(time() - start_time)")
 

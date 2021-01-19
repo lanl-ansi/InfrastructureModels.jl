@@ -189,8 +189,8 @@ end
 
 @testset "helper functions - instantiate_model, ref_extensions, var, con, sol" begin
     mim = instantiate_model(
-        generic_mi_network_data, MyInfrastructureModel, build_my_model, ref_add_core!,
-        gn_global_keys; it = :foo, ref_extensions = [ref_ext_comp_stat!])
+        generic_mi_network_data, MyInfrastructureModel,build_my_model,
+        ref_add_core!, gn_global_keys; ref_extensions = [ref_ext_comp_stat!])
 
     @test !ismultinetwork(mim, :foo)
     @test ismultinetwork(mim, :foo) == ismultinetwork(mim.data["it"]["foo"])
@@ -208,8 +208,8 @@ end
     mn_data["multiinfrastructure"] = true
 
     mim = instantiate_model(
-        mn_data, MyInfrastructureModel, build_my_model, ref_add_core!, gn_global_keys;
-        it = :foo, ref_extensions = [ref_ext_comp_stat!])
+        mn_data, MyInfrastructureModel, build_my_model, ref_add_core!,
+        gn_global_keys, :foo; ref_extensions = [ref_ext_comp_stat!])
 
     @test ismultinetwork(mim, :foo)
     @test ismultinetwork(mim, :foo) == ismultinetwork(mim.data["it"]["foo"])
@@ -231,8 +231,8 @@ end
     mn_data["multiinfrastructure"] = true
 
     mim = instantiate_model(
-        mn_data, MyInfrastructureModel, build_my_model, ref_add_core!, gn_global_keys;
-        it = :foo, ref_extensions=[ref_ext_comp_stat!])
+        mn_data, MyInfrastructureModel, build_my_model, ref_add_core!,
+        gn_global_keys, :foo; ref_extensions=[ref_ext_comp_stat!])
 
     @test ismultinetwork(mim, :foo)
     @test ismultinetwork(mim, :foo) == ismultinetwork(mim.data["it"]["foo"])
@@ -254,7 +254,7 @@ end
 @testset "helper functions - instantiate_model, optimize_model!, sol" begin
     mim = instantiate_model(
         generic_mi_network_data, MyInfrastructureModel, build_my_model, ref_add_core!,
-        gn_global_keys; it = :foo, ref_extensions = [ref_ext_comp_stat!])
+        gn_global_keys, :foo; ref_extensions = [ref_ext_comp_stat!])
 
     result = optimize_model!(mim, optimizer = ipopt_solver)
     solution = result["solution"]["it"]["foo"]
@@ -279,8 +279,8 @@ end
     mn_data["multiinfrastructure"] = true
 
     mim = instantiate_model(
-        mn_data, MyInfrastructureModel, build_my_model, ref_add_core!, gn_global_keys;
-        it = :foo, ref_extensions = [ref_ext_comp_stat!])
+        mn_data, MyInfrastructureModel, build_my_model, ref_add_core!,
+        gn_global_keys, :foo; ref_extensions = [ref_ext_comp_stat!])
 
     result = optimize_model!(mim, optimizer = ipopt_solver)
     solution = result["solution"]["it"]["foo"]
@@ -307,7 +307,7 @@ end
 @testset "build_result structure" begin
     mim = instantiate_model(
         generic_si_network_data, MyInfrastructureModel, build_my_model, ref_add_core!,
-        gn_global_keys; it = :foo, ref_extensions = [ref_ext_comp_stat!])
+        gn_global_keys, :foo; ref_extensions = [ref_ext_comp_stat!])
 
     result = optimize_model!(mim, optimizer = ipopt_solver)
 
