@@ -56,11 +56,21 @@ generic_mi_network_data = JSON.parse("""{"it": {"foo": {
             "d":false
         }
         }}},
-        "multiinfrastructure": true,
-        "dep": {
-            "property_1": 1.0,
-            "property_2": "bar"
-        }}""")
+    "multiinfrastructure": true,
+    "dep": {
+        "property_1": 1.0,
+        "property_2": "bar",
+        "placeholder_dep_comp": {
+            "5": {
+                "property_3": 1.0,
+                "property_4": "foo"
+            },
+            "6": {
+                "property_3": 2.0,
+                "property_4": "barbar"
+            }
+        }
+    }}""")
 
 generic_network_time_series_data = Dict(
     "num_steps" => 3,

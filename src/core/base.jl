@@ -183,7 +183,6 @@ end
 function _initialize_dict_from_ref(ref::Dict{Symbol, <:Any})
     dict = Dict{Symbol, Any}(:it => Dict{Symbol, Any}(), :dep => Dict{Symbol, Any}())
     dict[:it] = Dict{Symbol, Any}(it => Dict{Symbol, Any}() for it in keys(ref[:it]))
-    dict[:dep] = Dict{Symbol, Any}(:nw => Dict{Int, Any}() for nw in keys(ref[:dep][:nw]))
 
     for it in keys(ref[:it])
         dict[:it][it] = Dict{Symbol, Any}(:nw => Dict{Int, Any}())
@@ -191,6 +190,12 @@ function _initialize_dict_from_ref(ref::Dict{Symbol, <:Any})
         for nw in keys(ref[:it][it][:nw])
             dict[:it][it][:nw][nw] = Dict{Symbol, Any}()
         end
+    end
+
+    dict[:dep] = Dict{Symbol, Any}(:nw => Dict{Int, Any}())
+
+    for nw in keys(ref[:dep][:nw])
+        dict[:dep][:nw][nw] = Dict{Symbol, Any}()
     end
 
     return dict
@@ -358,7 +363,7 @@ ref(aim::AbstractInfrastructureModel, it::Symbol; nw::Int=aim.cnw) = aim.ref[:it
 ref(aim::AbstractInfrastructureModel, it::Symbol, key::Symbol; nw::Int=aim.cnw) = aim.ref[:it][it][:nw][nw][key]
 ref(aim::AbstractInfrastructureModel, it::Symbol, key::Symbol, idx; nw::Int=aim.cnw) = aim.ref[:it][it][:nw][nw][key][idx]
 ref(aim::AbstractInfrastructureModel, it::Symbol, key::Symbol, idx, param::String; nw::Int=aim.cnw) = aim.ref[:it][it][:nw][nw][key][idx][param]
-ref_dep(aim::AbstractInfrastructureModel; nw::Int=aim.cnw) = aim.ref[:it][it][:nw][nw]
+ref_dep(aim::AbstractInfrastructureModel; nw::Int=aim.cnw) = aim.ref[:dep][:nw][nw]
 ref_dep(aim::AbstractInfrastructureModel, key::Symbol; nw::Int=aim.cnw) = aim.ref[:dep][:nw][nw][key]
 ref_dep(aim::AbstractInfrastructureModel, key::Symbol, idx; nw::Int=aim.cnw) = aim.ref[:dep][:nw][nw][key][idx]
 ref_dep(aim::AbstractInfrastructureModel, key::Symbol, idx, param::String; nw::Int=aim.cnw) = aim.ref[:dep][:nw][nw][key][idx][param]
