@@ -132,6 +132,30 @@ function build_my_model(aim::MyAbstractInfrastructureModel)
     aim.sol[:glb] = 4.56
 end
 
+
+function build_discrete_model(aim::MyAbstractInfrastructureModel)
+    for nw in nw_ids(aim)
+        c = var(aim, nw)[:c] = JuMP.@variable(aim.model,
+            [i in ids(aim, nw, :comp)], base_name="$(nw)_c",
+            integer=true,
+            lower_bound = i*2
+        )
+        sol_component_value(aim, nw, :comp, :c, ids(aim, nw, :comp), c)
+    end
+
+    for nw in nw_ids(aim)
+        for (c,comp) in ref(aim, nw, :comp)
+            JuMP.@constraint(aim.model, var(aim, nw, :c, c) >= c/2)
+        end
+    end
+
+    JuMP.@objective(aim.model, Min, sum(
+        sum( var(aim, nw, :c, c)^2 for c in ids(aim, nw, :comp))
+        for nw in nw_ids(aim))
+    )
+end
+
+
 function ref_add_core!(ref::Dict)
     for (nw, nw_ref) in ref[:nw]
         nw_ref[:comp] = Dict(x for x in nw_ref[:comp] if (!haskey(x.second, "status") || x.second["status"] != 0))
@@ -258,6 +282,16 @@ end
         @test nw_sol["comp"]["3"]["d"] == 1.23
     end
 end
+
+@testset "helper functions - relax_integrality" begin
+    mim = instantiate_model(generic_network_data, MyInfrastructureModel, build_discrete_model, ref_add_core!, gn_global_keys)
+    result = optimize_model!(mim, relax_integrality=true, optimizer=ipopt_solver)
+    solution = result["solution"]
+
+    @test isapprox(solution["comp"]["1"]["c"], 2.0)
+    @test isapprox(solution["comp"]["3"]["c"], 6.0)
+end
+
 
 
 @testset "build_result structure" begin

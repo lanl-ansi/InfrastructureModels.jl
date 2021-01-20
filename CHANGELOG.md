@@ -2,7 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Add support for `relax_integrality` in `optimize_model!`
 
 ### v0.5.3
 - Add generic `constraint_bounds_on_off` function.
