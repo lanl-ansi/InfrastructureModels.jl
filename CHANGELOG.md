@@ -2,6 +2,9 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+- nothing
+
+### v0.5.4
 - Add support for `relax_integrality` in `optimize_model!`
 
 ### v0.5.3
