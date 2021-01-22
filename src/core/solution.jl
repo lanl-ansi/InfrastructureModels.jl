@@ -75,8 +75,6 @@ function build_solution(aim::AbstractInfrastructureModel; post_processors=[])
         sol["it"][string(it)]["multinetwork"] = true
     end
 
-    sol["dep"] = build_solution_values(aim.ref[:dep])
-
     solution_preprocessor(aim, sol)
 
     for post_processor in post_processors
@@ -107,21 +105,9 @@ function build_solution(aim::AbstractInfrastructureModel; post_processors=[])
         end
     end
 
-    if ismultiinfrastructure(aim)
-        if ismultinetwork(aim.data["dep"])
-            sol["dep"]["multinetwork"] = true
-        else
-            for (k, v) in sol["dep"]["nw"]["$(aim.cnw)"]
-                sol["dep"][k] = v
-            end
-
-            sol["dep"]["multinetwork"] = false
-            delete!(sol["dep"], "nw")
-        end
-    else
+    if !ismultiinfrastructure(aim)
         sol["multiinfrastructure"] = false
         delete!(sol, "it")
-        delete!(sol, "dep")
     end
 
     return sol
@@ -187,14 +173,6 @@ end
 
 
 #### Helpers for populating the solution dict
-
-"given a variable that is indexed by component ids, builds the standard solution structure"
-function sol_component_value_dep(aim::AbstractInfrastructureModel, n::Int, comp_name::Symbol, field_name::Symbol, comp_ids, variables)
-    for i in comp_ids
-        @assert !haskey(sol_dep(aim, n, comp_name, i), field_name)
-        sol_dep(aim, n, comp_name, i)[field_name] = variables[i]
-    end
-end
 
 
 "given a constant value, builds the standard component-wise solution structure"

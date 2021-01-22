@@ -233,6 +233,7 @@ function component_table(data::Dict{String,<:Any}, component::String, fields::Ve
         return _component_table(data, component, fields)
     end
 end
+
 component_table(data::Dict{String,<:Any}, component::String, field::String) = component_table(data, component, [field])
 
 function _component_table(data::Dict{String,<:Any}, component::String, fields::Vector{String})
@@ -297,6 +298,7 @@ function summary(io::IO, data::Dict{String,<:Any};
         println(io, "")
         println(io, _bold("Table Counts"))
     end
+    
     for k in sort(component_types, by=x->get(component_types_order, x, max_parameter_value))
         println(io, "  $(k): $(length(data[k]))")
     end

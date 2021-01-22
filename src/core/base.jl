@@ -58,9 +58,7 @@ function InitializeInfrastructureModel(
     sol_proc = _initialize_dict_from_ref(ref)
 
     # Compute the minimum multinetwork index and store it as `cnw`.
-    cnw_it = minimum(minimum(collect(keys(ref[:it][it][:nw])) for it in keys(ref[:it])))
-    cnw_dep = minimum(collect(keys(ref[:dep][:nw]))) # Minimum interdependency multinetwork.
-    cnw = min(cnw_it, cnw_dep) # Overall minimum network index discovered in the data.
+    cnw = minimum(minimum(collect(keys(ref[:it][it][:nw])) for it in keys(ref[:it])))
 
     imo = InfrastructureModel(
         jump_model,
@@ -95,9 +93,7 @@ function InitializeInfrastructureModel(
     sol_proc = _initialize_dict_from_ref(ref)
 
     # Compute the minimum multinetwork index and store it as `cnw`.
-    cnw_it = minimum(minimum(keys(ref[:it][it][:nw]) for it in keys(ref[:it])))
-    cnw_dep = minimum(keys(ref[:dep][:nw])) # Minimum interdependency multinetwork.
-    cnw = min(cnw_it, cnw_dep) # Overall minimum network index discovered in the data.
+    cnw = minimum(minimum(keys(ref[:it][it][:nw]) for it in keys(ref[:it])))
 
     imo = InfrastructureModel(
         jump_model,
@@ -139,14 +135,6 @@ function ref_initialize(data::Dict{String, <:Any}, global_keys::Set{String} = Se
         _populate_ref_global_keys!(refs[:it][Symbol(it)], data_it, global_keys)
     end
 
-    # Populate the interdependency section of the refs dictionary.
-    _populate_ref_dep!(refs, data)
-
-    if haskey(data, "dep")
-        # Populate interdependency global keys.
-        _populate_ref_global_keys!(refs[:dep], data["dep"], global_keys)
-    end
-
     # Populate top-level dictionary global keys.
     _populate_ref_global_keys!(refs, data, global_keys)
 
@@ -172,9 +160,6 @@ function ref_initialize(data::Dict{String, <:Any}, it::String, global_keys::Set{
     # Populate the global keys section of the refs dictionary.
     _populate_ref_global_keys!(refs[:it][Symbol(it)], data, global_keys)
 
-    # Populate the interdependency section of the refs dictionary.
-    _populate_ref_dep!(refs, data)
-
     # Return the final refs object.
     return refs
 end
@@ -192,12 +177,6 @@ function _initialize_dict_from_ref(ref::Dict{Symbol, <:Any})
         end
     end
 
-    dict[:dep] = Dict{Symbol, Any}(:nw => Dict{Int, Any}())
-
-    for nw in keys(ref[:dep][:nw])
-        dict[:dep][:nw][nw] = Dict{Symbol, Any}()
-    end
-
     return dict
 end
 
@@ -212,47 +191,6 @@ function _populate_ref_global_keys!(refs::Dict{Symbol, <:Any}, data::Dict{String
     end
 end
 
-
-"Populate the portion of `refs` corresponding to interdependencies."
-function _populate_ref_dep!(refs::Dict{Symbol, <:Any}, data::Dict{String, <:Any}, global_keys::Set{String} = Set{String}())
-    # Get the interdependency portion of the data dictionary.
-    data_in = haskey(data, "dep") ? data["dep"] : Dict{String, Any}()
-
-    # Initialize the ref corresponding to interdependencies.
-    refs[:dep] = Dict{Symbol, Any}()
-
-    # Build a multinetwork representation of the data.
-    if ismultinetwork(data_in)
-        nws_data = data_in["nw"]
-    
-        for (key, item) in data_in
-            if key != "nw"
-                refs[:dep][Symbol(key)] = item
-            end
-        end
-    else
-        nws_data = Dict("0" => data_in)
-    end
-
-    nws = refs[:dep][:nw] = Dict{Int, Any}()
-
-    # Populate the specific infrastructure type's ref dictionary.
-    for (n, nw_data) in nws_data
-        nw_id = parse(Int, n)
-        ref = nws[nw_id] = Dict{Symbol, Any}()
-    
-        for (key, item) in nw_data
-            if !(key in global_keys)
-                if isa(item, Dict{String, Any}) && _iscomponentdict(item)
-                    item_lookup = Dict{Int, Any}([(parse(Int, k), v) for (k, v) in item])
-                    ref[Symbol(key)] = item_lookup
-                else
-                    ref[Symbol(key)] = item
-                end
-            end
-        end
-    end
-end
 
 "Populate the portion of `refs` for a specific infrastructure type."
 function _populate_ref_it!(refs::Dict{Symbol, <:Any}, data_it::Dict{String, <:Any}, global_keys::Set{String}, it::String)
@@ -340,69 +278,42 @@ end
 
 nw_ids(aim::AbstractInfrastructureModel, it::Symbol) = keys(aim.ref[:it][it][:nw])
 nws(aim::AbstractInfrastructureModel, it::Symbol) = aim.ref[:it][it][:nw]
-nw_ids_dep(aim::AbstractInfrastructureModel) = keys(aim.ref[:dep][:nw])
-nws_dep(aim::AbstractInfrastructureModel) = aim.ref[:dep][:nw]
 
 ids(aim::AbstractInfrastructureModel, it::Symbol, nw::Int, key::Symbol) = keys(aim.ref[:it][it][:nw][nw][key])
 ids(aim::AbstractInfrastructureModel, it::Symbol, key::Symbol; nw::Int=aim.cnw) = keys(aim.ref[:it][it][:nw][nw][key])
-ids_dep(aim::AbstractInfrastructureModel, nw::Int, key::Symbol) = keys(aim.ref[:dep][:nw][nw][key])
-ids_dep(aim::AbstractInfrastructureModel, key::Symbol; nw::Int=aim.cnw) = keys(aim.ref[:dep][:nw][nw][key])
 
 
 ref(aim::AbstractInfrastructureModel, it::Symbol, nw::Int) = aim.ref[:it][it][:nw][nw]
 ref(aim::AbstractInfrastructureModel, it::Symbol, nw::Int, key::Symbol) = aim.ref[:it][it][:nw][nw][key]
 ref(aim::AbstractInfrastructureModel, it::Symbol, nw::Int, key::Symbol, idx) = aim.ref[:it][it][:nw][nw][key][idx]
 ref(aim::AbstractInfrastructureModel, it::Symbol, nw::Int, key::Symbol, idx, param::String) = aim.ref[:it][it][:nw][nw][key][idx][param]
-ref_dep(aim::AbstractInfrastructureModel, nw::Int) = aim.ref[:dep][:nw][nw]
-ref_dep(aim::AbstractInfrastructureModel, nw::Int, key::Symbol) = aim.ref[:dep][:nw][nw][key]
-ref_dep(aim::AbstractInfrastructureModel, nw::Int, key::Symbol, idx) = aim.ref[:dep][:nw][nw][key][idx]
-ref_dep(aim::AbstractInfrastructureModel, nw::Int, key::Symbol, idx, param::String) = aim.ref[:dep][:nw][nw][key][idx][param]
 
 
 ref(aim::AbstractInfrastructureModel, it::Symbol; nw::Int=aim.cnw) = aim.ref[:it][it][:nw][nw]
 ref(aim::AbstractInfrastructureModel, it::Symbol, key::Symbol; nw::Int=aim.cnw) = aim.ref[:it][it][:nw][nw][key]
 ref(aim::AbstractInfrastructureModel, it::Symbol, key::Symbol, idx; nw::Int=aim.cnw) = aim.ref[:it][it][:nw][nw][key][idx]
 ref(aim::AbstractInfrastructureModel, it::Symbol, key::Symbol, idx, param::String; nw::Int=aim.cnw) = aim.ref[:it][it][:nw][nw][key][idx][param]
-ref_dep(aim::AbstractInfrastructureModel; nw::Int=aim.cnw) = aim.ref[:dep][:nw][nw]
-ref_dep(aim::AbstractInfrastructureModel, key::Symbol; nw::Int=aim.cnw) = aim.ref[:dep][:nw][nw][key]
-ref_dep(aim::AbstractInfrastructureModel, key::Symbol, idx; nw::Int=aim.cnw) = aim.ref[:dep][:nw][nw][key][idx]
-ref_dep(aim::AbstractInfrastructureModel, key::Symbol, idx, param::String; nw::Int=aim.cnw) = aim.ref[:dep][:nw][nw][key][idx][param]
-
 
 var(aim::AbstractInfrastructureModel, it::Symbol, nw::Int) = aim.var[:it][it][:nw][nw]
 var(aim::AbstractInfrastructureModel, it::Symbol, nw::Int, key::Symbol) = aim.var[:it][it][:nw][nw][key]
 var(aim::AbstractInfrastructureModel, it::Symbol, nw::Int, key::Symbol, idx) = aim.var[:it][it][:nw][nw][key][idx]
-var_dep(aim::AbstractInfrastructureModel, nw::Int) = aim.var[:dep][:nw][nw]
-var_dep(aim::AbstractInfrastructureModel, nw::Int, key::Symbol) = aim.var[:dep][:nw][nw][key]
-var_dep(aim::AbstractInfrastructureModel, nw::Int, key::Symbol, idx) = aim.var[:dep][:nw][nw][key][idx]
 
 var(aim::AbstractInfrastructureModel, it::Symbol; nw::Int=aim.cnw) = aim.var[:it][it][:nw][nw]
 var(aim::AbstractInfrastructureModel, it::Symbol, key::Symbol; nw::Int=aim.cnw) = aim.var[:it][it][:nw][nw][key]
 var(aim::AbstractInfrastructureModel, it::Symbol, key::Symbol, idx; nw::Int=aim.cnw) = aim.var[:it][it][:nw][nw][key][idx]
-var_dep(aim::AbstractInfrastructureModel; nw::Int=aim.cnw) = aim.var[:dep][:nw][nw]
-var_dep(aim::AbstractInfrastructureModel, key::Symbol; nw::Int=aim.cnw) = aim.var[:dep][:nw][nw][key]
-var_dep(aim::AbstractInfrastructureModel, key::Symbol, idx; nw::Int=aim.cnw) = aim.var[:dep][:nw][nw][key][idx]
 
 
 con(aim::AbstractInfrastructureModel, it::Symbol, nw::Int) = aim.con[:it][it][:nw][nw]
 con(aim::AbstractInfrastructureModel, it::Symbol, nw::Int, key::Symbol) = aim.con[:it][it][:nw][nw][key]
 con(aim::AbstractInfrastructureModel, it::Symbol, nw::Int, key::Symbol, idx) = aim.con[:it][it][:nw][nw][key][idx]
-con_dep(aim::AbstractInfrastructureModel, nw::Int) = aim.con[:dep][:nw][nw]
-con_dep(aim::AbstractInfrastructureModel, nw::Int, key::Symbol) = aim.con[:dep][:nw][nw][key]
-con_dep(aim::AbstractInfrastructureModel, nw::Int, key::Symbol, idx) = aim.con[:dep][:nw][nw][key][idx]
 
 con(aim::AbstractInfrastructureModel, it::Symbol; nw::Int=aim.cnw) = aim.con[:it][it][:nw][nw]
 con(aim::AbstractInfrastructureModel, it::Symbol, key::Symbol; nw::Int=aim.cnw) = aim.con[:it][it][:nw][nw][key]
 con(aim::AbstractInfrastructureModel, it::Symbol, key::Symbol, idx; nw::Int=aim.cnw) = aim.con[:it][it][:nw][nw][key][idx]
-con_dep(aim::AbstractInfrastructureModel; nw::Int=aim.cnw) = aim.con[:dep][:nw][nw]
-con_dep(aim::AbstractInfrastructureModel, key::Symbol; nw::Int=aim.cnw) = aim.con[:dep][:nw][nw][key]
-con_dep(aim::AbstractInfrastructureModel, key::Symbol, idx; nw::Int=aim.cnw) = aim.con[:dep][:nw][nw][key][idx]
 
 
 sol(aim::AbstractInfrastructureModel, it::Symbol, nw::Int, args...) = _sol(aim.sol[:it][it][:nw][nw], args...)
 sol(aim::AbstractInfrastructureModel, it::Symbol, args...; nw::Int=aim.cnw) = _sol(aim.sol[:it][it][:nw][nw], args...)
-sol_dep(aim::AbstractInfrastructureModel, nw::Int, args...) = _sol(aim.sol[:dep][:nw][nw], args...)
-sol_dep(aim::AbstractInfrastructureModel, args...; nw::Int=aim.cnw) = _sol(aim.sol[:dep][:nw][nw], args...)
 
 function _sol(sol::Dict, args...)
     for arg in args

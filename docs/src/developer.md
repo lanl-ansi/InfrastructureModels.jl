@@ -121,18 +121,19 @@ Data that describe the linkages between interdependent infrastructures are defin
 ```json
 {
 "it": {
+    "dep": {...},
     "pm": {...},
     "gm": {...},
     "wm": {...},
     ...
 },
-"dep": {...},
 ...
 }
 ```
 
 Infrastructure short names,
 ```
+Interdependencies - dep
 Power Transmission - pm
 Power Distribution - pmd
 Natural Gas Transmission - gm

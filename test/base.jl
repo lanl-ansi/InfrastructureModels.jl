@@ -61,15 +61,15 @@ mutable struct MyInfrastructureModel <: MyAbstractInfrastructureModel @im_fields
 
 @testset "@im_fields and InitializeInfrastructureModel" begin
     global_keys = Set{String}()
-    mim = InitializeInfrastructureModel(MyInfrastructureModel, generic_mi_network_data, global_keys)
+    mim = InitializeInfrastructureModel(MyInfrastructureModel, generic_si_network_data, global_keys, :foo)
     mim_clone = InitializeInfrastructureModel(MyInfrastructureModel, generic_mi_network_data, global_keys, :foo)
 
-    @test mim.data == mim_clone.data
+    @test mim.data == mim_clone.data["it"]["foo"]
     @test mim.ref == mim_clone.ref
 
     @test isa(mim.model, JuMP.AbstractModel)
 
-    @test length(mim.data["it"]["foo"]) == 6
+    @test length(mim.data) == 6
     @test length(mim.setting) == 0
     @test length(mim.solution) == 0
     @test length(mim.ext) == 0
@@ -83,7 +83,7 @@ mutable struct MyInfrastructureModel <: MyAbstractInfrastructureModel @im_fields
 
     @test haskey(mim.sol_proc[:it][:foo], :nw); @test length(mim.sol_proc[:it][:foo][:nw][mim.cnw]) == 0
 
-    @test !haskey(mim.data["it"]["foo"], "nw"); @test length(mim.data["it"]["foo"]) == 6
+    @test !haskey(mim.data, "nw"); @test length(mim.data) == 6
     @test haskey(mim.sol[:it][:foo], :nw); @test length(mim.ref[:it][:foo][:nw][mim.cnw]) == 6
 end
 
@@ -121,22 +121,22 @@ end
 function build_mi_model(aim::MyAbstractInfrastructureModel)
     build_si_model(aim)
 
-    for nw in nw_ids_dep(aim)
-        d = var_dep(aim, nw)[:d] = JuMP.@variable(aim.model,
-            [i in ids_dep(aim, nw, :placeholder_dep_comp)],
+    for nw in nw_ids(aim, :dep)
+        d = var(aim, :dep, nw)[:d] = JuMP.@variable(aim.model,
+            [i in ids(aim, :dep, nw, :placeholder_dep_comp)],
             base_name="$(nw)_d", lower_bound = i
         )
 
-        dep_ids = ids_dep(aim, nw, :placeholder_dep_comp)
-        sol_component_value_dep(aim, nw, :placeholder_dep_comp, :d, dep_ids, d)
+        dep_ids = ids(aim, :dep, nw, :placeholder_dep_comp)
+        sol_component_value(aim, :dep, nw, :placeholder_dep_comp, :d, dep_ids, d)
     end
 
-    for nw in nw_ids_dep(aim)
-        con_dep(aim, nw)[:dep_con] = Dict()
+    for nw in nw_ids(aim, :dep)
+        con(aim, :dep, nw)[:dep_con] = Dict()
 
-        for (c, comp) in ref_dep(aim, nw, :placeholder_dep_comp)
-            cstr = JuMP.@constraint(aim.model, var_dep(aim, nw, :d, c) == 1.0)
-            con_dep(aim, nw, :dep_con)[c] = cstr
+        for (c, comp) in ref(aim, :dep, nw, :placeholder_dep_comp)
+            cstr = JuMP.@constraint(aim.model, var(aim, :dep, nw, :d, c) == 1.0)
+            con(aim, :dep, nw, :dep_con)[c] = cstr
         end
     end
 end
@@ -229,49 +229,49 @@ end
     @test !ismultinetwork(mim, :foo)
     @test ismultinetwork(mim, :foo) == ismultinetwork(mim.data["it"]["foo"])
 
-    @test length(nw_ids_dep(mim)) == 1
-    @test length(nws_dep(mim)) == 1
+    @test length(nw_ids(mim, :dep)) == 1
+    @test length(nws(mim, :dep)) == 1
 
     @test length(var(mim, :foo)[:c]) == 2
     @test length(var(mim, :foo, :c)) == 2
     @test isa(var(mim, :foo, :c, 1), JuMP.VariableRef)
 
-    @test length(var_dep(mim)[:d]) == 2
-    @test length(var_dep(mim, :d)) == 2
-    @test isa(var_dep(mim, :d, 5), JuMP.VariableRef)
+    @test length(var(mim, :dep)[:d]) == 2
+    @test length(var(mim, :dep, :d)) == 2
+    @test isa(var(mim, :dep, :d, 5), JuMP.VariableRef)
 
-    @test length(var_dep(mim, 0)[:d]) == 2
-    @test length(var_dep(mim, 0, :d)) == 2
-    @test isa(var_dep(mim, 0, :d, 5), JuMP.VariableRef)
+    @test length(var(mim, :dep, 0)[:d]) == 2
+    @test length(var(mim, :dep, 0, :d)) == 2
+    @test isa(var(mim, :dep, 0, :d, 5), JuMP.VariableRef)
 
     @test length(con(mim, :foo)[:comp]) == 2
     @test length(con(mim, :foo, :comp)) == 2
     @test isa(con(mim, :foo, :comp, 1), JuMP.ConstraintRef)
 
-    @test length(con_dep(mim)[:dep_con]) == 2
-    @test length(con_dep(mim, :dep_con)) == 2
-    @test isa(con_dep(mim, :dep_con, 5), JuMP.ConstraintRef)
+    @test length(con(mim, :dep)[:dep_con]) == 2
+    @test length(con(mim, :dep, :dep_con)) == 2
+    @test isa(con(mim, :dep, :dep_con, 5), JuMP.ConstraintRef)
 
-    @test length(con_dep(mim, 0)[:dep_con]) == 2
-    @test length(con_dep(mim, 0, :dep_con)) == 2
-    @test isa(con_dep(mim, 0, :dep_con, 5), JuMP.ConstraintRef)
+    @test length(con(mim, :dep, 0)[:dep_con]) == 2
+    @test length(con(mim, :dep, 0, :dep_con)) == 2
+    @test isa(con(mim, :dep, 0, :dep_con, 5), JuMP.ConstraintRef)
 
     @test length(ref(mim, :foo)[:comp_with_status]) == 2
     @test length(ref(mim, :foo, 0)[:comp_with_status]) == 2
     @test length(ref(mim, :foo, :comp_with_status)) == 2
 
-    @test length(ids_dep(mim, 0, :placeholder_dep_comp)) == 2
-    @test length(ids_dep(mim, :placeholder_dep_comp)) == 2
+    @test length(ids(mim, :dep, 0, :placeholder_dep_comp)) == 2
+    @test length(ids(mim, :dep, :placeholder_dep_comp)) == 2
 
-    @test length(ref_dep(mim)[:placeholder_dep_comp]) == 2
-    @test length(ref_dep(mim, :placeholder_dep_comp)) == 2
-    @test isa(ref_dep(mim, :placeholder_dep_comp, 5), Dict)
-    @test ref_dep(mim, :placeholder_dep_comp, 5, "property_3") == 1.0
+    @test length(ref(mim, :dep)[:placeholder_dep_comp]) == 2
+    @test length(ref(mim, :dep, :placeholder_dep_comp)) == 2
+    @test isa(ref(mim, :dep, :placeholder_dep_comp, 5), Dict)
+    @test ref(mim, :dep, :placeholder_dep_comp, 5, "property_3") == 1.0
 
-    @test length(ref_dep(mim, 0)[:placeholder_dep_comp]) == 2
-    @test length(ref_dep(mim, 0, :placeholder_dep_comp)) == 2
-    @test isa(ref_dep(mim, 0, :placeholder_dep_comp, 5), Dict)
-    @test ref_dep(mim, 0, :placeholder_dep_comp, 5, "property_3") == 1.0
+    @test length(ref(mim, :dep, 0)[:placeholder_dep_comp]) == 2
+    @test length(ref(mim, :dep, 0, :placeholder_dep_comp)) == 2
+    @test isa(ref(mim, :dep, 0, :placeholder_dep_comp, 5), Dict)
+    @test ref(mim, :dep, 0, :placeholder_dep_comp, 5, "property_3") == 1.0
 
     mn_data = replicate(generic_mi_network_data["it"]["foo"], 1, gn_global_keys)
     mn_data = Dict{String, Any}("it" => Dict{String, Any}("foo" => mn_data))
@@ -344,8 +344,8 @@ end
     @test solution["comp"]["3"]["d"] == 1.23
 
     mn_it = replicate(generic_mi_network_data["it"]["foo"], 3, gn_global_keys)
-    mn_data = Dict{String, Any}("it" => Dict{String, Any}("foo" => mn_it))
-    mn_data["dep"] = replicate(generic_mi_network_data["dep"], 3, gn_global_keys)
+    mn_dep = replicate(generic_mi_network_data["it"]["dep"], 3, gn_global_keys)
+    mn_data = Dict{String, Any}("it" => Dict{String, Any}("foo" => mn_it, "dep" => mn_dep))
     mn_data["multiinfrastructure"] = true
 
     mim = instantiate_model(
