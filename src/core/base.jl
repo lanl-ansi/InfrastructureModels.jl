@@ -389,14 +389,14 @@ function optimize_model!(aim::AbstractInfrastructureModel; optimizer=nothing, so
     start_time = time()
 
     if optimizer !== nothing
-        if aim.model.moi_backend.state == _MOI.Utilities.NO_OPTIMIZER
+        if JuMP.mode(aim.model) != JuMP.DIRECT && aim.model.moi_backend.state == _MOI.Utilities.NO_OPTIMIZER
             JuMP.set_optimizer(aim.model, optimizer)
         else
             Memento.warn(_LOGGER, "Model already contains optimizer, cannot use optimizer specified in `optimize_model!`")
         end
     end
 
-    if aim.model.moi_backend.state == _MOI.Utilities.NO_OPTIMIZER
+    if JuMP.mode(aim.model) != JuMP.DIRECT && aim.model.moi_backend.state == _MOI.Utilities.NO_OPTIMIZER
         Memento.error(_LOGGER, "No optimizer specified in `optimize_model!` or the given JuMP model.")
     end
 
