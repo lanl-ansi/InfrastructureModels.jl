@@ -2,7 +2,8 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Add support for multi-infrastructure data (breaking)
+- Drop `cnw` from AbstractInfrastructureModel fields in favor of `nw_id_default` (breaking)
 
 ### v0.5.4
 - Add support for `relax_integrality` in `optimize_model!`

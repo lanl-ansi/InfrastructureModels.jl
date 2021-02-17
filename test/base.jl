@@ -74,17 +74,15 @@ mutable struct MyInfrastructureModel <: MyAbstractInfrastructureModel @im_fields
     @test length(mim.solution) == 0
     @test length(mim.ext) == 0
 
-    @test mim.cnw == 0
+    @test haskey(mim.ref[:it][:foo], :nw); @test length(mim.ref[:it][:foo][:nw][nw_id_default]) == 6
+    @test haskey(mim.var[:it][:foo], :nw); @test length(mim.var[:it][:foo][:nw][nw_id_default]) == 0
+    @test haskey(mim.con[:it][:foo], :nw); @test length(mim.con[:it][:foo][:nw][nw_id_default]) == 0
+    @test haskey(mim.sol[:it][:foo], :nw); @test length(mim.sol[:it][:foo][:nw][nw_id_default]) == 0
 
-    @test haskey(mim.ref[:it][:foo], :nw); @test length(mim.ref[:it][:foo][:nw][mim.cnw]) == 6
-    @test haskey(mim.var[:it][:foo], :nw); @test length(mim.var[:it][:foo][:nw][mim.cnw]) == 0
-    @test haskey(mim.con[:it][:foo], :nw); @test length(mim.con[:it][:foo][:nw][mim.cnw]) == 0
-    @test haskey(mim.sol[:it][:foo], :nw); @test length(mim.sol[:it][:foo][:nw][mim.cnw]) == 0
-
-    @test haskey(mim.sol_proc[:it][:foo], :nw); @test length(mim.sol_proc[:it][:foo][:nw][mim.cnw]) == 0
+    @test haskey(mim.sol_proc[:it][:foo], :nw); @test length(mim.sol_proc[:it][:foo][:nw][nw_id_default]) == 0
 
     @test !haskey(mim.data, "nw"); @test length(mim.data) == 6
-    @test haskey(mim.sol[:it][:foo], :nw); @test length(mim.ref[:it][:foo][:nw][mim.cnw]) == 6
+    @test haskey(mim.sol[:it][:foo], :nw); @test length(mim.ref[:it][:foo][:nw][nw_id_default]) == 6
 end
 
 

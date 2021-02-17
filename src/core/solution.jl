@@ -88,7 +88,7 @@ function build_solution(aim::AbstractInfrastructureModel; post_processors=[])
         if ismultinetwork(data_it)
             sol["it"][it_str]["multinetwork"] = true
         else
-            for (k, v) in sol["it"][it_str]["nw"]["$(aim.cnw)"]
+            for (k, v) in sol["it"][it_str]["nw"]["$(nw_id_default)"]
                 sol["it"][it_str][k] = v
             end
 

@@ -11,7 +11,7 @@ function apply!(func!::Function, ref::Dict{Symbol, <:Any}, data::Dict{String, <:
             func!(nw_ref, nw_data)
         end
     else
-        func!(ref[:it][it][:nw][0], data_it)
+        func!(ref[:it][it][:nw][nw_id_default], data_it)
     end
 end
 
