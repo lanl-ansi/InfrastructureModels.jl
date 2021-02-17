@@ -10,8 +10,9 @@ Status:
 
 InfrastructureModels.jl encompasses shared functionalities, best practices, and style guides for a multi-infrastructure modeling and optimization ecosystem in Julia. The core packages in the InfrastructureModels ecosystem are
 
-* [GasModels.jl](https://github.com/lanl-ansi/GasModels.jl) - Natural gas transmision systems
-* [PowerModels.jl](https://github.com/lanl-ansi/PowerModels.jl) - Electrical power transmision systems
+* [GasModels.jl](https://github.com/lanl-ansi/GasModels.jl) - Natural gas transmission systems
+* [PetroleumModels.jl](https://github.com/lanl-ansi/PetroleumModels.jl) - Petroleum product transmission systems
+* [PowerModels.jl](https://github.com/lanl-ansi/PowerModels.jl) - Electrical power transmission systems
 * [PowerModelsDistribution.jl](https://github.com/lanl-ansi/PowerModelsDistribution.jl) - Electrical power distribution systems
 * [WaterModels.jl](https://github.com/lanl-ansi/WaterModels.jl) - Potable water distribution systems
 
