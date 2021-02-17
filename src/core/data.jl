@@ -7,8 +7,48 @@ function update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
     else
         Memento.warn(_LOGGER, "running update_data with data that does not include per_unit field, units may be incorrect")
     end
+
     _update_data!(data, new_data)
 end
+
+
+"Apply the function `func!`, which modifies `data` for a specific
+infrastructure, `it`. Here, `apply_to_subnetworks` specifies whether or
+not `func!` should be applied to all subnetworks in a multinetwork dataset."
+function apply!(func!::Function, data::Dict{String, <:Any}, it::String; apply_to_subnetworks::Bool = true)
+    data_it = ismultiinfrastructure(data) ? data["it"][it] : data
+
+    if ismultinetwork(data_it) && apply_to_subnetworks
+        for (nw, nw_data) in data_it["nw"]
+            func!(nw_data)
+        end
+    else
+        func!(data_it)
+    end
+end
+
+
+"Apply the getter function `func`, which operates on `data` for a specific
+infrastructure, `it`. Here, `apply_to_subnetworks` specifies whether or
+not `func` should be applied to all subnetworks in a multinetwork dataset. If
+so, a dictionary of retrieved data using `func` is returned, indexed by the
+indices of the multinetwork. Otherwise, a single value is returned."
+function get_data(func::Function, data::Dict{String, <:Any}, it::String; apply_to_subnetworks::Bool = true)
+    data_it = ismultiinfrastructure(data) ? data["it"][it] : data
+
+    if ismultinetwork(data_it) && apply_to_subnetworks
+        data_retrieved = Dict{String, Any}()
+
+        for (nw, nw_data) in data_it["nw"]
+            data_retrieved[nw] = func(nw_data)
+        end
+
+        return data_retrieved
+    else
+        return func(data_it)
+    end
+end
+
 
 
 "Attempts to determine if the given data is a component dictionary"
@@ -34,7 +74,14 @@ function _update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
 end
 
 "checks if a given network data is a multinetwork"
-ismultinetwork(data::Dict{String,<:Any}) = (haskey(data, "multinetwork") && data["multinetwork"] == true)
+function ismultinetwork(data::Dict{String,<:Any})
+    return haskey(data, "multinetwork") && data["multinetwork"] == true
+end
+
+"checks if a given network data is a multinetwork"
+function ismultiinfrastructure(data::Dict{String,<:Any})
+    return haskey(data, "multiinfrastructure") && data["multiinfrastructure"] == true
+end
 
 "checks if a given dataset has a time series component"
 has_time_series(data::Dict{String,<:Any}) = haskey(data, "time_series")
@@ -86,25 +133,29 @@ end
 
 
 "turns a single network and a time_series data block into a multi-network"
-function make_multinetwork(data::Dict{String, <:Any}, global_keys::Set{String})
-    if InfrastructureModels.ismultinetwork(data)
+function make_multinetwork(data::Dict{String, <:Any}, it::String, global_keys::Set{String})
+    data_it = ismultiinfrastructure(data) ? data["it"][it] : data
+
+    if InfrastructureModels.ismultinetwork(data_it)
         Memento.error(_LOGGER, "make_multinetwork does not support multinetwork data")
     end
 
-    if !haskey(data, "time_series")
+    if !haskey(data_it, "time_series")
         Memento.error(_LOGGER, "make_multinetwork requires time_series data")
     end
 
-    steps = data["time_series"]["num_steps"]
+    steps = data_it["time_series"]["num_steps"]
+
     if !isa(steps, Int)
         Memento.error(_LOGGER, "the value of num_steps should be an integer, given $(steps)")
     end
 
-    mn_data = replicate(data, steps, union(global_keys, Set(["time_series"])))
+    mn_data = replicate(data_it, steps, union(global_keys, Set(["time_series"])))
     time_series = pop!(mn_data, "time_series")
 
     for i in 1:steps
         nw_data = mn_data["nw"]["$(i)"]
+
         for (k,v) in time_series
             (k == "num_steps") && (continue)
             if isa(v, Dict) && haskey(nw_data, k)
@@ -123,7 +174,9 @@ function make_multinetwork(data::Dict{String, <:Any}, global_keys::Set{String})
         end
     end
 
-    return mn_data
+    mn_data["multinetwork"] = true
+
+    return ismultiinfrastructure(data) ? Dict("it" => Dict(it => mn_data)) : mn_data
 end
 
 
@@ -180,6 +233,7 @@ function component_table(data::Dict{String,<:Any}, component::String, fields::Ve
         return _component_table(data, component, fields)
     end
 end
+
 component_table(data::Dict{String,<:Any}, component::String, field::String) = component_table(data, component, [field])
 
 function _component_table(data::Dict{String,<:Any}, component::String, fields::Vector{String})
@@ -244,6 +298,7 @@ function summary(io::IO, data::Dict{String,<:Any};
         println(io, "")
         println(io, _bold("Table Counts"))
     end
+    
     for k in sort(component_types, by=x->get(component_types_order, x, max_parameter_value))
         println(io, "  $(k): $(length(data[k]))")
     end

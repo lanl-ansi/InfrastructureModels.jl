@@ -113,33 +113,32 @@ If the `multinetwork` parameter is `true` then several single network data objec
 }
 ```
 
-
-### Multi Infrastructure Data (proposed)
-
-If the data include the parameter `multiinfrastructure`, then network data objects are wrapped in an infrastructure type (`it`) lookup table, that uses special names for each type of infrastructure.  Each infrastructure data object can include a single network or a multi network of that infrastructure type.  Multi network lookup keys are assumed to be consistent across multiple infrastructure datasets.
+### Multi-infrastructure Data
+Network data objects are wrapped in an infrastructure type (`it`) lookup table that uses special names for each type of infrastructure.
+Each infrastructure data object can include a single network or a multinetwork of that infrastructure type.
+Data that describe the linkages between interdependent infrastructures are defined in the `dep` block.
 
 ```json
 {
-"multiinfrastructure": true,
-"it":{
-    "ep": {...},
-    "ng": {...},
-    "wtd": {...},
+"it": {
+    "dep": {...},
+    "pm": {...},
+    "gm": {...},
+    "wm": {...},
     ...
-}
-"comp_link": {...}
+},
 ...
 }
 ```
 
 Infrastructure short names,
 ```
-Power Transmission - ep
-Power Distribtion - epd
-Natrual Gas Transmission - ng
-Water Distribtion - wtd
+Interdependencies - dep
+Power Transmission - pm
+Power Distribution - pmd
+Natural Gas Transmission - gm
+Water Distribution - wm
 ```
-
 
 ## Variable Naming Conventions
 

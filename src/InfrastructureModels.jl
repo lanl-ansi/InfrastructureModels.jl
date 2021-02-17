@@ -24,10 +24,13 @@ function logger_config!(level; kwargs...)
     Memento.config!(_LOGGER, level, kwargs...)
 end
 
+const nw_id_default = 0
+
 include("core/base.jl")
 include("core/data.jl")
 include("core/constraint.jl")
 include("core/relaxation_scheme.jl")
+include("core/ref.jl")
 include("core/solution.jl")
 
 include("io/common.jl")

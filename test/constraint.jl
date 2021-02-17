@@ -3,7 +3,6 @@ replicates = 10
 seed!(0)
 
 @testset "constraints" begin
-
     @testset "bounds on/off" begin
         x_lb, x_ub = 10*rand(2)
         x_lb = -x_lb
@@ -29,5 +28,4 @@ seed!(0)
         @test(isapprox(JuMP.value(x), x_lb))
         @test(isapprox(JuMP.value(z), 1.0))
     end
-
 end

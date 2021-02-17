@@ -66,7 +66,6 @@
             @test length(data[k][1]) == length(v)
         end
     end
-
 end
 
 
@@ -75,12 +74,13 @@ end
     @testset "summary feature non-standard dict structure" begin
         data = Dict(
             "a" => 1,
-            "b" => [1,2,3],
+            "b" => [1, 2, 3],
             "c" => Dict(
                 "e" => 1.2,
                 "d" => 2.3
             )
         )
+
         output = sprint(InfrastructureModels.summary, data)
 
         line_count = count(c -> c == '\n', output)
@@ -104,7 +104,7 @@ end
     end
 
     @testset "summary feature component data" begin
-        output = sprint(InfrastructureModels.summary, generic_network_data)
+        output = sprint(InfrastructureModels.summary, generic_si_network_data)
 
         line_count = count(c -> c == '\n', output)
         @test line_count >= 18 && line_count <= 22
@@ -206,7 +206,7 @@ end
 @testset "data transformation" begin
 
     @testset "network replicate data" begin
-        mn_data = InfrastructureModels.replicate(generic_network_data, 3, Set(["a", "b", "per_unit", "list"]))
+        mn_data = InfrastructureModels.replicate(generic_si_network_data, 3, Set(["a", "b", "per_unit", "list"]))
 
         @test InfrastructureModels.get_num_networks(mn_data) == 3
         @test length(mn_data) == 7
@@ -225,7 +225,7 @@ end
 
 
     @testset "network replicate data, single network" begin
-        mn_data = InfrastructureModels.replicate(generic_network_data, 1, Set(["per_unit","undefined_key"]))
+        mn_data = InfrastructureModels.replicate(generic_si_network_data, 1, Set(["per_unit", "undefined_key"]))
 
         @test length(mn_data) == 4
         @test mn_data["multinetwork"]
@@ -237,53 +237,87 @@ end
 
 
    @testset "load state from time series" begin
-        data_tmp = deepcopy(generic_network_data)
-        data_tmp["time_series"] = generic_network_time_series_data
-        @test data_tmp["comp"]["1"]["a"] == 1
-        @test data_tmp["comp"]["2"]["c"] == "same"
+        data_tmp = deepcopy(generic_mi_network_data)
+        data_tmp["it"]["foo"]["time_series"] = generic_network_time_series_data
+        @test data_tmp["it"]["foo"]["comp"]["1"]["a"] == 1
+        @test data_tmp["it"]["foo"]["comp"]["2"]["c"] == "same"
 
-        InfrastructureModels.load_timepoint!(data_tmp, 1)
-        @test data_tmp["comp"]["1"]["a"] == 3
-        @test data_tmp["comp"]["2"]["c"] == "three"
+        InfrastructureModels.load_timepoint!(data_tmp["it"]["foo"], 1)
+        @test data_tmp["it"]["foo"]["comp"]["1"]["a"] == 3
+        @test data_tmp["it"]["foo"]["comp"]["2"]["c"] == "three"
 
-        InfrastructureModels.load_timepoint!(data_tmp, 2)
-        @test data_tmp["comp"]["1"]["a"] == 5
-        @test data_tmp["comp"]["2"]["c"] == "five"
+        InfrastructureModels.load_timepoint!(data_tmp["it"]["foo"], 2)
+        @test data_tmp["it"]["foo"]["comp"]["1"]["a"] == 5
+        @test data_tmp["it"]["foo"]["comp"]["2"]["c"] == "five"
 
-        InfrastructureModels.load_timepoint!(data_tmp, 3)
-        @test data_tmp["comp"]["1"]["a"] == 7
-        @test data_tmp["comp"]["2"]["c"] == "seven"
+        InfrastructureModels.load_timepoint!(data_tmp["it"]["foo"], 3)
+        @test data_tmp["it"]["foo"]["comp"]["1"]["a"] == 7
+        @test data_tmp["it"]["foo"]["comp"]["2"]["c"] == "seven"
     end
 
 
     @testset "make_multinetwork from time series" begin
-        generic_network_data_tmp = deepcopy(generic_network_data)
-        generic_network_data_tmp["time_series"] = generic_network_time_series_data
-        @test InfrastructureModels.get_num_networks(generic_network_data_tmp) == 3
-        @test InfrastructureModels.has_time_series(generic_network_data_tmp) == true
+        generic_network_data_tmp = deepcopy(generic_mi_network_data)
+        generic_network_data_tmp["it"]["foo"]["time_series"] = generic_network_time_series_data
+        @test InfrastructureModels.get_num_networks(generic_network_data_tmp["it"]["foo"]) == 3
+        @test InfrastructureModels.has_time_series(generic_network_data_tmp["it"]["foo"]) == true
+        mn_data = InfrastructureModels.make_multinetwork(generic_network_data_tmp, "foo", Set(["per_unit","undefined_key"]))
+        mn_data_it = mn_data["it"]["foo"]
 
-        mn_data = InfrastructureModels.make_multinetwork(generic_network_data_tmp, Set(["per_unit","undefined_key"]))
+        @test length(mn_data_it) == 5
+        @test mn_data_it["multinetwork"]
+        @test haskey(mn_data_it, "per_unit")
+        @test haskey(mn_data_it, "name")
+        @test haskey(mn_data_it, "global_constant")
+        @test isapprox(mn_data_it["global_constant"], 2.71, atol=1e-1)
 
-        @test length(mn_data) == 5
-        @test mn_data["multinetwork"]
-        @test haskey(mn_data, "per_unit")
-        @test haskey(mn_data, "name")
-        @test haskey(mn_data, "global_constant")
-        @test isapprox(mn_data["global_constant"], 2.71, atol=1e-1)
+        @test length(mn_data_it["nw"]) == 3
 
-        @test length(mn_data["nw"]) == 3
+        @test mn_data_it["nw"]["1"]["comp"]["1"]["a"] == 3
+        @test mn_data_it["nw"]["1"]["comp"]["2"]["c"] == "three"
+        @test mn_data_it["nw"]["1"]["time"] == 0.0
 
-        @test mn_data["nw"]["1"]["comp"]["1"]["a"] == 3
-        @test mn_data["nw"]["1"]["comp"]["2"]["c"] == "three"
-        @test mn_data["nw"]["1"]["time"] == 0.0
+        @test mn_data_it["nw"]["2"]["comp"]["1"]["a"] == 5
+        @test mn_data_it["nw"]["2"]["comp"]["2"]["c"] == "five"
+        @test mn_data_it["nw"]["2"]["time"] == 1.0
 
-        @test mn_data["nw"]["2"]["comp"]["1"]["a"] == 5
-        @test mn_data["nw"]["2"]["comp"]["2"]["c"] == "five"
-        @test mn_data["nw"]["2"]["time"] == 1.0
+        @test mn_data_it["nw"]["3"]["comp"]["1"]["a"] == 7
+        @test mn_data_it["nw"]["3"]["comp"]["2"]["c"] == "seven"
+        @test mn_data_it["nw"]["3"]["time"] == 2.0
+    end
 
-        @test mn_data["nw"]["3"]["comp"]["1"]["a"] == 7
-        @test mn_data["nw"]["3"]["comp"]["2"]["c"] == "seven"
-        @test mn_data["nw"]["3"]["time"] == 2.0
+
+    @testset "apply! feature" begin
+        # Modifier function.
+        func! = x -> x["b"] = "bloop_apply!"
+
+        # Test apply_to_subnetworks = false variant.
+        generic_network_data_tmp = deepcopy(generic_mi_network_data)
+        apply!(func!, generic_network_data_tmp, "foo"; apply_to_subnetworks = false)
+        @test generic_network_data_tmp["it"]["foo"]["b"] == "bloop_apply!"
+
+        # Test apply_to_subnetworks = true variant.
+        si_data = deepcopy(generic_si_network_data)
+        mn_data = InfrastructureModels.replicate(si_data, 2, Set(["per_unit"]))
+        apply!(func!, mn_data, "foo"; apply_to_subnetworks = true)
+        @test mn_data["nw"]["1"]["b"] == "bloop_apply!"
+        @test mn_data["nw"]["2"]["b"] == "bloop_apply!"
+    end
+
+
+    @testset "get_data feature" begin
+        # Getter function.
+        getter = x -> return x["b"]
+
+        # Test apply_to_subnetworks = false variant.
+        @test "bloop" == get_data(getter, generic_mi_network_data, "foo"; apply_to_subnetworks = false)
+
+        # Test apply_to_subnetworks = true variant.
+        si_data = deepcopy(generic_si_network_data)
+        mn_data = InfrastructureModels.replicate(si_data, 2, Set(["per_unit"]))
+        vals = get_data(getter, mn_data, "foo"; apply_to_subnetworks = true)
+        @test vals["1"] == "bloop"
+        @test vals["2"] == "bloop"
     end
 
 
@@ -440,7 +474,7 @@ end
 @testset "data comparison" begin
 
     @testset "dict comparison" begin
-        mn_data = InfrastructureModels.replicate(generic_network_data, 3, Set{String}())
+        mn_data = InfrastructureModels.replicate(generic_si_network_data, 3, Set{String}())
 
         nw_1 = mn_data["nw"]["1"]
         nw_2 = mn_data["nw"]["2"]
