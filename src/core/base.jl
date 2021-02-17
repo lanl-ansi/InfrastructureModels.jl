@@ -379,11 +379,7 @@ function optimize_model!(aim::AbstractInfrastructureModel; relax_integrality=fal
     start_time = time()
 
     if relax_integrality
-        try
-            JuMP.relax_integrality(aim.model)
-        catch
-            Memento.warn(_LOGGER, "the relax_integrality feature requires JuMP v0.21.4, update to gain access to this feature")
-        end
+        JuMP.relax_integrality(aim.model)
     end
 
     if JuMP.mode(aim.model) != JuMP.DIRECT && optimizer !== nothing
