@@ -397,7 +397,7 @@ function optimize_model!(aim::AbstractInfrastructureModel; relax_integrality=fal
     _, solve_time, solve_bytes_alloc, sec_in_gc = @timed JuMP.optimize!(aim.model)
 
     try
-        solve_time = _MOI.get(aim.model, _MOI.SolveTime())
+        solve_time = JuMP.solve_time(aim.model)
     catch
         Memento.warn(_LOGGER, "The given optimizer does not provide the SolveTime() attribute, falling back on @timed.  This is not a rigorous timing value.");
     end

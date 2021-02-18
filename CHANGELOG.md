@@ -2,7 +2,8 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Use JuMP's `result_count` funciton in `build_result`
+- Use JuMP's `solve_time` funciton in `optimize_model!`
 
 ### v0.6.0
 - Add support for multi-infrastructure data (breaking)

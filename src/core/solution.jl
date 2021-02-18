@@ -1,10 +1,9 @@
 ""
 function build_result(aim::AbstractInfrastructureModel, solve_time; solution_processors=[])
-    # TODO replace with JuMP.result_count(aim.model) after version v0.21
     # try-catch is needed until solvers reliably support ResultCount()
     result_count = 1
     try
-        result_count = _MOI.get(aim.model, _MOI.ResultCount())
+        result_count = JuMP.result_count(aim.model)
     catch
         Memento.warn(_LOGGER, "the given optimizer does not provide the ResultCount() attribute, assuming the solver returned a solution which may be incorrect.");
     end
