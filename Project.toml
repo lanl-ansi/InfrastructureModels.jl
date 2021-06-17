@@ -14,7 +14,7 @@ ECOS = ">= 0.11"
 Ipopt = ">= 0.6"
 JuMP = "~0.21.4"
 MathOptInterface = "~0.9"
-Memento = "~1.0, ~1.1"
+Memento = "~1.0, ~1.1, 1"
 julia = "^1"
 
 [extras]
