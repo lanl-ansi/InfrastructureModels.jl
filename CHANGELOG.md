@@ -2,8 +2,12 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+- nothing
+
+### v0.6.1
 - Use JuMP's `result_count` funciton in `build_result`
 - Use JuMP's `solve_time` funciton in `optimize_model!`
+- Add support for Memento v1.2
 
 ### v0.6.0
 - Add support for multi-infrastructure data (breaking)

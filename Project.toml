@@ -2,7 +2,7 @@ name = "InfrastructureModels"
 uuid = "2030c09a-7f63-5d83-885d-db604e0e9cc0"
 authors = ["Carleton Coffrin"]
 repo = "https://github.com/lanl-ansi/InfrastructureModels.jl"
-version = "0.6.0"
+version = "0.6.1"
 
 [deps]
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
@@ -14,7 +14,7 @@ ECOS = ">= 0.11"
 Ipopt = ">= 0.6"
 JuMP = "~0.21.4"
 MathOptInterface = "~0.9"
-Memento = "~1.0, ~1.1"
+Memento = "~1.0, ~1.1, ~1.2"
 julia = "^1"
 
 [extras]
