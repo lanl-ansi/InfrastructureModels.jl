@@ -51,6 +51,22 @@
         @test isa(data["bloop.baseMVA"], Float64)
     end
 
+    @testset "parsing matlab quotes" begin
+        # Single quotes
+        @test split_line("''") == ["''"]
+        @test split_line("'Slack Bus'") == ["'Slack Bus'"]
+        @test split_line("'Slack ''Bus'''") == ["'Slack 'Bus''"]
+        @test split_line("'''''Slack Bus'''''") == ["'''Slack Bus'''"]
+
+        # Double quotes
+        @test split_line("\"\"\"Slack Bus\"\"\"") == ["\"\"Slack Bus\"\""]
+        @test split_line("\"Slack \\\"Bus\\\"\"") == ["\"Slack \\\"Bus\\\"\""]
+
+        # In .m file
+        data = parse_matlab_file("../test/data/matlab_04.m")
+        @test length(data["mpc.names"]) == 4
+    end
+
     @testset "parsing matlab extended features" begin
         data, func, columns = parse_matlab_file("../test/data/matlab_02.m", extended=true)
 
