@@ -449,7 +449,7 @@ end
     @test length(result["solution"]) == 6
     @test length(result["solution"]["comp"]) == 2
 
-    @test result["termination_status"] == MOI.LOCALLY_SOLVED
-    @test result["primal_status"] == MOI.FEASIBLE_POINT
-    @test result["dual_status"] == MOI.FEASIBLE_POINT
+    @test result["termination_status"] == JuMP.LOCALLY_SOLVED
+    @test result["primal_status"] == JuMP.FEASIBLE_POINT
+    @test result["dual_status"] == JuMP.FEASIBLE_POINT
 end
