@@ -383,14 +383,14 @@ function optimize_model!(aim::AbstractInfrastructureModel; relax_integrality=fal
     end
 
     if JuMP.mode(aim.model) != JuMP.DIRECT && optimizer !== nothing
-        if aim.model.moi_backend.state == _MOI.Utilities.NO_OPTIMIZER
+        if JuMP.backend(aim.model).optimizer === nothing
             JuMP.set_optimizer(aim.model, optimizer)
         else
             Memento.warn(_LOGGER, "Model already contains optimizer, cannot use optimizer specified in `optimize_model!`")
         end
     end
 
-    if JuMP.mode(aim.model) != JuMP.DIRECT && aim.model.moi_backend.state == _MOI.Utilities.NO_OPTIMIZER
+    if JuMP.mode(aim.model) != JuMP.DIRECT && JuMP.backend(aim.model).optimizer === nothing
         Memento.error(_LOGGER, "No optimizer specified in `optimize_model!` or the given JuMP model.")
     end
 

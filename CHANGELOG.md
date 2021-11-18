@@ -4,12 +4,16 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.7.0
+- Drop support for JuMP v0.21
+- Remove dependency on MathOptInterface package
+
 ### v0.6.2
 - Add support for JuMP v0.22
 
 ### v0.6.1
-- Use JuMP's `result_count` funciton in `build_result`
-- Use JuMP's `solve_time` funciton in `optimize_model!`
+- Use JuMP's `result_count` function in `build_result`
+- Use JuMP's `solve_time` function in `optimize_model!`
 - Add support for Memento v1.2
 
 ### v0.6.0

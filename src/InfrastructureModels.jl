@@ -3,9 +3,6 @@ module InfrastructureModels
 import JuMP
 import Memento
 
-import MathOptInterface
-const _MOI = MathOptInterface
-
 # Create our module level logger (this will get precompiled)
 const _LOGGER = Memento.getlogger(@__MODULE__)
 
