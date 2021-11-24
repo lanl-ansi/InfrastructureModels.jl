@@ -4,6 +4,9 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.7.1
+- Add support for Memento v1.3
+
 ### v0.7.0
 - Drop support for JuMP v0.21
 - Remove dependency on MathOptInterface package
