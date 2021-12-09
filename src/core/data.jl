@@ -498,7 +498,7 @@ function compare_dict(d1, d2)
                         return false
                     end
                 else
-                    if v1 != v2
+                    if v1[i] != v2[i]
                         #println(v1, " ", v2)
                         return false
                     end
