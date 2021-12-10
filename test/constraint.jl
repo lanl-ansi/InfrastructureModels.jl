@@ -15,7 +15,7 @@ seed!(0)
         status = JuMP.optimize!(m)
 
         @test(isapprox(JuMP.value(x), 0.0, atol=1e-8))
-        @test(isapprox(JuMP.value(z), 0.0))
+        @test(isapprox(JuMP.value(z), 0.0, atol=1e-8))
 
 
         m = JuMP.Model(juniper_solver)

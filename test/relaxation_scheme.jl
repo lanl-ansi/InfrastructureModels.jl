@@ -316,8 +316,8 @@ seed!(0)
                 InfrastructureModels.relaxation_equality_on_off(rm, rx, ry, rz)
                 rstatus = JuMP.optimize!(rm)
 
-                @test(isapprox(JuMP.value(z), 0))
-                @test(isapprox(JuMP.value(rz), 0))
+                @test(isapprox(JuMP.value(z), 0, atol=1e-8))
+                @test(isapprox(JuMP.value(rz), 0, atol=1e-8))
 
                 #@test(isapprox(JuMP.value(y), y_lb))
                 #@test(isapprox(JuMP.value(ry), y_lb))
