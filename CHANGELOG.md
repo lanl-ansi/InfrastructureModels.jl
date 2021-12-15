@@ -2,6 +2,9 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+- nothing
+
+### v0.7.2
 - Fixed array processing performance bug in `compare_dict` (#82)
 
 ### v0.7.1
