@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Developer · InfrastructureModels</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.039/juliamono-regular.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.svg" alt="InfrastructureModels logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../">InfrastructureModels</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../library/">Library</a></li><li class="is-active"><a class="tocitem" href>Developer</a><ul class="internal"><li><a class="tocitem" href="#JSON-Data-Format"><span>JSON Data Format</span></a></li><li><a class="tocitem" href="#Variable-Naming-Conventions"><span>Variable Naming Conventions</span></a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Developer</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Developer</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/lanl-ansi/InfrastructureModels.jl/blob/master/docs/src/developer.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Developer-Documentation"><a class="docs-heading-anchor" href="#Developer-Documentation">Developer Documentation</a><a id="Developer-Documentation-1"></a><a class="docs-heading-anchor-permalink" href="#Developer-Documentation" title="Permalink"></a></h1><h2 id="JSON-Data-Format"><a class="docs-heading-anchor" href="#JSON-Data-Format">JSON Data Format</a><a id="JSON-Data-Format-1"></a><a class="docs-heading-anchor-permalink" href="#JSON-Data-Format" title="Permalink"></a></h2><p>InfrastructureModels and dependent packages leverage an extensible JSON-based data format.  This allows arbitrary extensions by the dependent packages and their users.  This section discusses the data standards that are consistent across dependent packages and extensions.</p><h3 id="Single-Network-Data"><a class="docs-heading-anchor" href="#Single-Network-Data">Single Network Data</a><a id="Single-Network-Data-1"></a><a class="docs-heading-anchor-permalink" href="#Single-Network-Data" title="Permalink"></a></h3><p>All network data has one required parameter,</p><ul><li><code>per_unit</code>: a boolean value indicating if component parameters are in mixed-units or per unit</li></ul><p>and three optional parameters,</p><ul><li><code>multinetwork</code>: a boolean value indicating if the data represents a single network or multiple networks (assumed to be <code>false</code> when not present)</li><li><code>name</code>: a human readable name for the network</li><li><code>description</code>: a textual description of the network and any related notes</li></ul><p>These top level parameters can be accompanied by collections of components, where the component name is the key of the collection.  A minimalist network dataset would be,</p><pre><code class="language-json hljs">{
+&quot;per_unit&quot;: &lt;boolean&gt;,
+(&quot;multinetwork&quot;: false,)
+(&quot;name&quot;: &lt;string&gt;,)
+(&quot;description&quot;: &lt;string&gt;,)
+&quot;component_1&quot;: {...},
+&quot;component_2&quot;: {...},
+...
+&quot;component_j&quot;: {...}
+}</code></pre><p>Each component collection is a lookup table of the form <code>index</code>-to-<code>component_data</code>.  Each component has two required parameters,</p><ul><li><code>index</code>: the component&#39;s unique integer value, which is also its lookup id</li><li><code>status</code>: an integer that takes 1 or 0 indicating if the component is active or inactive, respectively</li></ul><p>and three optional parameters,</p><ul><li><code>name</code>: a human readable name for the component</li><li><code>source_id</code>: a string representation of a unique id from a source dataset</li><li><code>dispatchable</code>: a boolean value indicating the component can be controlled or not.  The default value is component dependent and some component types may ignore this parameter.</li></ul><p>A typical component collection has a form along these lines,</p><pre><code class="language-json hljs">{
+&quot;component_1&quot;:{
+    &quot;1&quot;:{
+        &quot;index&quot;: 1,
+        &quot;status&quot;: &lt;int&gt;,
+        (&quot;name&quot;: &lt;string&gt;,)
+        (&quot;source_id&quot;: &lt;string&gt;,)
+        (&quot;dispatchable&quot;: &lt;boolean&gt;,)
+        ...
+    },
+    &quot;2&quot;:{
+        &quot;index&quot;: 2,
+        &quot;status&quot; :&lt;int&gt;,
+        (&quot;name&quot;: &lt;string&gt;,)
+        (&quot;source_id&quot;: &lt;string&gt;,)
+        (&quot;dispatchable&quot;: &lt;boolean&gt;,)
+        ...
+    }
+    ...
+    &quot;k&quot;:{
+        &quot;index&quot;: k,
+        &quot;status&quot; &lt;int&gt;,
+        (&quot;name&quot;: &lt;string&gt;,)
+        (&quot;source_id&quot;: &lt;string&gt;,)
+        (&quot;dispatchable&quot;: &lt;boolean&gt;,)
+        ...
+    }
+},
+...
+}</code></pre><h3 id="Multi-Network-Data"><a class="docs-heading-anchor" href="#Multi-Network-Data">Multi Network Data</a><a id="Multi-Network-Data-1"></a><a class="docs-heading-anchor-permalink" href="#Multi-Network-Data" title="Permalink"></a></h3><p>If the <code>multinetwork</code> parameter is <code>true</code> then several single network data objects are wrapped in a <code>nw</code> lookup table, like so,</p><pre><code class="language-json hljs">{
+&quot;multinetwork&quot;: true,
+&quot;per_unit&quot;: &lt;boolean&gt;,
+(&quot;name&quot;: &lt;string&gt;,)
+(&quot;description&quot;: &lt;string&gt;,)
+&quot;nw&quot;:{
+    &quot;1&quot;:{
+        &quot;index&quot;: &lt;int&gt;,
+        (&quot;name&quot;: &lt;string&gt;,)
+        (&quot;description&quot;: &lt;string&gt;,)
+        &quot;component_1&quot;: {...},
+        ...
+        &quot;component_j&quot;: {...}
+    },
+    &quot;2&quot;:{
+        &quot;index&quot;: &lt;int&gt;,
+        (&quot;name&quot;: &lt;string&gt;,)
+        (&quot;description&quot;: &lt;string&gt;,)
+        &quot;component_1&quot;: {...},
+        ...
+        &quot;component_j&quot;: {...}
+    },
+    ...
+    &quot;i&quot;:{
+        &quot;index&quot;: &lt;int&gt;,
+        (&quot;name&quot;: &lt;string&gt;,)
+        (&quot;description&quot;: &lt;string&gt;,)
+        &quot;component_1&quot;: {...},
+        ...
+        &quot;component_j&quot;: {...}
+    },
+}
+}</code></pre><h3 id="Multi-infrastructure-Data"><a class="docs-heading-anchor" href="#Multi-infrastructure-Data">Multi-infrastructure Data</a><a id="Multi-infrastructure-Data-1"></a><a class="docs-heading-anchor-permalink" href="#Multi-infrastructure-Data" title="Permalink"></a></h3><p>Network data objects are wrapped in an infrastructure type (<code>it</code>) lookup table that uses special names for each type of infrastructure. Each infrastructure data object can include a single network or a multinetwork of that infrastructure type. Data that describe the linkages between interdependent infrastructures are defined in the <code>dep</code> block.</p><pre><code class="language-json hljs">{
+&quot;it&quot;: {
+    &quot;dep&quot;: {...},
+    &quot;pm&quot;: {...},
+    &quot;gm&quot;: {...},
+    &quot;wm&quot;: {...},
+    ...
+},
+...
+}</code></pre><p>Infrastructure short names,</p><pre><code class="nohighlight hljs">Interdependencies - dep
+Power Transmission - pm
+Power Distribution - pmd
+Natural Gas Transmission - gm
+Water Distribution - wm</code></pre><h2 id="Variable-Naming-Conventions"><a class="docs-heading-anchor" href="#Variable-Naming-Conventions">Variable Naming Conventions</a><a id="Variable-Naming-Conventions-1"></a><a class="docs-heading-anchor-permalink" href="#Variable-Naming-Conventions" title="Permalink"></a></h2><h3 id="Suffixes"><a class="docs-heading-anchor" href="#Suffixes">Suffixes</a><a id="Suffixes-1"></a><a class="docs-heading-anchor-permalink" href="#Suffixes" title="Permalink"></a></h3><ul><li><code>_fr</code>: from-side (&#39;i&#39;-node)</li><li><code>_to</code>: to-side (&#39;j&#39;-node)</li></ul></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../library/">« Library</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.10 on <span class="colophon-date" title="Wednesday 15 December 2021 18:38">Wednesday 15 December 2021</span>. Using Julia version 1.7.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
