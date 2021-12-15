@@ -487,9 +487,9 @@ end
 end
 
 
-@testset "data comparison" begin
+@testset "data dict comparison" begin
 
-    @testset "dict comparison" begin
+    @testset "float test" begin
         mn_data = InfrastructureModels.replicate(generic_si_network_data, 3, Set{String}())
 
         nw_1 = mn_data["nw"]["1"]
@@ -502,4 +502,15 @@ end
         @test InfrastructureModels.compare_dict(nw_1, nw_3)
     end
 
+    @testset "array test" begin
+        mn_data = InfrastructureModels.replicate(generic_si_network_data, 2, Set{String}())
+
+        nw_1 = mn_data["nw"]["1"]
+        nw_2 = mn_data["nw"]["2"]
+
+        nw_1["dict"]["b"] = ["A", "B", 2.0]
+        nw_2["dict"]["b"] = ["A", "B", 2.00000001]
+
+        @test InfrastructureModels.compare_dict(nw_1, nw_2)
+    end
 end

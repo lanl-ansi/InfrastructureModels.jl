@@ -2,7 +2,7 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- nothing
+- Fixed array processing performance bug in `compare_dict` (#82)
 
 ### v0.7.1
 - Add support for Memento v1.3
