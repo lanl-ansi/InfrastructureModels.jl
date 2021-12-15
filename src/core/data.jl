@@ -479,7 +479,6 @@ end
 function compare_dict(d1, d2)
     for (k1,v1) in d1
         if !haskey(d2, k1)
-            #println(k1)
             return false
         end
         v2 = d2[k1]
@@ -498,21 +497,17 @@ function compare_dict(d1, d2)
                         return false
                     end
                 else
-                    if v1 != v2
-                        #println(v1, " ", v2)
+                    if v1[i] != v2[i]
                         return false
                     end
                 end
             end
         elseif isa(v1, Dict)
             if !compare_dict(v1, v2)
-                #println(v1, " ", v2)
                 return false
             end
         else
-            #println("2")
             if !isapprox(v1, v2)
-                #println(v1, " ", v2)
                 return false
             end
         end
