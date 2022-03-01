@@ -4,6 +4,9 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.7.3
+- Add support for JuMP v0.23
+
 ### v0.7.2
 - Fixed array processing performance bug in `compare_dict` (#82)
 
