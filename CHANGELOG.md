@@ -4,6 +4,9 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.7.5
+- Add support for Memento v1.4
+
 ### v0.7.4
 - Update minimum Julia version to v1.6 (LTS)
 - Add support for JuMP v1.0
