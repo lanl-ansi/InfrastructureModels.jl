@@ -1,16 +1,9 @@
 ""
 function build_result(aim::AbstractInfrastructureModel, solve_time; solution_processors=[])
-    # try-catch is needed until solvers reliably support ResultCount()
-    result_count = 1
-    try
-        result_count = JuMP.result_count(aim.model)
-    catch
-        Memento.warn(_LOGGER, "the given optimizer does not provide the ResultCount() attribute, assuming the solver returned a solution which may be incorrect.");
-    end
-
     solution = Dict{String,Any}()
 
-    if result_count > 0
+    primal_status = JuMP.primal_status(aim.model)
+    if primal_status == JuMP.FEASIBLE_POINT || primal_status == JuMP.NEARLY_FEASIBLE_POINT || primal_status == JuMP.INFEASIBLE_POINT
         solution = build_solution(aim, post_processors=solution_processors)
     else
         Memento.warn(_LOGGER, "model has no results, solution cannot be built")

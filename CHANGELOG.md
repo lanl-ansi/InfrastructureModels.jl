@@ -4,6 +4,10 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.8.0
+- Update semantics of `build_result` to use `primal_status` (breaking)
+- Drop support for JuMP v0.22, v0.23 (breaking)
+
 ### v0.7.5
 - Add support for Memento v1.4
 
