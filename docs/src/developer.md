@@ -1,8 +1,67 @@
 # Developer Documentation
 
-## JSON Data Format
+## Getting Started
 
-InfrastructureModels and dependent packages leverage an extensible JSON-based data format.  This allows arbitrary extensions by the dependent packages and their users.  This section discusses the data standards that are consistent across dependent packages and extensions.
+InfrastructureModels is a lightweight package that provides a foundation of shared functionality across sector-specific extensions of InfrastructureModels (e.g., see [GasModels](https://github.com/lanl-ansi/GasModels.jl), [PowerModels](https://github.com/lanl-ansi/PowerModels.jl), [GasPowerModels](https://github.com/lanl-ansi/GasPowerModels.jl))
+This foundation provide basic structure for sector-specific extensions but does not explicitly enforce some common conventions of the InfrastructureModels ecosystem, which are a best-practice to use.
+This documentation provides an introduction to the process of developing new InfrastructureModels packages, however we recommend engaging with the developers of InfrastructureModels for additional support in the development process.
+
+## New Package Development
+
+Developing a new InfrastructureModels package begins by building a new Julia package, usually base around a new infrastructure sector.  For the sake of illustration, this new package will be named `NewSectorModels`.
+
+### Package Organization
+
+The Julia programming language does not require or benefit from any specific package structure.  However, as code bases grow, developing an organization of Julia code into files helps to manage the organization of the information. To help provide consistency of code organization across InfrastructureModels packages the following package `src` file structure is recommended,
+
+* `NewSectorModels.jl` - root entry point of the package (required by Julia)
+* `core` - the essential features of the package
+  * `base.jl` - Definition of the most foundational functions of the package including the base type `AbstractNewSectorModel <: AbstractInfrastructureModel` and specializations of the common InfrastructureModels functions
+  * `constraint_template.jl` - templates for formulation agnostic constraints that will be called from the sector-specific mathematical models
+  * `constraint.jl` - formulation agnostic implementations of mathematical constraints
+  * `data.jl` - tools for working with sector-specific data dictionaries
+  * `export.jl` - an internal tool for only exporting functions that do not begin with `_`
+  * `objective.jl` - formulation agnostic implementations of objective functions
+  * `ref.jl` - tools for working with sector-specific reference dictionaries
+  * `solution.jl` - tools for working with sector-specific solution dictionaries
+  * `types.jl` - all of the sub-types of `AbstractNewSectorModel` that will be used in this package
+  * `variable.jl` - formulation agnostic implementations of variable definitions
+* `form` - overloads of `core` functions that are specialized to specific model formulations (via sub-types of `AbstractNewSectorModel`)
+* `io` - tools for reading and writing sector-specific data files
+* `prob` - formulation agnostic sector-specific mathematical models (i.e., problems)
+
+
+### Foundation Specialization
+
+To leverage the foundational capabilities of InfrastructureModels the `NewSectorModels` package needs to define some key parameters and specialize a number of the generic functions provided in InfrastructureModels.
+
+This specialization begins by selecting a unique short-name for the package, the convention is to use the capital letters in the package name.  For example, a package called `NewSectorModels` it would have a short name of `nsm`.
+The convention is that the package will document its short name with the following constants in `NewSectorModels.jl`,
+```
+const nsm_it_name = "nsm"
+const nsm_it_sym = Symbol(nsm_it_name)
+const _nsm_global_keys = Set(["time_series", "per_unit"])
+```
+These constants are then used to specialize foundational InfrastructureModels functions in this sector-specific package.
+
+!!! warning
+    The package short-name must be unique across the InfrastructureModels ecosystem.
+    This is how each package is able to maintain a namespace that does interfere with another one.
+
+The specialization continues by overloading InfrastructureModels functions and providing `nsm_it_sym` and `_nsm_global_keys` as default arguments to these more generic methods. Overloading these functions is optional but recommended as a convenience to the users of the `NewSectorModels`, who often will not encounter any other package in the InfrastructureModels ecosystem.  The following InfrastructureModels functions are recommended for overloading,
+```
+instantiate_model, build_ref, nw_ids, nws, ids, ref, var, con, sol,
+ismultinetwork, ismultiinfrastructure, make_multinetwork, replicate,
+sol_component_fixed, sol_component_value, sol_component_value_edge,
+apply!, summary
+```
+
+
+## Data Format
+
+InfrastructureModels and dependent packages leverage an extensible JSON-based data format. 
+This allows arbitrary extensions by the dependent packages and their users. 
+This section discusses the data standards that are consistent across dependent packages and extensions.
 
 ### Single Network Data
 
@@ -35,7 +94,6 @@ Each component collection is a lookup table of the form `index`-to-`component_da
 and three optional parameters,
 * `name`: a human readable name for the component
 * `source_id`: a string representation of a unique id from a source dataset
-* `dispatchable`: a boolean value indicating the component can be controlled or not.  The default value is component dependent and some component types may ignore this parameter.
 
 A typical component collection has a form along these lines,
 
@@ -73,7 +131,7 @@ A typical component collection has a form along these lines,
 ```
 
 
-### Multi Network Data
+### Multi-network Data
 
 If the `multinetwork` parameter is `true` then several single network data objects are wrapped in a `nw` lookup table, like so,
 
@@ -131,7 +189,7 @@ Data that describe the linkages between interdependent infrastructures are defin
 }
 ```
 
-Infrastructure short names,
+Some InfrastructureModels short names include,
 ```
 Interdependencies - dep
 Power Transmission - pm
