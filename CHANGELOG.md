@@ -4,6 +4,9 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.7.6
+- Improve developer docs (#89)
+
 ### v0.7.5
 - Add support for Memento v1.4
 
