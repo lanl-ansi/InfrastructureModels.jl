@@ -224,7 +224,7 @@ function split_line(mp_line::AbstractString)
     isquote(c) = (c == '\'' || c == '"')
 
     function _push_curr_token()
-        if curr_pos <= length(mp_line)
+        if curr_pos <= lastindex(mp_line)
             curr_token *= mp_line[curr_pos]
         end
         curr_token = strip(curr_token)
@@ -238,14 +238,14 @@ function split_line(mp_line::AbstractString)
 
     function _push_curr_char()
         curr_token *= mp_line[curr_pos]
-        curr_pos += 1
+        curr_pos = nextind(mp_line, curr_pos)
     end
 
     curr_pos = 1
-    while curr_pos <= length(mp_line)
+    while curr_pos <= lastindex(mp_line)
         if is_curr_token_quote
             if mp_line[curr_pos] == curr_token[1]
-                if mp_line[curr_pos-1] == '\\'
+                if mp_line[prevind(mp_line, curr_pos)] == '\\'
                     # If we are inside a quote and we see slash-quote, we should
                     # treat the quote character as a regular character.
                     _push_curr_char()
