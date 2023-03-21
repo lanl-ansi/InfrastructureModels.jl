@@ -1,9 +1,9 @@
-% case to test matlab quotes
+% case to test matlab quotes and special characters
 
 function mpc = matlab_04
 
 mpc.names = {
-	'Slack Bus 1'
+	'ɑ Slack Bus 1λ'
 	'Slack \"Bus\" 1'
 	'Slack '''
 	''
