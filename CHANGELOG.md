@@ -4,6 +4,9 @@ InfrastructureModels.jl Change Log
 ### Staged
 - nothing
 
+### v0.7.7
+- Fix support for utf-8 in matlab parser (#91)
+
 ### v0.7.6
 - Improve developer docs (#89)
 
