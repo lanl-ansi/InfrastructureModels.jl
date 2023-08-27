@@ -29,6 +29,34 @@ generic_si_network_data = JSON.parse("""{
     }
 }""")
 
+# used to check that ref_initialize works correctly with strongly typed data
+generic_si_network_data_native = Dict(
+    "per_unit" => false,
+    "a" => 1,
+    "b" => "bloop",
+    "list" =>  [1, "two", 3.0, false],
+    "dict" =>  Dict("a" => 1, "b" => 2.0, "c" => true, "d" => "bloop"),
+    "comp" => Dict(
+        "1" => Dict(
+            "a" => 1,
+            "b" => 2,
+            "c" => "same",
+            "status" => 1
+        ),
+        "2" => Dict(
+            "a" => 3,
+            "b" => 4,
+            "c" => "same",
+            "status" => 0
+        ),
+        "3" => Dict(
+            "a" => 5,
+            "b" => 6,
+            "c" => "same",
+            "d" => false
+        )
+    )
+)
 
 generic_mi_network_data = JSON.parse("""
 {
