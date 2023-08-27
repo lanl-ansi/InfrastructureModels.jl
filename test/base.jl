@@ -61,7 +61,6 @@ end
 end
 
 
-
 abstract type MyAbstractInfrastructureModel <: AbstractInfrastructureModel end
 mutable struct MyInfrastructureModel <: MyAbstractInfrastructureModel @im_fields end
 
