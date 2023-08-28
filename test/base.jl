@@ -55,6 +55,11 @@ end
     @test ref[:it][:foo][:nw][0][:comp][2]["a"] == 3
 end
 
+@testset "ref initialize keytype" begin
+    ref = ref_initialize(generic_si_network_data_native, "foo", Set(["per_unit", "dict"]))
+    @test keytype(ref[:it][:foo][:nw][0][:comp]) == Int
+end
+
 
 abstract type MyAbstractInfrastructureModel <: AbstractInfrastructureModel end
 mutable struct MyInfrastructureModel <: MyAbstractInfrastructureModel @im_fields end

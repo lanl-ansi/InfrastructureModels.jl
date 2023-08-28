@@ -209,7 +209,7 @@ function _populate_ref_it!(refs::Dict{Symbol, <:Any}, data_it::Dict{String, <:An
     
         for (key, item) in nw_data
             if !(key in global_keys)
-                if isa(item, Dict{String, Any}) && _iscomponentdict(item)
+                if typeof(item) <: Dict{String, <:Any} && _iscomponentdict(item)
                     item_lookup = Dict{Int, Any}([(parse(Int, k), v) for (k, v) in item])
                     ref[Symbol(key)] = item_lookup
                 else
