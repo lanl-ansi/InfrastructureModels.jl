@@ -2,7 +2,10 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
-- Fix support for strongly type network data (#92)
+- nothing
+
+### v0.7.8
+- Fix support for strongly typed network data (#92)
 
 ### v0.7.7
 - Fix support for utf-8 in matlab parser (#91)
