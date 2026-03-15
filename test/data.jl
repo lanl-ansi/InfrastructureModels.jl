@@ -352,7 +352,7 @@ end
                     \"b\":3
                 }
             }
-        }")
+        }"; dicttype=Dict{String,Any})
 
         mod = JSON.parse("{
             \"per_unit\":false,
@@ -368,7 +368,7 @@ end
                     \"b\":false
                 }
             }
-        }")
+        }"; dicttype=Dict{String,Any})
 
         update_data!(data, mod)
 
