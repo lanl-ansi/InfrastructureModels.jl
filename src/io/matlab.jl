@@ -36,7 +36,7 @@ function parse_matlab_string(data_string::String; extended=false)
             function_name = value
         elseif occursin("=",line)
             if struct_name !== nothing && !occursin("$(struct_name).", line)
-                Memento.warn(_LOGGER, "assignments are expected to be made to \"$(struct_name)\" but given: $(line)")
+                @warn "assignments are expected to be made to \"$(struct_name)\" but given: $(line)"
             end
 
             if occursin("[", line)
@@ -59,7 +59,7 @@ function parse_matlab_string(data_string::String; extended=false)
                 matlab_dict[name] = value
             end
         else
-            Memento.warn(_LOGGER, "Matlab parser skipping the following line:\n  $(line)")
+            @warn "Matlab parser skipping the following line:\n  $(line)"
         end
 
         index += 1
@@ -181,7 +181,7 @@ function _parse_matlab_data(lines, index, start_char, end_char)
         if columns < 0
             columns = length(row_items)
         elseif columns != length(row_items)
-            Memento.error(_LOGGER, "matrix parsing error, inconsistent number of items in each row\n$(row)")
+            error("matrix parsing error, inconsistent number of items in each row\n$(row)")
         end
     end
 
@@ -199,13 +199,13 @@ function _parse_matlab_data(lines, index, start_char, end_char)
         column_names_string = replace(column_names_string, "%column_names%" => "")
         column_names = split(column_names_string)
         if length(matrix[1]) != length(column_names)
-            Memento.error(_LOGGER, "column name parsing error, data rows $(length(matrix[1])), column names $(length(column_names)) \n$(column_names)")
+            error("column name parsing error, data rows $(length(matrix[1])), column names $(length(column_names)) \n$(column_names)")
         end
         for (c, column_name) in enumerate(column_names)
             if column_name == "index"
-                Memento.info(_LOGGER, "the column named \"index\" in matrix will be interpreted as a unique component identifier")
+                @info "the column named \"index\" in matrix will be interpreted as a unique component identifier"
                 if !(typeof(typed_columns[c][1]) <: Int)
-                    Memento.error(_LOGGER, "the type of a column named \"index\" must be Int, but given $(typeof(typed_columns[c][1]))")
+                    error("the type of a column named \"index\" must be Int, but given $(typeof(typed_columns[c][1]))")
                 end
             end
         end
@@ -319,7 +319,7 @@ function check_type(typ, value)
             value = parse(typ, value)
             return value
         catch e
-            Memento.error(_LOGGER, "parsing error, the matlab string \"$(value)\" can not be parsed to $(typ) data")
+            error("parsing error, the matlab string \"$(value)\" can not be parsed to $(typ) data")
             rethrow(e)
         end
     else
@@ -327,7 +327,7 @@ function check_type(typ, value)
             value = typ(value)
             return value
         catch e
-            Memento.error(_LOGGER, "parsing error, the matlab value $(value) of type $(typeof(value)) can not be parsed to $(typ) data")
+            error("parsing error, the matlab value $(value) of type $(typeof(value)) can not be parsed to $(typ) data")
             rethrow(e)
         end
     end

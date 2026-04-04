@@ -13,9 +13,7 @@ mutable struct BarModel <: AbstractModel @some_fields end
 @testset "silence" begin
     # This should silence everything except error messages.
     InfrastructureModels.silence()
-    im_logger = Memento.getlogger(InfrastructureModels)
-    @test Memento.getlevel(im_logger) == "error"
-    Memento.warn(im_logger, "Silenced message should not be displayed.")
+    @test Logging.min_enabled_level(current_logger()) > Logging.Warn
 end
 
 

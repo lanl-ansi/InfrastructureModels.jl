@@ -2,10 +2,10 @@
 function update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
     if haskey(data, "per_unit") && haskey(new_data, "per_unit")
         if data["per_unit"] != new_data["per_unit"]
-            Memento.error(_LOGGER, "update_data requires datasets in the same units, try make_per_unit and make_mixed_units")
+            error("update_data requires datasets in the same units, try make_per_unit and make_mixed_units")
         end
     else
-        Memento.warn(_LOGGER, "running update_data with data that does not include per_unit field, units may be incorrect")
+        @warn "running update_data with data that does not include per_unit field, units may be incorrect"
     end
 
     _update_data!(data, new_data)
@@ -101,7 +101,7 @@ end
 function replicate(sn_data::Dict{String,<:Any}, count::Int, global_keys::Set{String})
     @assert count > 0
     if ismultinetwork(sn_data)
-        Memento.error(_LOGGER, "replicate can only be used on single networks")
+        error("replicate can only be used on single networks")
     end
 
     name = get(sn_data, "name", "anonymous")
@@ -137,17 +137,17 @@ function make_multinetwork(data::Dict{String, <:Any}, it::String, global_keys::S
     data_it = ismultiinfrastructure(data) ? data["it"][it] : data
 
     if InfrastructureModels.ismultinetwork(data_it)
-        Memento.error(_LOGGER, "make_multinetwork does not support multinetwork data")
+        error("make_multinetwork does not support multinetwork data")
     end
 
     if !haskey(data_it, "time_series")
-        Memento.error(_LOGGER, "make_multinetwork requires time_series data")
+        error("make_multinetwork requires time_series data")
     end
 
     steps = data_it["time_series"]["num_steps"]
 
     if !isa(steps, Int)
-        Memento.error(_LOGGER, "the value of num_steps should be an integer, given $(steps)")
+        error("the value of num_steps should be an integer, given $(steps)")
     end
 
     mn_data = replicate(data_it, steps, union(global_keys, Set(["time_series"])))
@@ -163,7 +163,7 @@ function make_multinetwork(data::Dict{String, <:Any}, it::String, global_keys::S
                 _update_data_timepoint!(nw_data[k], v, i)
             elseif isa(v, Array) 
                 if length(v) != steps 
-                    Memento.error(_LOGGER, "the size of the array $k in the time series block must be equal to $steps, currently it is $(length(v))")
+                    error("the size of the array $k in the time series block must be equal to $steps, currently it is $(length(v))")
                 else 
                     #println(k); println(v[i])
                     nw_data[k] = v[i]
@@ -183,15 +183,15 @@ end
 "loads a single time point from a time_series data block into the current network"
 function load_timepoint!(data::Dict{String, <:Any}, step_index::Int)
     if InfrastructureModels.ismultinetwork(data)
-        Memento.error(_LOGGER, "load_timepoint! does not support multinetwork data")
+        error("load_timepoint! does not support multinetwork data")
     end
 
     if !haskey(data, "time_series")
-        Memento.error(_LOGGER, "load_timepoint! requires time_series data")
+        error("load_timepoint! requires time_series data")
     end
 
     if step_index < 1 || step_index > data["time_series"]["num_steps"]
-        Memento.error(_LOGGER, "a step index of $(step_index) is outside the valid range of 1:$(data["time_series"]["num_steps"])")
+        error("a step index of $(step_index) is outside the valid range of 1:$(data["time_series"]["num_steps"])")
     end
 
     for (k,v) in data["time_series"]
@@ -215,10 +215,10 @@ function _update_data_timepoint!(data::Dict{String, <:Any}, new_data::Dict{Strin
             elseif (!isa(v, Dict) || !isa(v, Array)) && isa(new_v, Array)
                 data[key] = new_v[step]
             else
-                Memento.warn(_LOGGER, "skipping key $(key) because object types do not match, target $(typeof(v)) source $(typeof(new_v))")
+                @warn "skipping key $(key) because object types do not match, target $(typeof(v)) source $(typeof(new_v))"
             end
         else
-            Memento.warn(_LOGGER, "skipping time_series key $(key) because it does not occur in the target data")
+            @warn "skipping time_series key $(key) because it does not occur in the target data"
         end
     end
 end
@@ -239,7 +239,7 @@ component_table(data::Dict{String,<:Any}, component::String, field::String) = co
 function _component_table(data::Dict{String,<:Any}, component::String, fields::Vector{String})
     comps = data[component]
     if !_iscomponentdict(comps)
-        Memento.error(_LOGGER, "$(component) does not appear to refer to a component list")
+        error("$(component) does not appear to refer to a component list")
     end
 
     items = []
@@ -277,7 +277,7 @@ function summary(io::IO, data::Dict{String,<:Any};
     )
 
     if ismultinetwork(data)
-        Memento.error(_LOGGER, "summary does not yet support multinetwork data")
+        error("summary does not yet support multinetwork data")
     end
 
     component_types = []

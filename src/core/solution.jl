@@ -5,7 +5,7 @@ function build_result(aim::AbstractInfrastructureModel, solve_time; solution_pro
     try
         result_count = JuMP.result_count(aim.model)
     catch
-        Memento.warn(_LOGGER, "the given optimizer does not provide the ResultCount() attribute, assuming the solver returned a solution which may be incorrect.");
+        @warn "the given optimizer does not provide the ResultCount() attribute, assuming the solver returned a solution which may be incorrect."
     end
 
     solution = Dict{String,Any}()
@@ -13,7 +13,7 @@ function build_result(aim::AbstractInfrastructureModel, solve_time; solution_pro
     if result_count > 0
         solution = build_solution(aim, post_processors=solution_processors)
     else
-        Memento.warn(_LOGGER, "model has no results, solution cannot be built")
+        @warn "model has no results, solution cannot be built"
     end
 
     result = Dict{String,Any}(
@@ -166,7 +166,7 @@ end
 
 ""
 function build_solution_values(var::Any)
-    Memento.warn(_LOGGER, "build_solution_values found unknown type $(typeof(var))")
+    @warn "build_solution_values found unknown type $(typeof(var))"
     return var
 end
 
