@@ -16,6 +16,95 @@ mutable struct BarModel <: AbstractModel @some_fields end
     @test isa(Logging.global_logger(), LoggingExtras.EarlyFilteredLogger)
 end
 
+@testset "logging" begin
+    @testset "meta formatter" begin
+        # Info: prefix has module + level, suffix empty
+        color, prefix, suffix = InfrastructureModels._im_metafmt(Logging.Info, InfrastructureModels, :default, :id, "file.jl", 42)
+        @test occursin("InfrastructureModels", prefix)
+        @test occursin("Info", prefix)
+        @test suffix == ""
+
+        # Warn: prefix says "Warning", suffix has file+line
+        color, prefix, suffix = InfrastructureModels._im_metafmt(Logging.Warn, InfrastructureModels, :default, :id, "file.jl", 42)
+        @test occursin("Warning", prefix)
+        @test occursin("file.jl", suffix)
+        @test occursin("42", suffix)
+
+        # Error: prefix says "Error", suffix has file+line
+        color, prefix, suffix = InfrastructureModels._im_metafmt(Logging.Error, InfrastructureModels, :default, :id, "file.jl", 42)
+        @test occursin("Error", prefix)
+        @test occursin("file.jl", suffix)
+
+        # Debug: prefix says "Debug"
+        color, prefix, suffix = InfrastructureModels._im_metafmt(Logging.Debug, InfrastructureModels, :default, :id, "file.jl", 42)
+        @test occursin("Debug", prefix)
+        @test occursin("file.jl", suffix)
+
+        # UnitRange line numbers
+        _, _, suffix = InfrastructureModels._im_metafmt(Logging.Warn, InfrastructureModels, :default, :id, "file.jl", 10:20)
+        @test occursin("10-20", suffix)
+
+        # nil module/file/line (Info level -> suffix always empty)
+        _, _, suffix = InfrastructureModels._im_metafmt(Logging.Info, nothing, :default, :id, nothing, nothing)
+        @test suffix == ""
+    end
+
+    @testset "set_logging_level!" begin
+        for level in [:Info, :Warn, :Error]
+            InfrastructureModels.set_logging_level!(level)
+            @test Logging.global_logger() isa LoggingExtras.EarlyFilteredLogger
+        end
+        InfrastructureModels.silence!()  # cleanup
+    end
+
+    @testset "reset_logging_level!" begin
+        InfrastructureModels.silence!()
+        @test Logging.global_logger() isa LoggingExtras.EarlyFilteredLogger
+
+        InfrastructureModels.reset_logging_level!()
+        @test Logging.global_logger() isa Logging.ConsoleLogger
+
+        InfrastructureModels.silence!()  # cleanup
+    end
+
+    @testset "restore_global_logger!" begin
+        original = InfrastructureModels._DEFAULT_LOGGER
+
+        InfrastructureModels.restore_global_logger!()
+        @test Logging.global_logger() === original
+
+        InfrastructureModels.reset_logging_level!()
+        InfrastructureModels.silence!()  # cleanup
+    end
+
+    @testset "make_filtered_logger" begin
+        filtered = InfrastructureModels._make_filtered_logger(Logging.Error)
+        @test filtered isa LoggingExtras.EarlyFilteredLogger
+        @test filtered.logger isa Logging.ConsoleLogger
+    end
+
+    @testset "logger_config!" begin
+        for level in ["info", "warn", "error", "debug"]
+            InfrastructureModels.logger_config!(level)
+            @test Logging.global_logger() isa LoggingExtras.EarlyFilteredLogger
+        end
+        InfrastructureModels.silence!()  # cleanup
+    end
+
+    @testset "silence and reset round-trip" begin
+        InfrastructureModels.reset_logging_level!()
+        @test Logging.global_logger() isa Logging.ConsoleLogger
+
+        InfrastructureModels.silence!()
+        @test Logging.global_logger() isa LoggingExtras.EarlyFilteredLogger
+
+        InfrastructureModels.reset_logging_level!()
+        @test Logging.global_logger() isa Logging.ConsoleLogger
+
+        InfrastructureModels.silence!()  # cleanup
+    end
+end
+
 
 @testset "def macro" begin
     foo = FooModel(1, 2.3, "4")
