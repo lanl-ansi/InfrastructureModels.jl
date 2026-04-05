@@ -12,8 +12,8 @@ mutable struct BarModel <: AbstractModel @some_fields end
 
 @testset "silence" begin
     # This should silence everything except error messages.
-    InfrastructureModels.silence()
-    @test Logging.min_enabled_level(current_logger()) > Logging.Warn
+    InfrastructureModels.silence!()
+    @test isa(Logging.global_logger(), LoggingExtras.EarlyFilteredLogger)
 end
 
 

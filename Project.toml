@@ -7,12 +7,14 @@ version = "0.7.8"
 [deps]
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+LoggingExtras = "e6f89c97-d47a-5376-807f-9c37f3926c36"
 
 [compat]
 ECOS = ">= 0.12"
 Ipopt = ">= 0.8"
 JuMP = "~0.22, ~0.23, 1"
 Juniper = ">= 0.8"
+LoggingExtras = "0.4.7, 1"
 julia = "1.6"
 
 [extras]

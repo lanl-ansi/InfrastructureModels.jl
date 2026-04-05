@@ -1,5 +1,6 @@
 using InfrastructureModels
 import Logging
+import LoggingExtras
 import JSON
 
 import JuMP
@@ -17,7 +18,7 @@ import Random: seed!
 using Test
 
 # Suppress warnings during testing
-Logging.disable_logging(Logging.Warn)
+InfrastructureModels.silence!()
 
 include("common.jl")
 
