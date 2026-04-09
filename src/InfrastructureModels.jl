@@ -7,11 +7,11 @@ import LoggingExtras
 # Setup Logging
 include("core/logging.jl")
 _DEFAULT_LOGGER = Logging.current_logger()
-_LOGGER = Logging.ConsoleLogger(; meta_formatter=InfrastructureModels._im_metafmt)
+_LOGGER = Logging.ConsoleLogger(; meta_formatter=InfrastructureModels._dispatching_metafmt)
 function __init__()
     global _DEFAULT_LOGGER = Logging.current_logger()
-    global _LOGGER = Logging.ConsoleLogger(; meta_formatter=InfrastructureModels._im_metafmt)
-
+    global _LOGGER = Logging.ConsoleLogger(; meta_formatter=InfrastructureModels._dispatching_metafmt)
+    register_module!(InfrastructureModels, _im_metafmt)
     Logging.global_logger(_LOGGER)
 end
 

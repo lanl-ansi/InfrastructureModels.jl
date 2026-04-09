@@ -77,10 +77,52 @@ end
         InfrastructureModels.silence!()  # cleanup
     end
 
-    @testset "make_filtered_logger" begin
-        filtered = InfrastructureModels._make_filtered_logger(Logging.Error)
-        @test filtered isa LoggingExtras.EarlyFilteredLogger
-        @test filtered.logger isa Logging.ConsoleLogger
+    @testset "register_module! and dispatching formatter" begin
+        # IM is already registered in __init__
+        @test haskey(InfrastructureModels._MODULE_FORMATTERS, InfrastructureModels)
+
+        # Dispatching formatter routes to registered formatter
+        color1, prefix1, _ = InfrastructureModels._dispatching_metafmt(Logging.Info, InfrastructureModels, :default, :id, "file.jl", 1)
+        color2, prefix2, _ = InfrastructureModels._im_metafmt(Logging.Info, InfrastructureModels, :default, :id, "file.jl", 1)
+        @test prefix1 == prefix2
+
+        # Unregistered module falls back to _im_metafmt
+        color3, prefix3, _ = InfrastructureModels._dispatching_metafmt(Logging.Info, Main, :default, :id, "file.jl", 1)
+        color4, prefix4, _ = InfrastructureModels._im_metafmt(Logging.Info, Main, :default, :id, "file.jl", 1)
+        @test prefix3 == prefix4
+    end
+
+    @testset "set_module_log_level! and reset_module_log_level!" begin
+        # Set a level for a fake module
+        InfrastructureModels.set_module_log_level!(Main, Logging.Error)
+        @test haskey(InfrastructureModels._MODULE_LOG_LEVELS, Main)
+        @test Logging.global_logger() isa LoggingExtras.EarlyFilteredLogger
+
+        # Reset it
+        InfrastructureModels.reset_module_log_level!(Main)
+        @test !haskey(InfrastructureModels._MODULE_LOG_LEVELS, Main)
+
+        InfrastructureModels.silence!()  # cleanup
+    end
+
+    @testset "per-module independence" begin
+        # Silence IM only
+        InfrastructureModels.reset_logging_level!()
+        InfrastructureModels.silence!()
+
+        # IM is silenced
+        @test haskey(InfrastructureModels._MODULE_LOG_LEVELS, InfrastructureModels)
+        @test InfrastructureModels._MODULE_LOG_LEVELS[InfrastructureModels] == Logging.Error
+
+        # Main is not silenced
+        @test !haskey(InfrastructureModels._MODULE_LOG_LEVELS, Main)
+
+        # Filter function correctly discriminates
+        @test InfrastructureModels._should_log((level=Logging.Warn, _module=Main)) == true
+        @test InfrastructureModels._should_log((level=Logging.Warn, _module=InfrastructureModels)) == false
+        @test InfrastructureModels._should_log((level=Logging.Error, _module=InfrastructureModels)) == true
+
+        InfrastructureModels.silence!()  # cleanup
     end
 
     @testset "logger_config!" begin
