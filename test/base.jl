@@ -9,16 +9,6 @@ abstract type AbstractModel end
 mutable struct FooModel <: AbstractModel @some_fields end
 mutable struct BarModel <: AbstractModel @some_fields end
 
-
-@testset "silence" begin
-    # This should silence everything except error messages.
-    InfrastructureModels.silence()
-    im_logger = Memento.getlogger(InfrastructureModels)
-    @test Memento.getlevel(im_logger) == "error"
-    Memento.warn(im_logger, "Silenced message should not be displayed.")
-end
-
-
 @testset "def macro" begin
     foo = FooModel(1, 2.3, "4")
     bar = BarModel(1, 2.3, "4")

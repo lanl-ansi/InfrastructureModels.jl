@@ -1,23 +1,19 @@
 using InfrastructureModels
-import Memento
-import JSON
+using Test
 
-import JuMP
-
-import Ipopt
 import ECOS
+import Ipopt
+import JSON
+import JuMP
 import Juniper
+import Random: seed!
+
+# Suppress warnings during testing
+InfrastructureModels.silence()
 
 ipopt_solver = JuMP.optimizer_with_attributes(Ipopt.Optimizer, "print_level"=>0)
 ecos_solver = JuMP.optimizer_with_attributes(ECOS.Optimizer, "verbose"=>0)
 juniper_solver = JuMP.optimizer_with_attributes(Juniper.Optimizer, "nl_solver"=>ipopt_solver, "log_levels"=>[])
-
-import Random: seed!
-
-using Test
-
-# Suppress warnings during testing
-InfrastructureModels.logger_config!("error")
 
 include("common.jl")
 
