@@ -27,7 +27,7 @@ generic_si_network_data = JSON.parse("""{
             "d":false
         }
     }
-}""")
+}"""; dicttype=Dict{String,Any})
 
 # used to check that ref_initialize works correctly with strongly typed data
 generic_si_network_data_native = Dict(
@@ -104,7 +104,7 @@ generic_mi_network_data = JSON.parse("""
             }
         }
     }
-}""")
+}"""; dicttype=Dict{String,Any})
 
 generic_network_time_series_data = Dict(
     "num_steps" => 3,

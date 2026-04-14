@@ -198,29 +198,6 @@ end
 
 
 function ref_add_core!(ref::Dict)
-    for (nw, nw_ref) in ref[:nw]
-        nw_ref[:comp] = Dict(x for x in nw_ref[:comp] if (!haskey(x.second, "status") || x.second["status"] != 0))
-    end
-
-    for nw in nw_ids(aim, :foo)
-        con(aim, :foo, nw)[:comp] = Dict()
-        for (c, comp) in ref(aim, :foo, nw, :comp)
-            cstr = JuMP.@constraint(aim.model, var(aim, :foo, nw, :c, c) >= 0.5 * c)
-            con(aim, :foo, nw, :comp)[c] = cstr
-            sol(aim, :foo, nw, :comp, c)[:c_lb] = cstr
-        end
-    end
-
-    JuMP.@objective(aim.model, Min, sum(
-        sum( var(aim, :foo, nw, :c, c)^2 for c in ids(aim, :foo, nw, :comp))
-        for nw in nw_ids(aim, :foo))
-    )
-
-    aim.sol[:it][:foo][:glb] = 4.56
-end
-
-
-function ref_add_core!(ref::Dict)
     apply!(_ref_add_core!, ref, :foo)
 end
 
