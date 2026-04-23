@@ -1,6 +1,6 @@
 name = "InfrastructureModels"
 uuid = "2030c09a-7f63-5d83-885d-db604e0e9cc0"
-version = "0.7.8"
+version = "0.7.9"
 authors = ["Carleton Coffrin"]
 repo = "https://github.com/lanl-ansi/InfrastructureModels.jl"
 
