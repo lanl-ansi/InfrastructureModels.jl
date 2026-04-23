@@ -448,3 +448,15 @@ end
     @test result["primal_status"] == JuMP.FEASIBLE_POINT
     @test result["dual_status"] == JuMP.FEASIBLE_POINT
 end
+
+@testset "test_logging" begin
+    InfrastructureModels.logger_config!("debug")
+    InfrastructureModels.@_debug("test-debug")
+    InfrastructureModels.@_info("test-info")
+    InfrastructureModels.@_warn("test-warn")
+    @test_throws(
+        ErrorException("test-error"),
+        InfrastructureModels.@_error("test-error"),
+    )
+    InfrastructureModels.silence()
+end
