@@ -9,16 +9,6 @@ abstract type AbstractModel end
 mutable struct FooModel <: AbstractModel @some_fields end
 mutable struct BarModel <: AbstractModel @some_fields end
 
-
-@testset "silence" begin
-    # This should silence everything except error messages.
-    InfrastructureModels.silence()
-    im_logger = Memento.getlogger(InfrastructureModels)
-    @test Memento.getlevel(im_logger) == "error"
-    Memento.warn(im_logger, "Silenced message should not be displayed.")
-end
-
-
 @testset "def macro" begin
     foo = FooModel(1, 2.3, "4")
     bar = BarModel(1, 2.3, "4")
@@ -457,4 +447,16 @@ end
     @test result["termination_status"] == JuMP.LOCALLY_SOLVED
     @test result["primal_status"] == JuMP.FEASIBLE_POINT
     @test result["dual_status"] == JuMP.FEASIBLE_POINT
+end
+
+@testset "test_logging" begin
+    InfrastructureModels.logger_config!("debug")
+    InfrastructureModels.@_debug("test-debug")
+    InfrastructureModels.@_info("test-info")
+    InfrastructureModels.@_warn("test-warn")
+    @test_throws(
+        ErrorException("test-error"),
+        InfrastructureModels.@_error("test-error"),
+    )
+    InfrastructureModels.silence()
 end
