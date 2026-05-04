@@ -2,6 +2,8 @@ InfrastructureModels.jl Change Log
 ==================================
 
 ### Staged
+
+### v0.7.9
 - Various maintenance updates to bring InfrastructureModels up to date (#97)
 - Remove Memento and switch to Logging.jl (#99)
 
